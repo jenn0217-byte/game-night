@@ -2589,6 +2589,10 @@ body.ingame #view:has(.wgw.hang){min-height:0}
 .wgw .key.miss{background:rgba(0,0,0,.22);color:rgba(255,255,255,.35);box-shadow:none}
 .wgw.hang .key:disabled:not(.hit):not(.miss){opacity:.6}
 .hgnote{margin:0;text-align:center;color:#FFF3DA;font-weight:800;font-size:.82rem;flex:none}
+.wgw.hang .kb.ro .key{pointer-events:none}
+.wgw.hang .kb.ro .key:disabled:not(.hit):not(.miss){opacity:.8}
+.wgw.hang .key.last{outline:3px solid #FFD60A;outline-offset:1px;animation:hglast .5s ease-out}
+@keyframes hglast{0%{transform:scale(1.25)}100%{transform:none}}
 .wgw.hang .wgrow{margin-top:0}
 .wgw.hang .wgav{position:relative}
 .wgw.hang .wgav small{position:absolute;top:33px;left:50%;transform:translateX(-50%)}
@@ -3537,8 +3541,13 @@ function fbLoad(src){return new Promise((ok,no)=>{const e=document.createElement
 async function fbDb(){try{const v='https://www.gstatic.com/firebasejs/10.12.2/';await fbLoad(v+'firebase-app-compat.js');await fbLoad(v+'firebase-firestore-compat.js');
   const app=firebase.apps.length?firebase.app():firebase.initializeApp(window.GN_FB),fs=firebase.firestore(app),root=fs.collection('gn').doc(window.GN_ROOM||'main');
   const ref=p=>{const k=p.split('/');return k.length%2?root.collection(k[0]):root.collection(k[0]).doc(k[1])};
-  const wrapDoc=d=>({set:x=>d.set(x),update:x=>d.set(x,{merge:true}),onSnapshot:(f,e)=>d.onSnapshot(f,e)});
-  return {collection:n=>{const c=ref(n);return {doc:id=>wrapDoc(c.doc(id)),onSnapshot:(f,e)=>c.onSnapshot(f,e)}},doc:p=>wrapDoc(ref(p))}}catch(e){return null}}
+  /* Firestore has no arrays inside arrays and no undefined: wrap inner arrays as {_a:[...]} on the way in, unwrap on the way out */
+  const enc=(v,inA)=>v===undefined?null:Array.isArray(v)?(inA?{_a:v.map(x=>enc(x,true))}:v.map(x=>enc(x,true))):v&&typeof v==='object'?Object.fromEntries(Object.entries(v).map(([k,x])=>[k,enc(x,false)])):v;
+  const dec=v=>Array.isArray(v)?v.map(dec):v&&typeof v==='object'?(Object.keys(v).length===1&&Array.isArray(v._a)?v._a.map(dec):Object.fromEntries(Object.entries(v).map(([k,x])=>[k,dec(x)]))):v;
+  const wrapSnap=s=>({id:s.id,exists:s.exists,data:()=>{const x=s.data();return x===undefined?x:dec(x)}});
+  const wrapDoc=d=>({set:x=>d.set(enc(x,false)),update:x=>d.set(enc(x,false),{merge:true}),onSnapshot:(f,e)=>d.onSnapshot(s=>f(wrapSnap(s)),e)});
+  window.__gnEnc=enc;window.__gnDec=dec;
+  return {collection:n=>{const c=ref(n);return {doc:id=>wrapDoc(c.doc(id)),onSnapshot:(f,e)=>c.onSnapshot(s=>f({docs:s.docs.map(wrapSnap)}),e)}},doc:p=>wrapDoc(ref(p))}}catch(e){return null}}
 const store={db:null,local:{games:{},meta:null},remote:[],key(){return practice?'gn2-practice':'gn2-local'},
   loadLocal(){this.local={games:{},meta:null};try{const s=localStorage.getItem(this.key());if(s){const d=JSON.parse(s);this.local.games=d.games||{};this.local.meta=d.meta||null}}catch(e){}},
   saveLocal(){try{localStorage.setItem(this.key(),JSON.stringify(this.local))}catch(e){}},
@@ -3546,7 +3555,7 @@ const store={db:null,local:{games:{},meta:null},remote:[],key(){return practice?
   async start(){
     this.loadLocal();this.pushLocal();
     let db=null;if(window.GN_FB){/* hosted copy: the room key arrives once in the link (#k=...), then lives on this phone */
-      let k=null;try{const m=/[#&]k=([A-Za-z0-9_-]{8,})/.exec(location.hash||'');if(m){k=m[1];localStorage.setItem('gn-room',k);history.replaceState(null,'',location.pathname+location.search)}else k=localStorage.getItem('gn-room')}catch(e){}
+      let k=null;try{const m=/[#&]k=([A-Za-z0-9_-]{8,})/.exec(location.hash||'');if(m){k=m[1];localStorage.setItem('gn-room',k)/* the key stays in the address so Add to Home Screen keeps it (iOS home-screen apps get their own storage) */}else k=localStorage.getItem('gn-room')}catch(e){}
       if(!k){const v=$('#view');if(v)v.innerHTML='<div class="panel" style="margin-top:40px;text-align:center"><h3>Game Night</h3><p class="sub">Open the game with the link Jen sent you. It has your key in it.</p></div>';return}
       window.GN_ROOM=k;db=await fbDb();if(!db){toast('Couldn’t reach the game server. Check your connection and reload.')}}else{try{db=window.claude&&window.claude.use?await window.claude.use('db'):null}catch(e){db=null}}
     if(!db){shared=false;renderChips();return}
@@ -4523,7 +4532,7 @@ G.hang={title:'Hangman',blurb:'Pick a word for them. Six wrong guesses and you w
     const state=done?(g.winner===guesser?'won':'lost'):'';
     let cap;
     if(done){const w=g.winner;cap=`<span class="wgcap res ${w===me?'win':'lose'}">${w===me?'YOU WON!':nm(w).toUpperCase()+' WON'}</span>`}
-    else cap=iSet?`<span class="wgcap">WAITING FOR ${nm(guesser).toUpperCase()}...</span>`:`<span class="wgcap go">YOUR TURN</span>`;
+    else cap=iSet?`<span class="wgcap">${(g.guesses||'').length?nm(guesser).toUpperCase()+' IS GUESSING...':'WAITING FOR '+nm(guesser).toUpperCase()+'...'}</span>`:`<span class="wgcap go">YOUR TURN</span>`;
     const hud=`<div class="wghud">${hgAv(me,me===g.setter?'<u>WORD</u>':'')}<div class="wgmid">${cap}<span class="hgmeter" aria-label="Misses ${miss.length} of 6">${Array.from({length:6},(_,i)=>`<i class="${i<miss.length?'on':''}"></i>`).join('')}</span></div>${hgAv(op,op===g.setter?'<u>WORD</u>':'')}</div>`;
     const prevMiss=ui.g.hm;ui.g.hm=miss.length;
     const maxL=Math.max(...g.word.split(' ').map(w=>w.length));
@@ -4538,7 +4547,10 @@ G.hang={title:'Hangman',blurb:'Pick a word for them. Six wrong guesses and you w
     let since='';if(iSet&&!done&&!g.solo){let sn=0;try{sn=+(localStorage.getItem('gn2-hang-seen-'+g.id)||0)}catch(_){}
       const nw=[...(g.guesses||'')].slice(sn);if(nw.length&&sn<(g.guesses||'').length)since=`<p class="hgnote hgsince">${nm(guesser)} guessed ${nw.map(L=>`<b class="${g.word.includes(L)?'y':'n'}">${L}</b>`).join(' ')}</p>`}
     const again=g.solo?`<button class="btn" data-act="hang-solo">New mystery phrase</button>`:wgAgain(g,`<button class="btn" data-act="hang-again">${iSet?'Pick another word':'Your turn to pick a word'}</button>`);
-    const foot=done?`<div class="row wgrow">${again}<button class="btn ghost" data-act="archive" data-id="${g.id}">Clear from list</button></div>`:iSet?(since||`<p class="hgnote">Only you can see the grey letters. ${nm(guesser)} guesses on their phone.</p>`):kb;
+    /* setter: the guesser's keyboard, read-only and live (green = in the word, dark = miss, yellow ring = newest guess) */
+    const lastL=(g.guesses||'').slice(-1);
+    const kbRO=iSet&&!done?kbd('hang-watch',L=>{const used=(g.guesses||'').includes(L);return {cls:(used?(g.word.includes(L)?'hit':'miss'):'')+(L===lastL?' last':''),off:true}}).replace('<div class="kb">','<div class="kb ro" aria-label="Letters guessed so far">'):'';
+    const foot=done?`<div class="row wgrow">${again}<button class="btn ghost" data-act="archive" data-id="${g.id}">Clear from list</button></div>`:iSet?(since||`<p class="hgnote">${(g.guesses||'').length?`${nm(guesser)}’s guesses show here as they tap.`:`${nm(guesser)} guesses on their phone. You’ll see each letter here.`}</p>`)+kbRO:kb;
     return `${head('Hangman')}<div class="wgw hang${iSet&&!done?' setter':''}">${hud}${board}<div class="slots hgslots" style="--L:${maxL}">${slots}</div>${foot}</div>`},
   after(g){hangFit();wgRmToast(g);
     if(g.setter===me){const n=(g.guesses||'').length;clearTimeout(ui.g.hgSeenT);ui.g.hgSeenT=setTimeout(()=>{try{localStorage.setItem('gn2-hang-seen-'+g.id,String(n))}catch(_){}},1500)}
@@ -6182,7 +6194,8 @@ function mgFit(g){const host=document.getElementById('cv-host'),wrap=document.qu
 /* ============ BOWLING (v14: iPhone feel. Drag the ball to aim, swipe up to bowl. The physics runs to the end at release; the screen plays it back
    time-based: 1.6s roll, one calm 0.4s tumble per pin, no shake. Pre-rendered lane, pin and ball sprites, dirty-rect drawing, cached score strip.) ============ */
 const PINS=(()=>{const p=[],rows=[[30],[24.4,35.6],[18.8,30,41.2],[13.2,24.4,35.6,46.8]];rows.forEach((r,k)=>r.forEach(x=>p.push([x,42-k*9.5])));return p})();
-const BWK={pd:.7,pc:6,pp:.92,bp:.8,wall:.55};
+/* v15 (Oct 28, Jen: "bowling too easy"): pins slide less and bounce off each other less, so a head-on hit leaves pins; strikes need the pocket */
+const BWK={pd:1.5,pc:12,pp:.75,bp:.8,wall:.55};
 function bowlSim(up,x,vx,vy,spin){const K=BWK,ball={x,y:186,vx,vy,r:4.2,m:7},pins=PINS.map((p,i)=>({i,x:p[0],y:p[1],vx:0,vy:0,r:2.3,m:1.5,up:!!up[i],moved:false}));
   return {ball,pins,gutter:false,t:0,done:false,acc:0,step(dt){const h=1/240;this.acc+=dt;while(this.acc>=h&&!this.done){this.acc-=h;this.sub(h)}},
   sub(h){const b=this.ball;this.t+=h;
@@ -6425,7 +6438,7 @@ G.bowl={title:'Bowling',blurb:'Swipe to bowl. Curve your swipe for spin.',
     onUp(cv,g){const st=cv.st,gs=st.gest;st.gest=null;if(!gs||!g||!this.live(cv,g))return;if(gs.mode!=='swipe'){st.aim=0;return}
       const sw=bowlSwipeOf(gs.pts,BW.H);if(!sw){st.aim=0;return}
       const z=sw.end,e=bwInv(z.x,Math.min(z.y,bwP(30,150)[1])),bx=st.ballX,dxl=(e[0]-bx)*.5,dyl=e[1]-BW.BY,dl=Math.hypot(dxl,dyl)||1;
-      const sp=Math.max(95,Math.min(230,70+95*sw.p)),vx=dxl/dl*sp,vy=dyl/dl*sp,spin=sw.spin,x=bx,id=shotId(),before=g.pins.slice();st.aim=Math.atan2(vx,-vy);bowlHintDone();
+      const sp=Math.max(95,Math.min(230,70+95*sw.p)),wob=(.4+.8*(sp-95)/135)*Math.PI/180*Math.sqrt(-2*Math.log(Math.random()||1e-9))*Math.cos(2*Math.PI*Math.random()),/* release wobble: a fast throw is a little less accurate */ca=Math.cos(wob),sa=Math.sin(wob),vx=(dxl*ca-dyl*sa)/dl*sp,vy=(dxl*sa+dyl*ca)/dl*sp,spin=sw.spin,x=bx,id=shotId(),before=g.pins.slice();st.aim=Math.atan2(vx,-vy);bowlHintDone();
       st.seen=id;bowlSeenSet(g.id,id);this.begin(st,{pins:before,x,vx,vy,spin},me);st.lastIn={p:sw.p,sp,spin,L:sw.L,v:sw.v,dur:sw.dur};G.bowl._last=st.lastIn;
       st.onDone=run=>{const after=run.pins.map(q=>q.up&&!q.moved?1:0),k=before.reduce((a2,b)=>a2+b,0)-after.reduce((a2,b)=>a2+b,0);
         const rolls=[...(g.rolls[me]||[]),k],pos=bowlPos(rolls,g.n),prev=bowlPos(g.rolls[me]||[],g.n);
