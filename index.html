@@ -3518,7 +3518,9 @@ body.ingame:has(.fsc) #toast{top:120px;margin-top:0}
 .mttable{flex:1 1 auto;min-height:0;display:flex;align-items:center;justify-content:center}
 .mtsvg{width:100%;height:100%;max-height:100%;display:block;overflow:visible}
 .mtsvg .mthit{fill:transparent}
-.mtspoke.can{cursor:pointer}.mtspoke.can .mthit{fill:rgba(255,214,10,.14);stroke:#FFD60A;stroke-width:1.5;animation:mtglow .8s ease-in-out infinite alternate}
+.mtspoke.can{cursor:pointer}.mtspoke.can .mthit{fill:rgba(255,214,10,.07)}
+.mtslot.can rect{animation:mtslot .7s ease-in-out infinite alternate;transform-box:fill-box;transform-origin:center}
+@keyframes mtslot{from{transform:scale(.94);filter:drop-shadow(0 0 0 #FFD60A)}to{transform:scale(1.08);filter:drop-shadow(0 0 6px #FFD60A)}}
 @keyframes mtglow{from{fill-opacity:.4}to{fill-opacity:1}}
 .mtslotn{font:900 13px var(--display);fill:#fff;paint-order:stroke;stroke:rgba(0,0,0,.35);stroke-width:2px}
 .mtslot.can .mtslotn{fill:#2A2100;stroke:none}
@@ -3544,6 +3546,12 @@ body.ingame:has(.fsc) #toast{top:120px;margin-top:0}
 .mtrack:has(+.mtact){padding-bottom:6px}
 .mtact .row{width:100%;padding:0 10px}
 .mtdraw{background:#FFD60A;color:#2A2100;font-size:1rem;letter-spacing:.06em;padding:12px 28px}
+.mtmid small b.mtlast{color:#fff;font-weight:900}
+.mtsee .mtseeall{display:flex;flex-wrap:wrap;gap:4px;align-items:center;padding:10px;margin:8px 0 12px;border-radius:14px;background:#7A5032;max-height:46vh;overflow:auto}
+.mtsee .mtseeh{padding:2px;border-radius:6px;background:#151517;line-height:0}
+.mtsee .mtslotc{font:900 .9rem var(--display);color:#fff;border:1.5px dashed rgba(255,255,255,.7);border-radius:6px;padding:2px 8px;font-style:normal}
+.mtspoke[data-act=mtrain-see]{cursor:pointer}
+html:has(.mtwrap),body:has(.mtwrap){background:linear-gradient(180deg,var(--bg) 50%,#121214 50%)}
 .mtrs table{width:100%;border-collapse:collapse;margin:8px 0 12px;font-variant-numeric:tabular-nums}.mtrs th,.mtrs td{padding:6px;border-bottom:1px solid var(--hair);text-align:center}.mtrs th:first-child{text-align:left}
 </style>
 
@@ -10282,8 +10290,8 @@ const mtSeenSet=(id,v)=>{try{localStorage.setItem('gn-mt-seen-'+id+'-'+me,v)}cat
    face-down pile, and your tiles standing on a black two-tier rack. ---- */
 const mtName=tr=>tr==='mx'?'the shared train':tr===me?'your train':esc(nameOf(tr))+'’s train';
 /* one tile drawn into a parent SVG. vertical: a on top, b below; horizontal: a left, b right. L = long side */
-function mtTileG(a,b,x,y,L,vert,cls){const W=L/2,w=vert?W:L,h=vert?L:W,r=W*.085,R=W*.16;
-  const half=(n,ox,oy)=>(MT_PIP[n]||[]).map(([px,py])=>{const cx=ox+px*W,cy=oy+py*W;return `<circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="${r.toFixed(2)}" fill="${MT_COL[n]}"/><circle cx="${(cx-r*.3).toFixed(1)}" cy="${(cy-r*.35).toFixed(1)}" r="${(r*.32).toFixed(2)}" fill="#fff" opacity=".55"/>`}).join('');
+function mtTileG(a,b,x,y,L,vert,cls){const W=L/2,w=vert?W:L,h=vert?L:W,R=W*.16;
+  const half=(n,ox,oy)=>{const r=W*(n<=6?.105:n<=9?.092:.078);return (MT_PIP[n]||[]).map(([px,py])=>{const cx=ox+px*W,cy=oy+py*W;return `<circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="${r.toFixed(2)}" fill="${MT_COL[n]}"/><circle cx="${(cx-r*.3).toFixed(1)}" cy="${(cy-r*.35).toFixed(1)}" r="${(r*.32).toFixed(2)}" fill="#fff" opacity=".55"/>`}).join('')};
   const bar=vert?`<rect x="${(x+W*.1).toFixed(1)}" y="${(y+W-W*.035).toFixed(1)}" width="${(W*.8).toFixed(1)}" height="${(W*.07).toFixed(1)}" rx="${W*.03}" fill="#1b1b1d"/>`:`<rect x="${(x+W-W*.035).toFixed(1)}" y="${(y+W*.1).toFixed(1)}" width="${(W*.07).toFixed(1)}" height="${(W*.8).toFixed(1)}" rx="${W*.03}" fill="#1b1b1d"/>`;
   const spin=`<circle cx="${(x+(vert?W/2:W)).toFixed(1)}" cy="${(y+(vert?W:W/2)).toFixed(1)}" r="${(W*.07).toFixed(2)}" fill="#C9A646" stroke="#8a6d1f" stroke-width="${(W*.015).toFixed(2)}"/>`;
   return `<g class="mtg${cls?' '+cls:''}"><rect x="${(x+W*.04).toFixed(1)}" y="${(y+W*.07).toFixed(1)}" width="${w}" height="${h}" rx="${R}" fill="rgba(0,0,0,.28)"/><rect x="${x}" y="${y}" width="${w}" height="${h}" rx="${R}" fill="url(#mtface)" stroke="#CFC8B8" stroke-width="${(W*.03).toFixed(2)}"/>${bar}${half(a,x,y)}${half(b,vert?x:x+W,vert?y+W:y)}${spin}</g>`}
@@ -10302,17 +10310,17 @@ const MT_MX='#F2A900';
 const MT_VB=[360,440],MT_H=[180,212],MT_HR=44,MT_L=50;
 function mtPaths(o){const [HX,HY]=MT_H,R=MT_HR;
   /* each path: start of the centreline at the hub edge + legs {dx,dy,lim}: tiles stay inside lim along that leg */
-  return {[o]:{x:HX,y:HY-R-4,legs:[{dx:0,dy:-1,lim:26},{dx:-1,dy:0,lim:6}]},
+  return {[o]:{x:HX,y:HY-R-4,legs:[{dx:0,dy:-1,lim:26},{dx:-1,dy:0,lim:30}]},
     mx:{x:HX+R+4,y:HY,legs:[{dx:1,dy:0,lim:354},{dx:0,dy:-1,lim:44}]},
     [me]:{x:HX,y:HY+R+4,legs:[{dx:0,dy:1,lim:414},{dx:1,dy:0,lim:354}]}}}
 function mtLay(t,path,gap){/* lay pieces along the path, turning corners like a real train; null if they don't fit (+ the end slot) */
-  const L=MT_L,W=L/2,out=[];let li=0,x=path.x,y=path.y,band=W/2;
+  const L=MT_L,W=L/2,out=[];let li=0,x=path.x,y=path.y,band=W/2,lastAl=L;
   const fits=(lg,al)=>lg.dx>0?x+al<=lg.lim:lg.dx<0?x-al>=lg.lim:lg.dy>0?y+al<=lg.lim:y-al>=lg.lim;
   const place=(al,ac)=>{for(;;){const lg=path.legs[li];if(!lg)return null;
-      if(fits(lg,al)){const cx=x+lg.dx*al/2,cy=y+lg.dy*al/2;x+=lg.dx*(al+gap);y+=lg.dy*(al+gap);band=ac/2;return {cx,cy,w:lg.dx?al:ac,h:lg.dx?ac:al,lg}}
+      if(fits(lg,al)){const cx=x+lg.dx*al/2,cy=y+lg.dy*al/2;x+=lg.dx*(al+gap);y+=lg.dy*(al+gap);band=ac/2;lastAl=al;return {cx,cy,w:lg.dx?al:ac,h:lg.dx?ac:al,lg}}
       const nx=path.legs[li+1];if(!nx)return null;
       /* turn: back off the gap, step half a tile on, then out past the side of the last tile */
-      x-=lg.dx*gap;y-=lg.dy*gap;x+=lg.dx*W/2+nx.dx*(band+gap);y+=lg.dy*W/2+nx.dy*(band+gap);li++}};
+      /* after a crosswise double, run alongside it (its middle); otherwise step half a tile on */const st=band>W/2?-lastAl/2:W/2;x-=lg.dx*gap;y-=lg.dy*gap;x+=lg.dx*st+nx.dx*(band+gap);y+=lg.dy*st+nx.dy*(band+gap);li++}};
   for(const p of t){const dbl=p[0]===p[1],b=place(dbl?W:L,dbl?L:W);if(!b)return null;out.push({p,dbl,...b})}
   const slot=place(L*.55,W);if(!slot)return null;return {tiles:out,slot}}
 function mtTable(g,sel,legal,fresh){const [HX,HY]=MT_H,HR=MT_HR,L=MT_L,W=L/2,GAP=2,eng=mtEng(g),o=other(me),P=mtPaths(o);
@@ -10328,14 +10336,14 @@ function mtTable(g,sel,legal,fresh){const [HX,HY]=MT_H,HR=MT_HR,L=MT_L,W=L/2,GAP
     const sl=lay.slot,end=mtEnd(g,tr),sx=sl.cx-sl.w/2,sy=sl.cy-sl.h/2;
     const slot=`<g class="mtslot${can?' can':''}"><rect x="${sx.toFixed(1)}" y="${sy.toFixed(1)}" width="${sl.w.toFixed(1)}" height="${sl.h.toFixed(1)}" rx="4" fill="${can?'rgba(255,214,10,.4)':'rgba(255,255,255,.12)'}" stroke="${can?'#FFD60A':'rgba(255,255,255,.6)'}" stroke-width="${can?2.4:1.2}" stroke-dasharray="${can?'0':'3 2.5'}"/><text x="${sl.cx.toFixed(1)}" y="${(sl.cy+4.6).toFixed(1)}" text-anchor="middle" class="mtslotn">${end}</text></g>`;
     const sg=sl.lg,mx=sl.cx+sg.dx*(sl.w/2+15)+(sg.dy?W*.95:0),my=sl.cy+sg.dy*(sl.h/2+6)+(sg.dx?W/2+6:8);
-    const loco=open?mtLocoG(col,+mx.toFixed(1),+my.toFixed(1),1,sg.dx<0?-1:1):'';
+    const loco=open?mtLocoG(col,+Math.max(15,Math.min(345,mx)).toFixed(1),+Math.max(22,Math.min(436,my)).toFixed(1),1,sg.dx<0?-1:1):'';
     const lab=tr==='mx'?'Shared':tr===me?'You':nm(tr),s0=segs[0];
     const [lx,ly,anc]=s0.dx?[HX+HR+6,HY-L/2-5,'start']:s0.dy<0?[HX-L/2-5,HY-HR-6,'end']:[HX-L/2-5,HY+HR+16,'end'];
     const more=hid?`<text x="${(s0.dx?HX+HR+6:HX+L/2+5).toFixed(1)}" y="${(s0.dx?HY+L/2+13:s0.dy<0?HY-HR-6:HY+HR+16).toFixed(1)}" class="mtmore">+${hid}</text>`:'';
     const hit=(()=>{let cx=path.x,cy=path.y,h='';segs.forEach((lg,i)=>{const pad=W/2+7,ex=lg.dx?lg.lim:cx,ey=lg.dy?lg.lim:cy;
       h+=`<rect x="${(Math.min(cx,ex)-(lg.dx?0:pad)).toFixed(1)}" y="${(Math.min(cy,ey)-(lg.dy?0:pad)).toFixed(1)}" width="${(Math.abs(ex-cx)+(lg.dx?0:pad*2)).toFixed(1)}" height="${(Math.abs(ey-cy)+(lg.dy?0:pad*2)).toFixed(1)}" rx="10" class="mthit"/>`;
       const nx=segs[i+1];if(nx){cx=ex-lg.dx*W/2+nx.dx*(W/2);cy=ey-lg.dy*W/2+nx.dy*(W/2)}});return h})();
-    out+=`<g class="mtspoke ${tr==='mx'?'mx':tr===me?'mine':'theirs'}${can?' can':''}" ${can?`data-act="mtrain-play" data-tr="${tr}" role="button" aria-label="Play on ${lab==='You'?'your':lab==='Shared'?'the shared':lab+'’s'} train"`:''}>${hit}${tiles}${slot}${loco}${more}<text x="${lx}" y="${ly}" text-anchor="${anc}" class="mtlabel" style="fill:${col}">${esc(lab)}</text></g>`}
+    out+=`<g class="mtspoke ${tr==='mx'?'mx':tr===me?'mine':'theirs'}${can?' can':''}" ${can?`data-act="mtrain-play" data-tr="${tr}" role="button" aria-label="Play on ${lab==='You'?'your':lab==='Shared'?'the shared':lab+'’s'} train"`:t.length?`data-act="mtrain-see" data-tr="${tr}" role="button" aria-label="See the whole train"`:''}>${hit}${tiles}${slot}${loco}${more}<text x="${lx}" y="${ly}" text-anchor="${anc}" class="mtlabel" style="fill:${col}">${esc(lab)}</text></g>`}
   /* boneyard: face-down pile, lower left */
   const nb=g.bone.length,pile=Array.from({length:Math.max(1,Math.min(5,Math.ceil(nb/12)))},(_,i)=>`<rect x="${26+i*4}" y="${300-i*6}" width="${L}" height="${W}" rx="4" fill="#1d1d21" stroke="#3a3a40" stroke-width="1" transform="rotate(${(i%2?-7:5)} ${51+i*4} ${312-i*6})"/>`).join('');
   const bone=nb?`<g class="mtbonepile">${pile}<text x="56" y="352" text-anchor="middle" class="mtbonen">${nb}</text><text x="56" y="364" text-anchor="middle" class="mtbonel">BONEYARD</text></g>`:'';
@@ -10364,16 +10372,19 @@ G.mtrain={title:'Dominos',blurb:'Double-twelve dominoes. Build your train, empty
     const R=g.rend&&mtSeen(g.id+'-r')!==String(g.rend.round)?g.rend:null;
     const rsheet=R?`<div class="cpdim" data-act="mtrain-rok"></div><div class="gp-sheet mtrs"><h3>Round ${R.round+1} done</h3><p class="sub">${R.out?esc(nameOf(R.out))+' went out.':'Blocked: nobody could play.'}</p><table><tr><th></th><th>This round</th><th>Total</th></tr>${[me,o].map(p=>`<tr><th>${p===me?'You':nm(p)}</th><td>${R.pips[p]}</td><td><b>${tot(p)}</b></td></tr>`).join('')}</table><button class="btn" data-act="mtrain-rok">${g.status==='done'?'See result':'Next round'}</button></div>`:'';
     const eg=g.eng&&!(g.trains[me].t.length||g.trains[o].t.length||g.trains.mx.t.length)?`${g.eng.by===me?'You':esc(nm(g.eng.by))} had the ${mtEng(g)}-${mtEng(g)}${g.eng.drawn?` (drew ${g.eng.drawn})`:''} and ${g.eng.by===me?'go':'goes'} first`:'lowest score wins';
+    const SE=ui.g.mtSee&&g.trains[ui.g.mtSee]?ui.g.mtSee:null,seT=SE?g.trains[SE].t||[]:[];
+    const seeSheet=SE?`<div class="cpdim" data-act="mtrain-seex"></div><div class="gp-sheet mtsee"><h3>${SE==='mx'?'Shared train':SE===me?'Your train':esc(nm(SE))+'’s train'} · ${seT.length} tile${seT.length===1?'':'s'}</h3><div class="mtseeall"><span class="mtseeh">${mtTile(mtS(mtEng(g),mtEng(g)),{w:44,v:false})}</span>${seT.map(p=>mtTile(mtS(p[0],p[1]),{w:44,v:p[0]===p[1]})).join('')}<i class="mtslotc">${mtEnd(g,SE)}</i></div><button class="btn" data-act="mtrain-seex">Done</button></div>`:'';
+    const lm=L&&L.by!==me&&g.status==='active'?(L.kind==='play'?`${esc(nm(L.by))} played ${L.s} on ${L.tr==='mx'?'the shared train':L.tr===me?'your train':'their train'}`:`${esc(nm(L.by))} drew and passed`):'';
     const round=`Round ${(g.round||0)+1} of ${g.R} · ${eg}${g.pend&&!can?` · ${esc(nm(g.turn))} must cover the double`:''}`;
-    return `${head('Dominos')}<div class="mtwrap"><div class="mthud">${side(me)}<div class="mtmid">${cap}<small>${round}</small></div>${side(o)}</div>
+    return `${head('Dominos')}<div class="mtwrap"><div class="mthud">${side(me)}<div class="mtmid">${cap}<small>${lm?`<b class="mtlast">${lm}</b> · `:''}${round}</small></div>${side(o)}</div>
       <div class="mttable">${mtTable(g,sel,legal,fresh)}</div>
-      <div class="mtrack${can?' can':''}" style="--tw:${tw}px">${rows}<i class="mtlip"></i></div>${act?`<div class="mtact">${act}</div>`:''}</div>${rsheet}`},
+      <div class="mtrack${can?' can':''}" style="--tw:${tw}px">${rows}<i class="mtlip"></i></div>${act?`<div class="mtact">${act}</div>`:''}</div>${rsheet}${seeSheet}`},
   after(g){const w=document.querySelector('#view .mtwrap');if(!w)return;
     const fit=()=>{const vh=Math.min(innerHeight,window.visualViewport?visualViewport.height:innerHeight),top=w.getBoundingClientRect().top,pb=parseFloat(getComputedStyle(document.documentElement).paddingBottom)||0;
       w.style.height=Math.max(380,Math.floor(vh-top))+'px';w.style.setProperty('--pb',pb+'px')};fit();
     const n=w.querySelector('.mtpiece.new');if(n)n.addEventListener('animationend',()=>n.classList.remove('new'),{once:true})},
   async act(a,t,g){if(a==='mtrain-start'||a==='mtrain-again')return this.start();if(a==='mtrain-r'){ui.opt.mtR=+t.dataset.r;renderModal&&renderModal();return}
-    if(!g)return;if(a==='mtrain-rok'){mtSeenSet(g.id+'-r',String(g.rend&&g.rend.round));render();return}
+    if(!g)return;if(a==='mtrain-see'){ui.g.mtSee=t.dataset.tr;render();return}if(a==='mtrain-seex'){ui.g.mtSee=null;render();return}if(a==='mtrain-rok'){mtSeenSet(g.id+'-r',String(g.rend&&g.rend.round));render();return}
     if(g.status!=='active'||g.turn!==me)return;const legal=mtLegal(g,me);
     if(a==='mtrain-pick'){const s=t.dataset.s,fits=legal.filter(m=>m.s===s);if(!fits.length)return;
       if(fits.length===1)return mtPlay(g,fits[0]);ui.g.mtSel={id:g.id,s};render();try{navigator.vibrate&&navigator.vibrate(8)}catch(_){}return}
