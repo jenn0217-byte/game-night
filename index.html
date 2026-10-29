@@ -3501,7 +3501,51 @@ body.ingame #view:has(.fsc){min-height:0}
 .ffly.fface{border-radius:4px;filter:drop-shadow(0 4px 6px rgba(0,0,0,.4))}.ffly.fface svg{width:100%;height:100%;display:block}
 body.ingame:has(.fsc) #toast{top:120px;margin-top:0}
 
-.cpstage .cvwrap.hbwrap{border-radius:0;box-shadow:none;background:#6E2412}.hbmenu{top:12px;left:12px}.hbsheet .scard table{width:100%}</style>
+.cpstage .cvwrap.hbwrap{border-radius:0;box-shadow:none;background:#6E2412}.hbmenu{top:12px;left:12px}.hbsheet .scard table{width:100%}/* ===== Dominos v2 (Oct 29): wood table, black octagon hub, spoke trains, plastic engines, black two-tier rack ===== */
+.mtwrap{display:flex;flex-direction:column;gap:8px;margin-inline:-16px;padding:0 10px;background:linear-gradient(180deg,#8B5E3C,#7A5032 60%,#6B4429);
+  background-image:repeating-linear-gradient(90deg,rgba(255,255,255,.035) 0 2px,transparent 2px 9px,rgba(0,0,0,.05) 9px 10px,transparent 10px 23px),linear-gradient(180deg,#8B5E3C,#7A5032 60%,#6B4429);border-radius:20px 20px 0 0;overflow:hidden;min-height:0}
+.mthud{display:grid;grid-template-columns:72px 1fr 72px;align-items:center;gap:6px;padding:10px 2px 0;flex:none}
+.mtside{display:flex;flex-direction:column;align-items:center;gap:1px;color:#FFF3E0;position:relative}
+.mtav{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;font:900 1rem var(--display);color:#fff;border:3px solid rgba(255,255,255,.85);box-shadow:0 3px 8px rgba(0,0,0,.35)}
+.mtside.p1 .mtav{background:var(--p1)}.mtside.p2 .mtav{background:var(--p2)}
+.mtside.on .mtav{box-shadow:0 0 0 3px #FFD60A,0 3px 8px rgba(0,0,0,.35)}
+.mtside small{font-weight:900;font-size:.7rem;opacity:.9}.mtside b{font:800 1.05rem var(--display);line-height:1}
+.mtcnt{font-size:.6rem;font-weight:900;opacity:.75}
+.mtmid{display:flex;flex-direction:column;align-items:center;gap:4px;min-width:0}
+.mtmid small{color:#FFE8CC;font-size:.68rem;font-weight:800;text-align:center;opacity:.85;line-height:1.2}
+.mtcap{background:#1C1C1F;color:#fff;font:900 .78rem var(--body);letter-spacing:.06em;padding:7px 12px;border-radius:10px;box-shadow:0 3px 8px rgba(0,0,0,.3);white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis}
+.mtcap.go{background:#FFD60A;color:#2A2100}.mtcap.sent{background:#1C2C51}.mtcap.win{background:#FFD60A;color:#2A2100;font-size:.95rem}.mtcap.lose{background:#1C1C1F}.mtcap.tie{background:#fff;color:#111}
+.mttable{flex:1 1 auto;min-height:0;display:flex;align-items:center;justify-content:center}
+.mtsvg{width:100%;height:100%;max-height:100%;display:block;overflow:visible}
+.mtsvg .mthit{fill:transparent}
+.mtspoke.can{cursor:pointer}.mtspoke.can .mthit{fill:rgba(255,214,10,.14);stroke:#FFD60A;stroke-width:1.5;animation:mtglow .8s ease-in-out infinite alternate}
+@keyframes mtglow{from{fill-opacity:.4}to{fill-opacity:1}}
+.mtslotn{font:900 13px var(--display);fill:#fff;paint-order:stroke;stroke:rgba(0,0,0,.35);stroke-width:2px}
+.mtslot.can .mtslotn{fill:#2A2100;stroke:none}
+.mtlabel{font:900 11px var(--body);paint-order:stroke;stroke:rgba(40,20,5,.75);stroke-width:3px;letter-spacing:.03em}
+.mtmore{font:900 11px var(--body);fill:#FFE8CC}
+.mtbonen{font:800 16px var(--display);fill:#fff}.mtbonel{font:900 7.5px var(--body);fill:#FFE8CC;letter-spacing:.12em}
+.mtpiece.new{animation:mtin .45s cubic-bezier(.3,1.3,.5,1) both}
+@keyframes mtin{from{transform:translate(var(--ox),var(--oy));opacity:0}}
+.mtpiece.pend .mtg>rect:nth-child(2){stroke:#FFD60A;stroke-width:2}
+.mtloco{filter:drop-shadow(0 1px 1px rgba(0,0,0,.3))}
+/* rack */
+.mtrack{flex:none;position:relative;margin:0 -10px;padding:10px 10px calc(6px + var(--pb,0px));background:linear-gradient(180deg,#2B2B30,#121214);border-top:3px solid #3a3a40;box-shadow:0 -6px 16px rgba(0,0,0,.35);display:flex;flex-direction:column;gap:4px}
+.mtrow{display:flex;justify-content:center;gap:4px;padding-bottom:5px;border-bottom:5px solid #050506;box-shadow:0 2px 0 #3a3a40}
+.mth{border:0;background:none;padding:0;line-height:0;border-radius:6px;transition:transform .15s var(--ease),filter .2s}
+.mth .mtile{width:calc(var(--tw) + 3px);height:auto;display:block}
+.mtrack.can .mth.no{filter:brightness(.62) saturate(.6)}
+.mth.ok{transform:translateY(-3px)}.mth.ok .mtile{filter:drop-shadow(0 0 4px rgba(255,214,10,.95))}
+.mth.sel{transform:translateY(-9px)}.mth.sel .mtile{filter:drop-shadow(0 0 0 #FFD60A) drop-shadow(0 0 6px #FFD60A)}
+.mth:active:not(:disabled){transform:translateY(-6px) scale(.97)}
+.mth:disabled{cursor:default}
+.mtlip{display:none}
+.mtact{flex:none;display:flex;justify-content:center;padding:0 0 calc(8px + var(--pb,0px));margin:-6px -10px 0;background:#121214}
+.mtrack:has(+.mtact){padding-bottom:6px}
+.mtact .row{width:100%;padding:0 10px}
+.mtdraw{background:#FFD60A;color:#2A2100;font-size:1rem;letter-spacing:.06em;padding:12px 28px}
+.mtrs table{width:100%;border-collapse:collapse;margin:8px 0 12px;font-variant-numeric:tabular-nums}.mtrs th,.mtrs td{padding:6px;border-bottom:1px solid var(--hair);text-align:center}.mtrs th:first-child{text-align:left}
+</style>
 
 <div class="wrap">
   <header class="top">
@@ -9072,10 +9116,10 @@ G.archery={title:'Archery',blurb:'Sets of 3 arrows. Read the wind, first to 6 se
        pointercancel / lostpointercapture finish the gesture with the last known point so a held shot is never dropped. */
     bind(cv){const el=cv.canvas;el.style.touchAction='none';
       const toW=e=>{const r=cv.st.rect;return {x:(e.clientX-r.l)/r.s-AR.dx,y:(e.clientY-r.t)/r.s-AR.dy}};
-      el.addEventListener('pointerdown',e=>{const st=cv.st;if(!st||st.ptr!=null)return;e.preventDefault();const r=el.getBoundingClientRect();st.rect={l:r.left,t:r.top,s:cv.s};st.ptr=e.pointerId;st.last=toW(e);st.gest=true;try{el.setPointerCapture(e.pointerId)}catch(_){}
-        arAudioResume();G.archery.cv.pdown(cv,st.last,cur())},{passive:false});
-      el.addEventListener('pointermove',e=>{const st=cv.st;if(!st||st.ptr!==e.pointerId)return;e.preventDefault();st.last=toW(e);if(st.aim)G.archery.cv.pmove(cv,st.last)},{passive:false});
-      const end=e=>{const st=cv.st;if(!st||st.ptr!==e.pointerId)return;const p=e.type==='pointerup'?toW(e):st.last;st.ptr=null;G.archery.cv.pup(cv,p,cur());st.gest=false;if(ui.needRender){ui.needRender=false;render()}};
+      el.addEventListener('pointerdown',e=>{const st=cv.st;if(!st||st.ptr!=null)return;e.preventDefault();const r=el.getBoundingClientRect();st.rect={l:r.left,t:r.top,s:cv.s};st.ptr=e.pointerId;st.lastP=toW(e);st.gest=true;try{el.setPointerCapture(e.pointerId)}catch(_){}
+        arAudioResume();G.archery.cv.pdown(cv,st.lastP,cur())},{passive:false});
+      el.addEventListener('pointermove',e=>{const st=cv.st;if(!st||st.ptr!==e.pointerId)return;e.preventDefault();st.lastP=toW(e);if(st.aim)G.archery.cv.pmove(cv,st.lastP)},{passive:false});
+      const end=e=>{const st=cv.st;if(!st||st.ptr!==e.pointerId)return;const p=e.type==='pointerup'?toW(e):st.lastP;st.ptr=null;G.archery.cv.pup(cv,p,cur());st.gest=false;if(ui.needRender){ui.needRender=false;render()}};
       el.addEventListener('pointerup',end);el.addEventListener('pointercancel',end);el.addEventListener('lostpointercapture',end)},
     sync(cv,g){if(cv.stMe!==me&&!cv.st.fly&&!cv.st.rp&&!(cv.st.hold>0)&&!cv.st.gest){this.init(cv,g)}const st=cv.st,ls=g.lastShot;if(!ls||ls.id===st.seen)return;st.seen=ls.id;AR_SEEN.set(g.id,ls.id);
       if(ls.by!==me&&!st.fly){st.rp={shot:ls,t:0};st.aim=null;const k=ls.k,sets=g.sets||[];if(sets[k])arPrewarm(cv,arDi(sets[k].n));const cs=arCurSet(g);if(cs)arPrewarm(cv,arDi(cs.n))}},
@@ -9090,7 +9134,7 @@ G.archery={title:'Archery',blurb:'Sets of 3 arrows. Read the wind, first to 6 se
       const closeup=f=>{tz=arZ(di)*1.15;tx=50+f.shot.x*R*.5;ty=cy+f.shot.y*R*.5};
       if(st.aim){tz=arZ(di)*.72;tx=50;ty=cy;kk=7}
       else if(st.fly){const f=st.fly,e=Math.min(1,f.t/AR.FLY),ee=e<.5?2*e*e:1-Math.pow(-2*e+2,2)/2;if(!f.c0)f.c0={z:st.cam.z,x:st.cam.x,y:st.cam.y};closeup(f);st.cam.z=f.c0.z+(tz-f.c0.z)*ee;st.cam.x=f.c0.x+(tx-f.c0.x)*ee;st.cam.y=f.c0.y+(ty-f.c0.y)*ee;tz=st.cam.z;tx=st.cam.x;ty=st.cam.y;kk=60}
-      else if(st.land||st.hold>0){if(st.last)closeup(st.last);kk=6}
+      else if(st.land||st.hold>0){if(st.last&&st.last.shot)closeup(st.last);kk=6}
       else if(st.rp){tz=arZ(di)*.72;tx=50;ty=cy;kk=7}
       const k=1-Math.exp(-dt*kk);st.cam.z+=(tz-st.cam.z)*k;st.cam.x+=(tx-st.cam.x)*k;st.cam.y+=(ty-st.cam.y)*k;
       const rt=st.aim?1:0;st.raise+=(rt-st.raise)*(1-Math.exp(-dt*10));
@@ -10211,28 +10255,94 @@ const mtEnd=(g,tr)=>{const t=(g.trains[tr]||{}).t||[];return t.length?t[t.length
 function mtLegal(g,p){const h=g.hands[p]||[],o=other(p),out=[];const pend=g.pend&&g.pend.tr?g.pend:null;
   const trs=pend?[pend.tr]:[p,'mx',...(g.trains[o]&&g.trains[o].open?[o]:[])];
   for(const s of h){const [a,b]=mtT(s);for(const tr of trs){const e=mtEnd(g,tr);if(a===e||b===e)out.push({s,tr})}}return out}
-function mtDeal(round,first){const E=12-(round%13),all=[];for(let a=0;a<=12;a++)for(let b=a;b<=12;b++)if(!(a===E&&b===E))all.push(mtS(a,b));
-  const d=shuffle(all);return {round,hands:{p1:d.slice(0,15),p2:d.slice(15,30)},bone:d.slice(30),trains:{p1:{t:[],open:false},p2:{t:[],open:false},mx:{t:[]}},pend:null,drew:0,passes:0,turn:first,rstart:first}}
+/* Oct 29 (Jen's rules card): the round's double is in the deal. Whoever holds it sets it in the hub and goes first;
+   if nobody has it, players draw from the boneyard in turn (starting with first) until it turns up. */
+function mtDeal(round,first){const E=12-(round%13),eng=mtS(E,E),all=[];for(let a=0;a<=12;a++)for(let b=a;b<=12;b++)all.push(mtS(a,b));
+  const d=shuffle(all),hands={p1:d.slice(0,15),p2:d.slice(15,30)},bone=d.slice(30);let who=hands.p1.includes(eng)?'p1':hands.p2.includes(eng)?'p2':null,drawn=0,p=first||'p1';
+  while(!who&&bone.length){const s=bone.pop();hands[p].push(s);drawn++;if(s===eng)who=p;else p=p==='p1'?'p2':'p1'}
+  who=who||first||'p1';hands[who]=hands[who].filter(x=>x!==eng);
+  return {round,hands,bone,trains:{p1:{t:[],open:false},p2:{t:[],open:false},mx:{t:[]}},pend:null,drew:0,passes:0,turn:who,rstart:first,eng:{by:who,drawn}}}
 const mtSeen=id=>{try{return localStorage.getItem('gn-mt-seen-'+id+'-'+me)}catch(_){return null}};
 const mtSeenSet=(id,v)=>{try{localStorage.setItem('gn-mt-seen-'+id+'-'+me,v)}catch(_){}};
-/* a domino as SVG; v=true draws it upright (hand), else lying across (train). w = long side in px */
-function mtTile(s,o){o=o||{};const [a0,b0]=mtT(s),[a,b]=o.flip?[b0,a0]:[a0,b0],v=!!o.v,L=o.w||60,W=L/2;
-  const half=(n,x,y)=>{const pts=MT_PIP[n]||[],r=n>9?W*.072:W*.085;return pts.map(([px,py])=>`<circle cx="${(x+px*W).toFixed(1)}" cy="${(y+py*W).toFixed(1)}" r="${r.toFixed(1)}" fill="${MT_COL[n]}"/>`).join('')};
-  const w=v?W:L,h=v?L:W;const body=`<rect x=".8" y=".8" width="${w-1.6}" height="${h-1.6}" rx="${W*.16}" fill="#FFFDF6" stroke="#C9C2B0" stroke-width="1.1"/>`+
-    (v?`<path d="M${W*.14} ${W}H${W*.86}" stroke="#B9B1A0" stroke-width="1.2"/>${half(a,0,0)}${half(b,0,W)}`:`<path d="M${W} ${W*.14}V${W*.86}" stroke="#B9B1A0" stroke-width="1.2"/>${half(a,0,0)}${half(b,W,0)}`);
-  return `<svg class="mtile${o.cls?' '+o.cls:''}" viewBox="0 0 ${w} ${h}" width="${w}" height="${h}" aria-label="${a} and ${b}" ${o.attr||''}>${body}</svg>`}
-const mtName=tr=>tr==='mx'?'Mexican Train':tr===me?'your train':esc(nameOf(tr))+'’s train';
-/* the train marker: a little engine in the owner's colour */
-const mtLoco=(col,on)=>`<svg class="mtloco${on?' on':''}" viewBox="0 0 30 22" aria-hidden="true"><rect x="2" y="6" width="17" height="10" rx="2" fill="${col}"/><rect x="13" y="1" width="9" height="15" rx="2" fill="${col}"/><rect x="15" y="3" width="5" height="4" rx="1" fill="#E8F6FF"/><rect x="4" y="2" width="4" height="5" rx="1" fill="#333"/><path d="M22 16h6l-3-5h-3z" fill="${col}"/><circle cx="7" cy="18" r="3" fill="#222"/><circle cx="17" cy="18" r="3" fill="#222"/><circle cx="25" cy="18" r="2.4" fill="#222"/></svg>`;
-function mtLane(g,tr,sel,legal,fresh){const t=(g.trains[tr]||{}).t||[],open=tr==='mx'||(g.trains[tr]&&g.trains[tr].open),owner=tr==='mx'?null:tr,col=tr==='mx'?'#E8A800':PCOL[tr];
-  const fits=sel?legal.filter(m=>m.s===sel&&m.tr===tr):[],can=fits.length>0;const pend=g.pend&&g.pend.tr===tr;
-  const SHOW=3,hid=Math.max(0,t.length-SHOW),vis=t.slice(hid);
-  const tiles=vis.map(([a,b],i)=>{const k=hid+i,last=k===t.length-1,dbl=a===b,isNew=last&&fresh&&fresh.tr===tr;return `<span class="mtt${dbl?' dbl':''}${isNew?' new '+(fresh.by===me?'mine':'theirs'):''}${pend&&last?' pend':''}">${mtTile(mtS(a,b),{w:48,v:dbl})}</span>`}).join('');
-  const lab=tr==='mx'?'Mexican':owner===me?'You':nm(owner);
-  return `<button class="mtlane ${tr==='mx'?'mx':owner===me?'mine':'theirs'}${can?' can':''}${pend?' pendl':''}" ${can?`data-act="mtrain-play" data-tr="${tr}"`:'disabled'} aria-label="${lab} train, ends on ${mtEnd(g,tr)}${open&&tr!=='mx'?', open':''}">
-    <span class="mtlab">${mtLoco(col,open&&tr!=='mx')}<small>${lab}</small></span><span class="mtrun">${hid?`<em>+${hid}</em>`:''}${tiles}<i class="mtslot">${mtEnd(g,tr)}</i></span></button>`}
-G.mtrain={title:'Mexican Train',blurb:'Dominoes: build your train, empty your hand first.',
-  modal(){const n=ui.opt.mtR||3;return `<h2>New Mexican Train</h2><p class="sub">Double-twelve dominoes. Play on your train, the Mexican Train, or theirs when it’s open. Lowest score wins.</p><div class="opts">${[[1,'1 round'],[3,'3 rounds'],[13,'Full game (13)']].map(([v,l])=>`<button class="opt${n===v?' on':''}" data-act="mtrain-r" data-r="${v}" aria-pressed="${n===v}">${l}</button>`).join('')}</div>${startRow('mtrain')}`},
+/* ---- Dominos v2 look (Oct 29, from Jen's photos): white tiles with a black centre bar and a brass spinner, one colour per pip
+   number (standard double-12 set), a black octagon hub with the engine double in the middle, trains running out from the hub
+   like spokes (theirs up, the shared train right, yours down), glossy plastic train markers on open trains, the boneyard as a
+   face-down pile, and your tiles standing on a black two-tier rack. ---- */
+/* ---- Dominos v2 look (Oct 29, from Jen's photos): white tiles with a black centre bar and a brass spinner, one colour per pip
+   number (standard double-12 set), a black octagon hub with the engine double in the middle, trains running out from the hub
+   like spokes (theirs up, the shared train right, yours down), glossy plastic train markers on open trains, the boneyard as a
+   face-down pile, and your tiles standing on a black two-tier rack. ---- */
+/* ---- Dominos v2 look (Oct 29, from Jen's photos): white tiles with a black centre bar and a brass spinner, one colour per pip
+   number (standard double-12 set), a black octagon hub with the engine double in the middle, trains running out from the hub
+   like spokes (theirs up, the shared train right, yours down), glossy plastic train markers on open trains, the boneyard as a
+   face-down pile, and your tiles standing on a black two-tier rack. ---- */
+/* ---- Dominos v2 look (Oct 29, from Jen's photos): white tiles with a black centre bar and a brass spinner, one colour per pip
+   number (standard double-12 set), a black octagon hub with the engine double in the middle, trains running out from the hub
+   like spokes (theirs up, the shared train right, yours down), glossy plastic train markers on open trains, the boneyard as a
+   face-down pile, and your tiles standing on a black two-tier rack. ---- */
+const mtName=tr=>tr==='mx'?'the shared train':tr===me?'your train':esc(nameOf(tr))+'’s train';
+/* one tile drawn into a parent SVG. vertical: a on top, b below; horizontal: a left, b right. L = long side */
+function mtTileG(a,b,x,y,L,vert,cls){const W=L/2,w=vert?W:L,h=vert?L:W,r=W*.085,R=W*.16;
+  const half=(n,ox,oy)=>(MT_PIP[n]||[]).map(([px,py])=>{const cx=ox+px*W,cy=oy+py*W;return `<circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="${r.toFixed(2)}" fill="${MT_COL[n]}"/><circle cx="${(cx-r*.3).toFixed(1)}" cy="${(cy-r*.35).toFixed(1)}" r="${(r*.32).toFixed(2)}" fill="#fff" opacity=".55"/>`}).join('');
+  const bar=vert?`<rect x="${(x+W*.1).toFixed(1)}" y="${(y+W-W*.035).toFixed(1)}" width="${(W*.8).toFixed(1)}" height="${(W*.07).toFixed(1)}" rx="${W*.03}" fill="#1b1b1d"/>`:`<rect x="${(x+W-W*.035).toFixed(1)}" y="${(y+W*.1).toFixed(1)}" width="${(W*.07).toFixed(1)}" height="${(W*.8).toFixed(1)}" rx="${W*.03}" fill="#1b1b1d"/>`;
+  const spin=`<circle cx="${(x+(vert?W/2:W)).toFixed(1)}" cy="${(y+(vert?W:W/2)).toFixed(1)}" r="${(W*.07).toFixed(2)}" fill="#C9A646" stroke="#8a6d1f" stroke-width="${(W*.015).toFixed(2)}"/>`;
+  return `<g class="mtg${cls?' '+cls:''}"><rect x="${(x+W*.04).toFixed(1)}" y="${(y+W*.07).toFixed(1)}" width="${w}" height="${h}" rx="${R}" fill="rgba(0,0,0,.28)"/><rect x="${x}" y="${y}" width="${w}" height="${h}" rx="${R}" fill="url(#mtface)" stroke="#CFC8B8" stroke-width="${(W*.03).toFixed(2)}"/>${bar}${half(a,x,y)}${half(b,vert?x:x+W,vert?y+W:y)}${spin}</g>`}
+/* standalone tile (hand, hub card): upright unless o.v===false */
+function mtTile(s,o){o=o||{};const [a0,b0]=mtT(s),[a,b]=o.flip?[b0,a0]:[a0,b0],v=o.v!==false,L=o.w||60,W=L/2,w=v?W:L,h=v?L:W;
+  return `<svg class="mtile${o.cls?' '+o.cls:''}" viewBox="-1 -1 ${w+3} ${h+4}" width="${w+3}" height="${h+4}" aria-label="${a} and ${b}" ${o.attr||''}>${MT_DEFS}${mtTileG(a,b,0,0,L,v)}</svg>`}
+const MT_DEFS=`<defs><linearGradient id="mtface" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFFFFF"/><stop offset=".6" stop-color="#F7F5EF"/><stop offset="1" stop-color="#E9E5DA"/></linearGradient></defs>`;
+/* glossy plastic engine (the train marker). x,y = centre bottom, s = scale, dir = 1 faces right */
+function mtLocoG(col,x,y,s,dir){const d=dir||1;return `<g class="mtloco" transform="translate(${x} ${y}) scale(${s*d} ${s})"><ellipse cx="0" cy="1" rx="13" ry="3" fill="rgba(0,0,0,.3)"/>
+  <rect x="-12" y="-11" width="15" height="10" rx="2" fill="${col}"/><rect x="1" y="-17" width="10" height="16" rx="2.2" fill="${col}"/><rect x="-9" y="-19" width="4" height="8" rx="1" fill="${col}"/>
+  <path d="M-13 -1h4l-2 -4h-2z" fill="${col}"/><circle cx="-7" cy="-1" r="3.2" fill="${col}" stroke="rgba(0,0,0,.35)" stroke-width=".8"/><circle cx="1" cy="-1" r="3.2" fill="${col}" stroke="rgba(0,0,0,.35)" stroke-width=".8"/><circle cx="8" cy="-1" r="3.2" fill="${col}" stroke="rgba(0,0,0,.35)" stroke-width=".8"/>
+  <rect x="3" y="-15" width="6" height="5" rx="1" fill="rgba(0,0,0,.35)"/><rect x="-11" y="-10" width="13" height="3" rx="1.5" fill="#fff" opacity=".45"/><rect x="2" y="-16.5" width="2" height="12" rx="1" fill="#fff" opacity=".5"/><rect x="-8.5" y="-18.5" width="1.2" height="6" fill="#fff" opacity=".5"/></g>`}
+const MT_MX='#F2A900';
+/* the table: one SVG, 360 x 440, hub at (180,212). Each train follows its own path out of the hub and turns a corner
+   (like the photos), so 5-6 tiles show before older ones fold into a +N count by the hub. */
+const MT_VB=[360,440],MT_H=[180,212],MT_HR=44,MT_L=50;
+function mtPaths(o){const [HX,HY]=MT_H,R=MT_HR;
+  /* each path: start of the centreline at the hub edge + legs {dx,dy,lim}: tiles stay inside lim along that leg */
+  return {[o]:{x:HX,y:HY-R-4,legs:[{dx:0,dy:-1,lim:26},{dx:-1,dy:0,lim:6}]},
+    mx:{x:HX+R+4,y:HY,legs:[{dx:1,dy:0,lim:354},{dx:0,dy:-1,lim:44}]},
+    [me]:{x:HX,y:HY+R+4,legs:[{dx:0,dy:1,lim:414},{dx:1,dy:0,lim:354}]}}}
+function mtLay(t,path,gap){/* lay pieces along the path, turning corners like a real train; null if they don't fit (+ the end slot) */
+  const L=MT_L,W=L/2,out=[];let li=0,x=path.x,y=path.y,band=W/2;
+  const fits=(lg,al)=>lg.dx>0?x+al<=lg.lim:lg.dx<0?x-al>=lg.lim:lg.dy>0?y+al<=lg.lim:y-al>=lg.lim;
+  const place=(al,ac)=>{for(;;){const lg=path.legs[li];if(!lg)return null;
+      if(fits(lg,al)){const cx=x+lg.dx*al/2,cy=y+lg.dy*al/2;x+=lg.dx*(al+gap);y+=lg.dy*(al+gap);band=ac/2;return {cx,cy,w:lg.dx?al:ac,h:lg.dx?ac:al,lg}}
+      const nx=path.legs[li+1];if(!nx)return null;
+      /* turn: back off the gap, step half a tile on, then out past the side of the last tile */
+      x-=lg.dx*gap;y-=lg.dy*gap;x+=lg.dx*W/2+nx.dx*(band+gap);y+=lg.dy*W/2+nx.dy*(band+gap);li++}};
+  for(const p of t){const dbl=p[0]===p[1],b=place(dbl?W:L,dbl?L:W);if(!b)return null;out.push({p,dbl,...b})}
+  const slot=place(L*.55,W);if(!slot)return null;return {tiles:out,slot}}
+function mtTable(g,sel,legal,fresh){const [HX,HY]=MT_H,HR=MT_HR,L=MT_L,W=L/2,GAP=2,eng=mtEng(g),o=other(me),P=mtPaths(o);
+  const oct=k=>Array.from({length:8},(_,i)=>{const a=Math.PI/8+i*Math.PI/4;return `${(HX+Math.cos(a)*k).toFixed(1)},${(HY+Math.sin(a)*k).toFixed(1)}`}).join(' ');
+  const notches=Array.from({length:8},(_,i)=>{const a=i*Math.PI/4,cx=HX+Math.cos(a)*(HR-4),cy=HY+Math.sin(a)*(HR-4);return `<rect x="${(cx-5).toFixed(1)}" y="${(cy-4).toFixed(1)}" width="10" height="8" rx="1.5" fill="#2a2a2e" transform="rotate(${i*45+90} ${cx.toFixed(1)} ${cy.toFixed(1)})"/>`}).join('');
+  let out='';
+  for(const tr of [o,'mx',me]){const path=P[tr],segs=path.legs,t=(g.trains[tr]||{}).t||[],open=tr==='mx'||(g.trains[tr]&&g.trains[tr].open),col=tr==='mx'?MT_MX:PCOL[tr];
+    const pend=g.pend&&g.pend.tr===tr,can=sel&&legal.some(m=>m.s===sel&&m.tr===tr);
+    let hid=0,lay=mtLay(t,path,GAP);while(!lay&&hid<t.length){hid++;lay=mtLay(t.slice(hid),path,GAP)}
+    let tiles='';lay.tiles.forEach((b,i)=>{const k=hid+i,last=k===t.length-1,g0=b.lg,back=g0.dx<0||g0.dy<0;
+      const [a,c]=back?[b.p[1],b.p[0]]:[b.p[0],b.p[1]],tv=b.h>b.w;
+      tiles+=`<g class="mtpiece${last&&fresh&&fresh.tr===tr?' new':''}${pend&&last?' pend':''}" style="--ox:${(-g0.dx*18)}px;--oy:${(-g0.dy*18)}px">${mtTileG(a,c,+(b.cx-b.w/2).toFixed(1),+(b.cy-b.h/2).toFixed(1),L,tv)}</g>`});
+    const sl=lay.slot,end=mtEnd(g,tr),sx=sl.cx-sl.w/2,sy=sl.cy-sl.h/2;
+    const slot=`<g class="mtslot${can?' can':''}"><rect x="${sx.toFixed(1)}" y="${sy.toFixed(1)}" width="${sl.w.toFixed(1)}" height="${sl.h.toFixed(1)}" rx="4" fill="${can?'rgba(255,214,10,.4)':'rgba(255,255,255,.12)'}" stroke="${can?'#FFD60A':'rgba(255,255,255,.6)'}" stroke-width="${can?2.4:1.2}" stroke-dasharray="${can?'0':'3 2.5'}"/><text x="${sl.cx.toFixed(1)}" y="${(sl.cy+4.6).toFixed(1)}" text-anchor="middle" class="mtslotn">${end}</text></g>`;
+    const sg=sl.lg,mx=sl.cx+sg.dx*(sl.w/2+15)+(sg.dy?W*.95:0),my=sl.cy+sg.dy*(sl.h/2+6)+(sg.dx?W/2+6:8);
+    const loco=open?mtLocoG(col,+mx.toFixed(1),+my.toFixed(1),1,sg.dx<0?-1:1):'';
+    const lab=tr==='mx'?'Shared':tr===me?'You':nm(tr),s0=segs[0];
+    const [lx,ly,anc]=s0.dx?[HX+HR+6,HY-L/2-5,'start']:s0.dy<0?[HX-L/2-5,HY-HR-6,'end']:[HX-L/2-5,HY+HR+16,'end'];
+    const more=hid?`<text x="${(s0.dx?HX+HR+6:HX+L/2+5).toFixed(1)}" y="${(s0.dx?HY+L/2+13:s0.dy<0?HY-HR-6:HY+HR+16).toFixed(1)}" class="mtmore">+${hid}</text>`:'';
+    const hit=(()=>{let cx=path.x,cy=path.y,h='';segs.forEach((lg,i)=>{const pad=W/2+7,ex=lg.dx?lg.lim:cx,ey=lg.dy?lg.lim:cy;
+      h+=`<rect x="${(Math.min(cx,ex)-(lg.dx?0:pad)).toFixed(1)}" y="${(Math.min(cy,ey)-(lg.dy?0:pad)).toFixed(1)}" width="${(Math.abs(ex-cx)+(lg.dx?0:pad*2)).toFixed(1)}" height="${(Math.abs(ey-cy)+(lg.dy?0:pad*2)).toFixed(1)}" rx="10" class="mthit"/>`;
+      const nx=segs[i+1];if(nx){cx=ex-lg.dx*W/2+nx.dx*(W/2);cy=ey-lg.dy*W/2+nx.dy*(W/2)}});return h})();
+    out+=`<g class="mtspoke ${tr==='mx'?'mx':tr===me?'mine':'theirs'}${can?' can':''}" ${can?`data-act="mtrain-play" data-tr="${tr}" role="button" aria-label="Play on ${lab==='You'?'your':lab==='Shared'?'the shared':lab+'’s'} train"`:''}>${hit}${tiles}${slot}${loco}${more}<text x="${lx}" y="${ly}" text-anchor="${anc}" class="mtlabel" style="fill:${col}">${esc(lab)}</text></g>`}
+  /* boneyard: face-down pile, lower left */
+  const nb=g.bone.length,pile=Array.from({length:Math.max(1,Math.min(5,Math.ceil(nb/12)))},(_,i)=>`<rect x="${26+i*4}" y="${300-i*6}" width="${L}" height="${W}" rx="4" fill="#1d1d21" stroke="#3a3a40" stroke-width="1" transform="rotate(${(i%2?-7:5)} ${51+i*4} ${312-i*6})"/>`).join('');
+  const bone=nb?`<g class="mtbonepile">${pile}<text x="56" y="352" text-anchor="middle" class="mtbonen">${nb}</text><text x="56" y="364" text-anchor="middle" class="mtbonel">BONEYARD</text></g>`:'';
+  const hub=`<polygon points="${oct(HR+3)}" fill="rgba(0,0,0,.25)" transform="translate(2 4)"/><polygon points="${oct(HR)}" fill="#151517"/><polygon points="${oct(HR-6)}" fill="none" stroke="#2c2c31" stroke-width="1.2"/>${notches}${mtTileG(eng,eng,HX-L/2,HY-W/2,L,false,'eng')}`;
+  return `<svg class="mtsvg" viewBox="0 0 ${MT_VB[0]} ${MT_VB[1]}" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Table: hub ${eng}-${eng}">${MT_DEFS}${hub}${bone}${out}</svg>`}
+G.mtrain={title:'Dominos',blurb:'Double-twelve dominoes. Build your train, empty your hand first.',
+  modal(){const n=ui.opt.mtR||3;return `<h2>New Dominos</h2><p class="sub">Double-twelve, Mexican Train rules. Play on your train, the shared train, or theirs when it has a train marker. Lowest score wins.</p><div class="opts">${[[1,'1 round'],[3,'3 rounds'],[13,'Full game (13)']].map(([v,l])=>`<button class="opt${n===v?' on':''}" data-act="mtrain-r" data-r="${v}" aria-pressed="${n===v}">${l}</button>`).join('')}</div>${startRow('mtrain')}`},
   async start(){const R=ui.opt.mtR||3;await create(base('mtrain',{v:1,R,scores:{p1:[],p2:[]},last:null,rend:null,...mtDeal(0,me)}))},
   myMove:g=>g.status==='active'&&g.turn===me,
   busy:()=>!!ui.g.mtBusy,
@@ -10241,23 +10351,27 @@ G.mtrain={title:'Mexican Train',blurb:'Dominoes: build your train, empty your ha
     const sel=ui.g.mtSel&&ui.g.mtSel.id===g.id&&legal.some(m=>m.s===ui.g.mtSel.s)?ui.g.mtSel.s:null;
     const L=g.last,seenK=L?L.id:'',fresh=L&&L.tr&&(L.by===me?ui.g.mtMine===L.id:mtSeen(g.id)!==seenK)?L:null;if(L&&L.by!==me)mtSeenSet(g.id,seenK);
     const sent=ui.g.mtSent&&ui.g.mtSent.id===g.id&&Date.now()-ui.g.mtSent.t<1300;
-    let cap;if(g.status==='done'){const w=g.winner;cap=`<span class="mtcap ${w===me?'win':w==='tie'?'':'lose'}">${w===me?'YOU WON!':w==='tie'?'TIE GAME':'YOU LOST!'}</span>`}
-      else if(sent)cap=`<span class="mtcap sent">SENT ✓</span>`;else if(can)cap=`<span class="mtcap go">${g.pend?'COVER THE DOUBLE':'YOUR TURN'}</span>`;else cap=`<span class="mtcap">WAITING FOR OPPONENT..</span>`;
+    let cap;if(g.status==='done'){const w=g.winner;cap=`<span class="mtcap ${w===me?'win':w==='tie'?'tie':'lose'}">${w===me?'YOU WON!':w==='tie'?'TIE GAME':'YOU LOST!'}</span>`}
+      else if(sent)cap=`<span class="mtcap sent">SENT ✓</span>`;else if(can)cap=`<span class="mtcap go">${g.pend?'COVER THE DOUBLE':sel?'TAP A GLOWING TRAIN':'YOUR TURN'}</span>`;else cap=`<span class="mtcap">WAITING FOR ${esc(nm(o)).toUpperCase()}..</span>`;
     const side=p=>`<div class="mtside ${p}${g.status==='active'&&g.turn===p?' on':''}"><span class="mtav">${ini(p)}</span><small>${p===me?'You':nm(p)}</small><b>${tot(p)}</b>${p===me?'':`<span class="mtcnt">${(g.hands[p]||[]).length} tiles</span>`}</div>`;
-    const lanes=[o,'mx',me].map(tr=>mtLane(g,tr,sel,legal,fresh)).join('');
-    const hub=`<div class="mthub">${mtTile(mtS(mtEng(g),mtEng(g)),{w:56,v:true})}</div>`;
     const hand=(g.hands[me]||[]).slice().sort((x,y)=>{const [a,b]=mtT(x),[c,d]=mtT(y);return (a+b)-(c+d)||a-c}),pl=new Set(legal.map(m=>m.s));
-    const tiles=hand.map(s=>`<button class="mth${pl.has(s)?' ok':can?' no':''}${s===sel?' sel':''}" ${can&&pl.has(s)?`data-act="mtrain-pick" data-s="${s}"`:'disabled'} aria-label="${s.replace('-',' and ')}">${mtTile(s,{w:hand.length>18||innerHeight<640?60:72,v:true})}</button>`).join('');
+    /* the rack: two tiers (three when the hand is big); tiles shrink to fit the row */
+    const short=innerHeight<700,tiers=short?Math.max(1,Math.ceil(hand.length/12)):hand.length>18?3:hand.length>8?2:1,per=Math.ceil(hand.length/tiers)||1;
+    const tw=Math.max(22,Math.min(short?24:30,Math.floor((Math.min(innerWidth,560)-44)/per)-4)),TL=tw*2;
+    const rows=Array.from({length:tiers},(_,r)=>hand.slice(r*per,(r+1)*per)).map(row=>`<div class="mtrow">${row.map(s=>`<button class="mth${pl.has(s)?' ok':can?' no':''}${s===sel?' sel':''}" ${can&&pl.has(s)?`data-act="mtrain-pick" data-s="${s}"`:'disabled'} aria-label="${s.replace('-',' and ')}">${mtTile(s,{w:TL})}</button>`).join('')}</div>`).join('');
     const noPlay=can&&!legal.length;
-    const act=g.status==='done'?doneRow(g):noPlay?(g.bone.length&&!g.drew?`<button class="btn mtdraw" data-act="mtrain-draw">DRAW <small>${g.bone.length} left</small></button>`:`<button class="btn mtdraw" data-act="mtrain-pass">PASS</button>`):
-      `<span class="mtbone">${g.bone.length} in the boneyard</span>`;
+    const act=g.status==='done'?doneRow(g):noPlay?(g.bone.length&&!g.drew?`<button class="btn mtdraw" data-act="mtrain-draw">DRAW A TILE</button>`:`<button class="btn mtdraw" data-act="mtrain-pass">PASS</button>`):'';
     const R=g.rend&&mtSeen(g.id+'-r')!==String(g.rend.round)?g.rend:null;
     const rsheet=R?`<div class="cpdim" data-act="mtrain-rok"></div><div class="gp-sheet mtrs"><h3>Round ${R.round+1} done</h3><p class="sub">${R.out?esc(nameOf(R.out))+' went out.':'Blocked: nobody could play.'}</p><table><tr><th></th><th>This round</th><th>Total</th></tr>${[me,o].map(p=>`<tr><th>${p===me?'You':nm(p)}</th><td>${R.pips[p]}</td><td><b>${tot(p)}</b></td></tr>`).join('')}</table><button class="btn" data-act="mtrain-rok">${g.status==='done'?'See result':'Next round'}</button></div>`:'';
-    return `${head('Mexican Train')}<div class="mtwrap"><div class="mthud">${side(me)}${cap}${side(o)}</div>
-      <div class="mttable"><div class="mtround">Round ${(g.round||0)+1} of ${g.R}${g.pend&&!can?` · ${nm(g.turn)} must cover the double`:''}</div>${hub}<div class="mtlanes">${lanes}</div></div>
-      <div class="mthand${can?' can':''}">${tiles}</div><div class="mtact">${act}</div></div>${rsheet}`},
-  after(g){const w=document.querySelector('#view .mtwrap');if(!w)return;const vh=Math.min(innerHeight,window.visualViewport?visualViewport.height:innerHeight),top=w.getBoundingClientRect().top;w.style.minHeight=Math.max(420,Math.floor(vh-top-8))+'px';
-    const n=w.querySelector('.mtt.new');if(n)n.addEventListener('animationend',()=>n.classList.remove('new'),{once:true})},
+    const eg=g.eng&&!(g.trains[me].t.length||g.trains[o].t.length||g.trains.mx.t.length)?`${g.eng.by===me?'You':esc(nm(g.eng.by))} had the ${mtEng(g)}-${mtEng(g)}${g.eng.drawn?` (drew ${g.eng.drawn})`:''} and ${g.eng.by===me?'go':'goes'} first`:'lowest score wins';
+    const round=`Round ${(g.round||0)+1} of ${g.R} · ${eg}${g.pend&&!can?` · ${esc(nm(g.turn))} must cover the double`:''}`;
+    return `${head('Dominos')}<div class="mtwrap"><div class="mthud">${side(me)}<div class="mtmid">${cap}<small>${round}</small></div>${side(o)}</div>
+      <div class="mttable">${mtTable(g,sel,legal,fresh)}</div>
+      <div class="mtrack${can?' can':''}" style="--tw:${tw}px">${rows}<i class="mtlip"></i></div>${act?`<div class="mtact">${act}</div>`:''}</div>${rsheet}`},
+  after(g){const w=document.querySelector('#view .mtwrap');if(!w)return;
+    const fit=()=>{const vh=Math.min(innerHeight,window.visualViewport?visualViewport.height:innerHeight),top=w.getBoundingClientRect().top,pb=parseFloat(getComputedStyle(document.documentElement).paddingBottom)||0;
+      w.style.height=Math.max(380,Math.floor(vh-top))+'px';w.style.setProperty('--pb',pb+'px')};fit();
+    const n=w.querySelector('.mtpiece.new');if(n)n.addEventListener('animationend',()=>n.classList.remove('new'),{once:true})},
   async act(a,t,g){if(a==='mtrain-start'||a==='mtrain-again')return this.start();if(a==='mtrain-r'){ui.opt.mtR=+t.dataset.r;renderModal&&renderModal();return}
     if(!g)return;if(a==='mtrain-rok'){mtSeenSet(g.id+'-r',String(g.rend&&g.rend.round));render();return}
     if(g.status!=='active'||g.turn!==me)return;const legal=mtLegal(g,me);
@@ -10764,7 +10878,7 @@ Object.assign(ICON,{
   race:`<svg class="ico" viewBox="0 0 38 38" aria-hidden="true"><rect x="1" y="1" width="36" height="36" rx="9" fill="#F4F1E8" stroke="#ddd"/><rect x="6" y="6" width="26" height="26" fill="none" stroke="#C9C9CE" stroke-width="3"/><path d="M8 7h10" stroke="#E0243A" stroke-width="3" stroke-linecap="round"/><path d="M15 26c0-3 1.5-4.5 2.6-5.2a2.7 2.7 0 1 1 3 0c1.1.7 2.6 2.2 2.6 5.2z" fill="#1F6BFF"/></svg>`,
   life:`<svg class="ico" viewBox="0 0 38 38" aria-hidden="true"><rect x="1" y="1" width="36" height="36" rx="9" fill="#E9F7E4"/><circle cx="19" cy="18" r="11" fill="#FFC93C"/><path d="M19 18L19 7A11 11 0 0 1 29.5 15z" fill="#FF4D6D"/><path d="M19 18L29.5 15A11 11 0 0 1 24 28z" fill="#3FA7FF"/><path d="M19 18L24 28A11 11 0 0 1 9 23z" fill="#2BC48A"/><circle cx="19" cy="18" r="3" fill="#fff" stroke="#111"/></svg>`
 });
-ICON.mtrain=`<svg class="ico" viewBox="0 0 38 38" aria-hidden="true"><rect x="1" y="1" width="36" height="36" rx="9" fill="#1E8A55"/><rect x="7" y="9" width="12" height="22" rx="3" fill="#FFFDF6" stroke="#C9C2B0" transform="rotate(-12 13 20)"/><rect x="19" y="9" width="12" height="22" rx="3" fill="#FFFDF6" stroke="#C9C2B0" transform="rotate(10 25 20)"/><circle cx="12" cy="15" r="1.6" fill="#E5322B" transform="rotate(-12 13 20)"/><circle cx="15" cy="25" r="1.6" fill="#1F4FD8" transform="rotate(-12 13 20)"/><circle cx="11" cy="25" r="1.6" fill="#1F4FD8" transform="rotate(-12 13 20)"/><circle cx="25" cy="15" r="1.6" fill="#2DB34A" transform="rotate(10 25 20)"/><circle cx="25" cy="25" r="1.6" fill="#E8A800" transform="rotate(10 25 20)"/></svg>`;
+ICON.mtrain=`<svg class="ico" viewBox="0 0 38 38" aria-hidden="true"><rect x="1" y="1" width="36" height="36" rx="9" fill="#8B5E3C"/><polygon points="19,7.5 27.1,10.9 30.5,19 27.1,27.1 19,30.5 10.9,27.1 7.5,19 10.9,10.9" fill="#151517"/><rect x="11" y="15" width="16" height="8" rx="1.6" fill="#fff"/><rect x="18.6" y="16" width=".8" height="6" fill="#1b1b1d"/><circle cx="13.6" cy="17.4" r="1" fill="#E5322B"/><circle cx="16.2" cy="20.6" r="1" fill="#E5322B"/><circle cx="21.8" cy="17.4" r="1" fill="#1F4FD8"/><circle cx="24.4" cy="20.6" r="1" fill="#1F4FD8"/><circle cx="21.8" cy="20.6" r="1" fill="#1F4FD8"/><circle cx="24.4" cy="17.4" r="1" fill="#1F4FD8"/><rect x="28" y="3" width="6" height="12" rx="1.2" fill="#fff" transform="rotate(20 31 9)"/><circle cx="31" cy="6" r=".9" fill="#2DB34A" transform="rotate(20 31 9)"/><circle cx="31" cy="12" r=".9" fill="#E8A800" transform="rotate(20 31 9)"/></svg>`;
 const CATS=[['Classic board games',['clue','race','life','trail','slides','battle','who','mtrain']],['Party & skill',['tower','ice','surgeon']],['Cards',['fish']],['Sports',['pool','golf','bowl','hoops','cup','archery']],['Words',['ws','hang','wordle']],['Quick strategy',['ttt','dots','c4']]];
 const ORDER=CATS.flatMap(c=>c[1]);
 const titleOf=k=>esc(G[k].title);
