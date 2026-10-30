@@ -10336,7 +10336,8 @@ function mtTable(g,sel,legal,fresh){const [HX,HY]=MT_H,HR=MT_HR,L=MT_L,W=L/2,GAP
     const sl=lay.slot,end=mtEnd(g,tr),sx=sl.cx-sl.w/2,sy=sl.cy-sl.h/2;
     const slot=`<g class="mtslot${can?' can':''}"><rect x="${sx.toFixed(1)}" y="${sy.toFixed(1)}" width="${sl.w.toFixed(1)}" height="${sl.h.toFixed(1)}" rx="4" fill="${can?'rgba(255,214,10,.4)':'rgba(255,255,255,.12)'}" stroke="${can?'#FFD60A':'rgba(255,255,255,.6)'}" stroke-width="${can?2.4:1.2}" stroke-dasharray="${can?'0':'3 2.5'}"/><text x="${sl.cx.toFixed(1)}" y="${(sl.cy+4.6).toFixed(1)}" text-anchor="middle" class="mtslotn">${end}</text></g>`;
     const sg=sl.lg,mx=sl.cx+sg.dx*(sl.w/2+15)+(sg.dy?W*.95:0),my=sl.cy+sg.dy*(sl.h/2+6)+(sg.dx?W/2+6:8);
-    const loco=open?mtLocoG(col,+Math.max(15,Math.min(345,mx)).toFixed(1),+Math.max(22,Math.min(436,my)).toFixed(1),1,sg.dx<0?-1:1):'';
+    /* Jen: the train marker sits on the black hub right above the train's first domino; it's on when that train is open */
+    const s00=segs[0],loco=open?(s00.dx?mtLocoG(col,HX+32,HY-13.5,.75,1):s00.dy<0?mtLocoG(col,HX,HY-W/2-3,.95,1):mtLocoG(col,HX,HY+HR-5,.95,1)):'';
     const lab=tr==='mx'?'Shared':tr===me?'You':nm(tr),s0=segs[0];
     const [lx,ly,anc]=s0.dx?[HX+HR+6,HY-L/2-5,'start']:s0.dy<0?[HX-L/2-5,HY-HR-6,'end']:[HX-L/2-5,HY+HR+16,'end'];
     const more=hid?`<text x="${(s0.dx?HX+HR+6:HX+L/2+5).toFixed(1)}" y="${(s0.dx?HY+L/2+13:s0.dy<0?HY-HR-6:HY+HR+16).toFixed(1)}" class="mtmore">+${hid}</text>`:'';
@@ -10346,7 +10347,7 @@ function mtTable(g,sel,legal,fresh){const [HX,HY]=MT_H,HR=MT_HR,L=MT_L,W=L/2,GAP
     out+=`<g class="mtspoke ${tr==='mx'?'mx':tr===me?'mine':'theirs'}${can?' can':''}" ${can?`data-act="mtrain-play" data-tr="${tr}" role="button" aria-label="Play on ${lab==='You'?'your':lab==='Shared'?'the shared':lab+'’s'} train"`:t.length?`data-act="mtrain-see" data-tr="${tr}" role="button" aria-label="See the whole train"`:''}>${hit}${tiles}${slot}${loco}${more}<text x="${lx}" y="${ly}" text-anchor="${anc}" class="mtlabel" style="fill:${col}">${esc(lab)}</text></g>`}
   /* boneyard: face-down pile, lower left */
   const nb=g.bone.length,pile=Array.from({length:Math.max(1,Math.min(5,Math.ceil(nb/12)))},(_,i)=>`<rect x="${26+i*4}" y="${300-i*6}" width="${L}" height="${W}" rx="4" fill="#1d1d21" stroke="#3a3a40" stroke-width="1" transform="rotate(${(i%2?-7:5)} ${51+i*4} ${312-i*6})"/>`).join('');
-  const bone=nb?`<g class="mtbonepile">${pile}<text x="56" y="352" text-anchor="middle" class="mtbonen">${nb}</text><text x="56" y="364" text-anchor="middle" class="mtbonel">BONEYARD</text></g>`:'';
+  const bone=nb?`<g class="mtbonepile">${pile}<text x="56" y="352" text-anchor="middle" class="mtbonen">${nb}</text><text x="56" y="364" text-anchor="middle" class="mtbonel">PICK UP PILE</text></g>`:'';
   const hub=`<polygon points="${oct(HR+3)}" fill="rgba(0,0,0,.25)" transform="translate(2 4)"/><polygon points="${oct(HR)}" fill="#151517"/><polygon points="${oct(HR-6)}" fill="none" stroke="#2c2c31" stroke-width="1.2"/>${notches}${mtTileG(eng,eng,HX-L/2,HY-W/2,L,false,'eng')}`;
   return `<svg class="mtsvg" viewBox="0 0 ${MT_VB[0]} ${MT_VB[1]}" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Table: hub ${eng}-${eng}">${MT_DEFS}${hub}${bone}${out}</svg>`}
 G.mtrain={title:'Dominos',blurb:'Double-twelve dominoes. Build your train, empty your hand first.',
@@ -10368,13 +10369,13 @@ G.mtrain={title:'Dominos',blurb:'Double-twelve dominoes. Build your train, empty
     const tw=Math.max(22,Math.min(short?24:30,Math.floor((Math.min(innerWidth,560)-44)/per)-4)),TL=tw*2;
     const rows=Array.from({length:tiers},(_,r)=>hand.slice(r*per,(r+1)*per)).map(row=>`<div class="mtrow">${row.map(s=>`<button class="mth${pl.has(s)?' ok':can?' no':''}${s===sel?' sel':''}" ${can&&pl.has(s)?`data-act="mtrain-pick" data-s="${s}"`:'disabled'} aria-label="${s.replace('-',' and ')}">${mtTile(s,{w:TL})}</button>`).join('')}</div>`).join('');
     const noPlay=can&&!legal.length;
-    const act=g.status==='done'?doneRow(g):noPlay?(g.bone.length&&!g.drew?`<button class="btn mtdraw" data-act="mtrain-draw">DRAW A TILE</button>`:`<button class="btn mtdraw" data-act="mtrain-pass">PASS</button>`):'';
+    const act=g.status==='done'?doneRow(g):noPlay?(g.bone.length&&!g.drew?`<button class="btn mtdraw" data-act="mtrain-draw">PICK UP A TILE</button>`:`<button class="btn mtdraw" data-act="mtrain-pass">PASS</button>`):'';
     const R=g.rend&&mtSeen(g.id+'-r')!==String(g.rend.round)?g.rend:null;
     const rsheet=R?`<div class="cpdim" data-act="mtrain-rok"></div><div class="gp-sheet mtrs"><h3>Round ${R.round+1} done</h3><p class="sub">${R.out?esc(nameOf(R.out))+' went out.':'Blocked: nobody could play.'}</p><table><tr><th></th><th>This round</th><th>Total</th></tr>${[me,o].map(p=>`<tr><th>${p===me?'You':nm(p)}</th><td>${R.pips[p]}</td><td><b>${tot(p)}</b></td></tr>`).join('')}</table><button class="btn" data-act="mtrain-rok">${g.status==='done'?'See result':'Next round'}</button></div>`:'';
-    const eg=g.eng&&!(g.trains[me].t.length||g.trains[o].t.length||g.trains.mx.t.length)?`${g.eng.by===me?'You':esc(nm(g.eng.by))} had the ${mtEng(g)}-${mtEng(g)}${g.eng.drawn?` (drew ${g.eng.drawn})`:''} and ${g.eng.by===me?'go':'goes'} first`:'lowest score wins';
+    const eg=g.eng&&!(g.trains[me].t.length||g.trains[o].t.length||g.trains.mx.t.length)?`${g.eng.by===me?'You':esc(nm(g.eng.by))} had the ${mtEng(g)}-${mtEng(g)}${g.eng.drawn?` (picked up ${g.eng.drawn})`:''} and ${g.eng.by===me?'go':'goes'} first`:'lowest score wins';
     const SE=ui.g.mtSee&&g.trains[ui.g.mtSee]?ui.g.mtSee:null,seT=SE?g.trains[SE].t||[]:[];
     const seeSheet=SE?`<div class="cpdim" data-act="mtrain-seex"></div><div class="gp-sheet mtsee"><h3>${SE==='mx'?'Shared train':SE===me?'Your train':esc(nm(SE))+'’s train'} · ${seT.length} tile${seT.length===1?'':'s'}</h3><div class="mtseeall"><span class="mtseeh">${mtTile(mtS(mtEng(g),mtEng(g)),{w:44,v:false})}</span>${seT.map(p=>mtTile(mtS(p[0],p[1]),{w:44,v:p[0]===p[1]})).join('')}<i class="mtslotc">${mtEnd(g,SE)}</i></div><button class="btn" data-act="mtrain-seex">Done</button></div>`:'';
-    const lm=L&&L.by!==me&&g.status==='active'?(L.kind==='play'?`${esc(nm(L.by))} played ${L.s} on ${L.tr==='mx'?'the shared train':L.tr===me?'your train':'their train'}`:`${esc(nm(L.by))} drew and passed`):'';
+    const lm=L&&L.by!==me&&g.status==='active'?(L.kind==='play'?`${esc(nm(L.by))} played ${L.s} on ${L.tr==='mx'?'the shared train':L.tr===me?'your train':'their train'}`:`${esc(nm(L.by))} picked up and passed. Their train is on`):'';
     const round=`Round ${(g.round||0)+1} of ${g.R} · ${eg}${g.pend&&!can?` · ${esc(nm(g.turn))} must cover the double`:''}`;
     return `${head('Dominos')}<div class="mtwrap"><div class="mthud">${side(me)}<div class="mtmid">${cap}<small>${lm?`<b class="mtlast">${lm}</b> · `:''}${round}</small></div>${side(o)}</div>
       <div class="mttable">${mtTable(g,sel,legal,fresh)}</div>
@@ -10391,7 +10392,7 @@ G.mtrain={title:'Dominos',blurb:'Double-twelve dominoes. Build your train, empty
     if(a==='mtrain-play'){const s=ui.g.mtSel&&ui.g.mtSel.s,m=legal.find(x=>x.s===s&&x.tr===t.dataset.tr);if(m)return mtPlay(g,m);return}
     if(a==='mtrain-draw'){if(legal.length||!g.bone.length||g.drew)return;const bone=g.bone.slice(),s=bone.pop(),hand=[...g.hands[me],s];
       const g2={...g,hands:{...g.hands,[me]:hand},bone,drew:1};const fits=mtLegal(g2,me).filter(m=>m.s===s);
-      toast(fits.length?'You drew a tile that plays':'No play. Your train is open');
+      toast(fits.length?'You picked up a tile that plays':'No play. Your train is on, open for '+nameOf(other(me)));
       if(fits.length)return upd(g,{hands:{[me]:hand},bone,drew:1});return mtPass(g,{hands:{[me]:hand},bone})}
     if(a==='mtrain-pass'){if(legal.length||(g.bone.length&&!g.drew))return;return mtPass(g,{})}}
 };
