@@ -25,6 +25,15 @@ document.addEventListener('touchmove',e=>{if(!document.body.classList.contains('
 <style>
 
 /* ---- characters ---- */
+.mtplanbtn{display:block;margin:4px auto 6px;border:0;border-radius:99px;padding:7px 14px;background:#1E2233;color:#fff;font:800 .8rem var(--body,system-ui)}
+.mtplan{background:#FFF8E6;border:2px solid #F2D58A;border-radius:16px;padding:10px;margin:6px 0;display:flex;flex-direction:column;gap:8px}
+.mtph{display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap}.mtph b{font:800 .95rem var(--display,system-ui)}.mtph span{font-size:.75rem;color:#7A6330;font-weight:700}
+.mtprow{display:flex;gap:4px;overflow-x:auto;align-items:center;min-height:30px;padding-bottom:2px}.mtprow em{font-size:.8rem;color:#7A6330;font-style:normal}
+.mtpt{position:relative;border:0;background:none;padding:0;flex:none}.mtpt i,.mth .mtpn{position:absolute;top:-6px;right:-5px;min-width:16px;height:16px;border-radius:8px;background:#E8A800;color:#fff;font:800 10px/16px var(--body,system-ui);font-style:normal;text-align:center;padding:0 3px;box-shadow:0 1px 2px rgba(0,0,0,.3)}
+.mth{position:relative}.mth.inplan{opacity:.55}.mth.nextp{box-shadow:0 0 0 3px #FFD60A;border-radius:6px}
+.mtpend{flex:none;font-size:.72rem;font-weight:800;color:#7A6330;padding-left:4px}
+.mtpbtns{display:flex;gap:6px}.mtpbtns .btn{flex:1;padding:8px 6px;font-size:.78rem;min-height:0}
+
 .bbstage{position:relative}
 .bbwrap{border-radius:0;box-shadow:none;background:#DCEFFF;overflow:hidden}
 .bbwrap canvas{display:block;touch-action:none}
@@ -10853,11 +10862,25 @@ function mtLegal(g,p){const h=g.hands[p]||[],o=other(p),out=[];const pend=g.pend
   for(const s of h){const [a,b]=mtT(s);for(const tr of trs){const e=mtEnd(g,tr);if(a===e||b===e)out.push({s,tr})}}return out}
 /* Oct 29 (Jen's rules card): the round's double is in the deal. Whoever holds it sets it in the hub and goes first;
    if nobody has it, players draw from the boneyard in turn (starting with first) until it turns up. */
-function mtDeal(round,first){const E=12-(round%13),eng=mtS(E,E),all=[];for(let a=0;a<=12;a++)for(let b=a;b<=12;b++)all.push(mtS(a,b));
-  const d=shuffle(all),hands={p1:d.slice(0,15),p2:d.slice(15,30)},bone=d.slice(30);let who=hands.p1.includes(eng)?'p1':hands.p2.includes(eng)?'p2':null,drawn=0,p=first||'p1';
-  while(!who&&bone.length){const s=bone.pop();hands[p].push(s);drawn++;if(s===eng)who=p;else p=p==='p1'?'p2':'p1'}
+function mtDeal(round,first,H){H=H||15;const E=12-(round%13),eng=mtS(E,E),all=[];for(let a=0;a<=12;a++)for(let b=a;b<=12;b++)all.push(mtS(a,b));
+  const d=shuffle(all),hands={p1:d.slice(0,H),p2:d.slice(H,2*H)},bone=d.slice(2*H);let who=hands.p1.includes(eng)?'p1':hands.p2.includes(eng)?'p2':null,drawn=0,p=first||'p1';
+  /* Oct 31: nobody was dealt it -> it comes out of the pick up pile and goes in the hub, and the round's first player starts (no drawing marathon) */
+  if(!who){const k=bone.indexOf(eng);if(k>=0)bone.splice(k,1);who=p;drawn=-1;hands[who].push(eng)}
   who=who||first||'p1';hands[who]=hands[who].filter(x=>x!==eng);
   return {round,hands,bone,trains:{p1:{t:[],open:false},p2:{t:[],open:false},mx:{t:[]}},pend:null,drew:0,passes:0,turn:who,rstart:first,eng:{by:who,drawn}}}
+/* ---- train plan (Oct 31, Jen: "build out our own trains... like a plan"): line up your tiles in the order you mean to play them on your train. Private to this phone. */
+const mtPlanK=g=>'gn-mt-plan-'+g.id+'-'+me+'-'+(g.round||0);
+function mtPlan(g){let a=[];try{a=JSON.parse(localStorage.getItem(mtPlanK(g))||'[]')}catch(_){}const hand=new Set(g.hands[me]||[]);let cur=mtEnd(g,me);const out=[];
+  for(const s of a){if(!hand.has(s))continue;const [x,y]=mtT(s);if(x===cur){out.push({s,a:x,b:y});cur=y}else if(y===cur){out.push({s,a:y,b:x});cur=x}else break}
+  return {list:out,end:cur}}
+const mtPlanSet=(g,arr)=>{try{localStorage.setItem(mtPlanK(g),JSON.stringify(arr))}catch(_){}};
+function mtAutoPlan(hand,e){let best=[],n=0;const used=new Set();const go=(cur,path)=>{if(++n>150000)return;if(path.length>best.length)best=path.slice();
+  for(const s of hand){if(used.has(s))continue;const [x,y]=mtT(s);if(x!==cur&&y!==cur)continue;used.add(s);path.push(s);go(x===cur?y:x,path);path.pop();used.delete(s)}};go(e,[]);return best}
+function mtPlanPanel(g,P){const e=mtEnd(g,me),tiles=P.list.map((t,i)=>`<button class="mtpt" data-act="mtrain-pcut" data-i="${i}" aria-label="Remove ${t.s} and after">${mtTile(t.a+'-'+t.b,{w:44,v:t.a===t.b})}<i>${i+1}</i></button>`).join('');
+  const left=(g.hands[me]||[]).length-P.list.length;
+  return `<div class="mtplan"><div class="mtph"><b>Your train plan</b><span>starts on ${e} · ${P.list.length} planned · ${left} extra</span></div>
+    <div class="mtprow">${tiles||'<em>Tap tiles in your hand to line them up, starting with a '+e+'.</em>'}${P.list.length?`<span class="mtpend">ends on ${P.end}</span>`:''}</div>
+    <div class="mtpbtns"><button class="btn ghost" data-act="mtrain-pauto">Longest train for me</button><button class="btn ghost" data-act="mtrain-pclear">Clear</button><button class="btn" data-act="mtrain-plan">Done</button></div></div>`}
 const mtSeen=id=>{try{return localStorage.getItem('gn-mt-seen-'+id+'-'+me)}catch(_){return null}};
 const mtSeenSet=(id,v)=>{try{localStorage.setItem('gn-mt-seen-'+id+'-'+me,v)}catch(_){}};
 /* ---- Dominos v2 look (Oct 29, from Jen's photos): white tiles with a black centre bar and a brass spinner, one colour per pip
@@ -10949,8 +10972,9 @@ function mtTable(g,sel,legal,fresh){const [HX,HY]=MT_H,HR=MT_HR,eng=mtEng(g),o=o
   const hub=`<polygon points="${oct(HR+3)}" fill="rgba(0,0,0,.28)" transform="translate(2 4)"/><polygon points="${oct(HR)}" fill="url(#mthub)"/><polygon points="${oct(HR-6)}" fill="none" stroke="#2c2c31" stroke-width="1.2"/>${notches}${mtTileG(eng,eng,HX-25,HY-12.5,50,false,'eng')}`;
   return `<svg class="mtsvg" viewBox="0 0 ${MT_VB[0]} ${MT_VB[1]}" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Table: hub ${eng}-${eng}">${MT_DEFS}<defs><radialGradient id="mthub" cx=".4" cy=".35" r=".8"><stop offset="0" stop-color="#2a2a2f"/><stop offset="1" stop-color="#0e0e10"/></radialGradient></defs>${tracks}${hub}${bone}${out}</svg>`}
 G.mtrain={title:'Dominos',blurb:'Double-twelve dominoes. Build your train, empty your hand first.',
-  modal(){const n=ui.opt.mtR||3;return `<h2>New Dominos</h2><p class="sub">Double-twelve, Mexican Train rules. Play on your train, the shared train, or theirs when it has a train marker. Lowest score wins.</p><div class="opts">${[[1,'1 round'],[3,'3 rounds'],[13,'Full game (13)']].map(([v,l])=>`<button class="opt${n===v?' on':''}" data-act="mtrain-r" data-r="${v}" aria-pressed="${n===v}">${l}</button>`).join('')}</div>${startRow('mtrain')}`},
-  async start(){const R=ui.opt.mtR||3;await create(base('mtrain',{v:1,R,scores:{p1:[],p2:[]},last:null,rend:null,...mtDeal(0,me)}))},
+  modal(){const n=ui.opt.mtR||3;return `<h2>New Dominos</h2><p class="sub">Double-twelve, Mexican Train rules. Play on your train, the shared train, or theirs when it has a train marker. Lowest score wins.</p><div class="opts">${[[1,'1 round'],[3,'3 rounds'],[13,'Full game (13)']].map(([v,l])=>`<button class="opt${n===v?' on':''}" data-act="mtrain-r" data-r="${v}" aria-pressed="${n===v}">${l}</button>`).join('')}</div>
+    <div class="field"><span class="lbl">Tiles each</span><div class="opts">${[[10,'10 (quick)'],[12,'12'],[15,'15 (rule book)']].map(([v,l])=>`<button class="opt${(ui.opt.mtH||12)===v?' on':''}" data-act="mtrain-h" data-h="${v}" aria-pressed="${(ui.opt.mtH||12)===v}">${l}</button>`).join('')}</div></div>${startRow('mtrain')}`},
+  async start(){const R=ui.opt.mtR||3,H=ui.opt.mtH||12;await create(base('mtrain',{v:1,R,H,scores:{p1:[],p2:[]},last:null,rend:null,...mtDeal(0,me,H)}))},
   myMove:g=>g.status==='active'&&g.turn===me,
   busy:()=>!!ui.g.mtBusy,
   sub(g){const t=p=>(g.scores[p]||[]).reduce((a,b)=>a+b,0);return g.status==='done'?`Final · You ${t(me)} · ${nm(other(me))} ${t(other(me))}`:`Round ${(g.round||0)+1} of ${g.R} · ${(g.hands[me]||[]).length} tiles left`},
@@ -10961,30 +10985,36 @@ G.mtrain={title:'Dominos',blurb:'Double-twelve dominoes. Build your train, empty
     let cap;if(g.status==='done'){const w=g.winner;cap=`<span class="mtcap ${w===me?'win':w==='tie'?'tie':'lose'}">${w===me?'YOU WON!':w==='tie'?'TIE GAME':'YOU LOST!'}</span>`}
       else if(sent)cap=`<span class="mtcap sent">SENT ✓</span>`;else if(can)cap=`<span class="mtcap go">${g.pend?'COVER THE DOUBLE':sel?'TAP A GLOWING TRAIN':'YOUR TURN'}</span>`;else cap=`<span class="mtcap">WAITING FOR ${esc(nm(o)).toUpperCase()}..</span>`;
     const side=p=>`<div class="mtside ${p}${g.status==='active'&&g.turn===p?' on':''}"><span class="mtav">${ava(p)}</span><small>${p===me?'You':nm(p)}</small><b>${tot(p)}</b>${p===me?'':`<span class="mtcnt">${(g.hands[p]||[]).length} tiles</span>`}</div>`;
+    const PL=mtPlan(g),pidx=new Map(PL.list.map((t,i)=>[t.s,i+1])),planning=!!ui.g.mtPlan&&g.status==='active',nextP=PL.list[0]&&PL.list[0].s;
     const hand=(g.hands[me]||[]).slice().sort((x,y)=>{const [a,b]=mtT(x),[c,d]=mtT(y);return (a+b)-(c+d)||a-c}),pl=new Set(legal.map(m=>m.s));
     /* the rack: two tiers (three when the hand is big); tiles shrink to fit the row */
     const short=innerHeight<700,tiers=short?Math.max(1,Math.ceil(hand.length/12)):hand.length>18?3:hand.length>8?2:1,per=Math.ceil(hand.length/tiers)||1;
     const tw=Math.max(22,Math.min(short?24:30,Math.floor((Math.min(innerWidth,560)-44)/per)-4)),TL=tw*2;
-    const rows=Array.from({length:tiers},(_,r)=>hand.slice(r*per,(r+1)*per)).map(row=>`<div class="mtrow">${row.map(s=>`<button class="mth${pl.has(s)?' ok':can?' no':''}${s===sel?' sel':''}" ${can&&pl.has(s)?`data-act="mtrain-pick" data-s="${s}"`:'disabled'} aria-label="${s.replace('-',' and ')}">${mtTile(s,{w:TL})}</button>`).join('')}</div>`).join('');
+    const rows=Array.from({length:tiers},(_,r)=>hand.slice(r*per,(r+1)*per)).map(row=>`<div class="mtrow">${row.map(s=>`<button class="mth${planning?(pidx.has(s)?' inplan':' ok'):(pl.has(s)?' ok':can?' no':'')}${s===sel?' sel':''}${!planning&&can&&s===nextP&&pl.has(s)?' nextp':''}" ${planning?`data-act="mtrain-padd" data-s="${s}"`:can&&pl.has(s)?`data-act="mtrain-pick" data-s="${s}"`:'disabled'} aria-label="${s.replace('-',' and ')}">${mtTile(s,{w:TL})}${pidx.has(s)?`<i class="mtpn">${pidx.get(s)}</i>`:''}</button>`).join('')}</div>`).join('');
     const noPlay=can&&!legal.length;
     const act=g.status==='done'?doneRow(g):noPlay?(g.bone.length&&!g.drew?`<button class="btn mtdraw" data-act="mtrain-draw">PICK UP A TILE</button>`:`<button class="btn mtdraw" data-act="mtrain-pass">PASS</button>`):'';
     const R=g.rend&&mtSeen(g.id+'-r')!==String(g.rend.round)?g.rend:null;
     const rsheet=R?`<div class="cpdim" data-act="mtrain-rok"></div><div class="gp-sheet mtrs"><h3>Round ${R.round+1} done</h3><p class="sub">${R.out?esc(nameOf(R.out))+' went out.':'Blocked: nobody could play.'}</p><table><tr><th></th><th>This round</th><th>Total</th></tr>${[me,o].map(p=>`<tr><th>${p===me?'You':nm(p)}</th><td>${R.pips[p]}</td><td><b>${tot(p)}</b></td></tr>`).join('')}</table><button class="btn" data-act="mtrain-rok">${g.status==='done'?'See result':'Next round'}</button></div>`:'';
-    const eg=g.eng&&!(g.trains[me].t.length||g.trains[o].t.length||g.trains.mx.t.length)?`${g.eng.by===me?'You':esc(nm(g.eng.by))} had the ${mtEng(g)}-${mtEng(g)}${g.eng.drawn?` (picked up ${g.eng.drawn})`:''} and ${g.eng.by===me?'go':'goes'} first`:'lowest score wins';
+    const eg=g.eng&&!(g.trains[me].t.length||g.trains[o].t.length||g.trains.mx.t.length)?(g.eng.drawn<0?`The ${mtEng(g)}-${mtEng(g)} came from the pile · ${g.eng.by===me?'you go':esc(nm(g.eng.by))+' goes'} first`:`${g.eng.by===me?'You':esc(nm(g.eng.by))} had the ${mtEng(g)}-${mtEng(g)}${g.eng.drawn?` (picked up ${g.eng.drawn})`:''} and ${g.eng.by===me?'go':'goes'} first`):'lowest score wins';
     const SE=ui.g.mtSee&&g.trains[ui.g.mtSee]?ui.g.mtSee:null,seT=SE?g.trains[SE].t||[]:[];
     const seeSheet=SE?`<div class="cpdim" data-act="mtrain-seex"></div><div class="gp-sheet mtsee"><h3>${SE==='mx'?'Shared train':SE===me?'Your train':esc(nm(SE))+'’s train'} · ${seT.length} tile${seT.length===1?'':'s'}</h3><div class="mtseeall"><span class="mtseeh">${mtTile(mtS(mtEng(g),mtEng(g)),{w:44,v:false})}</span>${seT.map(p=>mtTile(mtS(p[0],p[1]),{w:44,v:p[0]===p[1]})).join('')}<i class="mtslotc">${mtEnd(g,SE)}</i></div><button class="btn" data-act="mtrain-seex">Done</button></div>`:'';
     const lm=L&&L.by!==me&&g.status==='active'?(L.kind==='play'?`${esc(nm(L.by))} played ${L.s} on ${L.tr==='mx'?'shared':L.tr===me?'your train':'her train'}`:`${esc(nm(L.by))} picked up and passed · her train is on`):'';
     const round=`Round ${(g.round||0)+1} of ${g.R} · ${eg}${g.pend&&!can?` · ${esc(nm(g.turn))} must cover the double`:''}`;
     return `${head('Dominos')}<div class="mtwrap"><div class="mthud">${side(me)}<div class="mtmid">${cap}<small>${lm?`Round ${(g.round||0)+1} of ${g.R} · <b class="mtlast">${lm}</b>`:round}</small></div>${side(o)}</div>
       <div class="mttable">${(mtSetVB(ui.g.mtAR),mtTable(g,sel,legal,fresh))}</div>
-      <div class="mtrack${can?' can':''}" style="--tw:${tw}px">${rows}<i class="mtlip"></i></div>${act?`<div class="mtact">${act}</div>`:''}</div>${rsheet}${seeSheet}`},
+      ${planning?mtPlanPanel(g,PL):g.status==='active'?`<button class="mtplanbtn" data-act="mtrain-plan">${PL.list.length?`📋 Train plan · ${PL.list.length} · next ${PL.list[0].s}`:'📋 Plan my train'}</button>`:''}<div class="mtrack${can||planning?' can':''}" style="--tw:${tw}px">${rows}<i class="mtlip"></i></div>${act?`<div class="mtact">${act}</div>`:''}</div>${rsheet}${seeSheet}`},
   after(g){const w=document.querySelector('#view .mtwrap');if(!w)return;
     const fit=()=>{const vh=Math.min(innerHeight,window.visualViewport?visualViewport.height:innerHeight),top=w.getBoundingClientRect().top,pb=parseFloat(getComputedStyle(document.documentElement).paddingBottom)||0;
       w.style.height=Math.max(380,Math.floor(vh-top))+'px';w.style.setProperty('--pb',pb+'px')};fit();
     const tb=w.querySelector('.mttable');if(tb){const b=tb.getBoundingClientRect();if(b.height>40){const ar=b.width/b.height;if(!ui.g.mtAR||Math.abs(ar-ui.g.mtAR)>.04){ui.g.mtAR=ar;render()}}}
     const n=w.querySelector('.mtpiece.new');if(n)n.addEventListener('animationend',()=>n.classList.remove('new'),{once:true})},
-  async act(a,t,g){if(a==='mtrain-start'||a==='mtrain-again')return this.start();if(a==='mtrain-r'){ui.opt.mtR=+t.dataset.r;renderModal&&renderModal();return}
+  async act(a,t,g){if(a==='mtrain-start'||a==='mtrain-again')return this.start();if(a==='mtrain-r'){ui.opt.mtR=+t.dataset.r;renderModal&&renderModal();return}if(a==='mtrain-h'){ui.opt.mtH=+t.dataset.h;renderModal&&renderModal();return}
     if(!g)return;if(a==='mtrain-see'){ui.g.mtSee=t.dataset.tr;render();return}if(a==='mtrain-seex'){ui.g.mtSee=null;render();return}if(a==='mtrain-rok'){mtSeenSet(g.id+'-r',String(g.rend&&g.rend.round));render();return}
+    if(a==='mtrain-plan'){ui.g.mtPlan=!ui.g.mtPlan;render();return}
+    if(a==='mtrain-padd'){const P=mtPlan(g),s=t.dataset.s,arr=P.list.map(x=>x.s);if(arr.includes(s)){toast('Already in your plan. Tap it in the plan to take it out.');return}const [x,y]=mtT(s);if(x!==P.end&&y!==P.end){toast(`That one doesn't connect. Your plan needs a ${P.end}.`);return}arr.push(s);mtPlanSet(g,arr);render();return}
+    if(a==='mtrain-pcut'){const P=mtPlan(g);mtPlanSet(g,P.list.slice(0,+t.dataset.i).map(x=>x.s));render();return}
+    if(a==='mtrain-pclear'){mtPlanSet(g,[]);render();return}
+    if(a==='mtrain-pauto'){const best=mtAutoPlan(g.hands[me]||[],mtEnd(g,me));mtPlanSet(g,best);toast(best.length?`Planned ${best.length} tiles in a row`:`Nothing in your hand matches a ${mtEnd(g,me)} yet`);render();return}
     if(g.status!=='active'||g.turn!==me)return;const legal=mtLegal(g,me);
     if(a==='mtrain-pick'){const s=t.dataset.s,fits=legal.filter(m=>m.s===s);if(!fits.length)return;
       if(fits.length===1)return mtPlay(g,fits[0]);ui.g.mtSel={id:g.id,s};render();try{navigator.vibrate&&navigator.vibrate(8)}catch(_){}return}
@@ -11017,7 +11047,7 @@ async function mtRoundEnd(g,patch,hands,out){const pips={p1:out==='p1'?0:mtPips(
   const rend={round,out,pips};const done=round+1>=(g.R||3);
   let p2={...patch,scores,rend};
   if(done){const a=scores.p1.reduce((x,y)=>x+y,0),b=scores.p2.reduce((x,y)=>x+y,0);p2={...p2,status:'done',winner:a===b?'tie':a<b?'p1':'p2',turn:g.turn}}
-  else{const first=other(g.rstart||g.by||'p1'),d=mtDeal(round+1,first);p2={...p2,...d}}
+  else{const first=other(g.rstart||g.by||'p1'),d=mtDeal(round+1,first,g.H||15);p2={...p2,...d}}
   return upd(g,rplc(g,p2,done?['last','pend','rend']:['last','pend','rend','trains']))}
 
 /* ============ LIFE PATH ============ */
