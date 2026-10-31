@@ -25,6 +25,17 @@ document.addEventListener('touchmove',e=>{if(!document.body.classList.contains('
 <style>
 
 /* ---- characters ---- */
+.mttools{display:flex;align-items:center;justify-content:center;gap:6px;flex-wrap:wrap;margin:4px 0 6px}
+.mttools .mtplanbtn{margin:0}
+.mtsortbtn{border:0;border-radius:99px;padding:7px 11px;background:rgba(255,255,255,.18);color:#fff;font:800 .74rem var(--body,system-ui)}
+.mtpts{font:800 .72rem var(--body,system-ui);color:rgba(255,255,255,.85)}
+
+.mttable{position:relative;overflow:hidden}
+.mtzw{display:flex;align-items:center;justify-content:center;width:100%;height:100%;transform-origin:50% 50%;will-change:transform}
+.mtzoom{position:absolute;right:8px;bottom:8px;display:flex;flex-direction:column;gap:6px;z-index:2}
+.mtzoom button{width:34px;height:34px;border-radius:50%;border:0;background:rgba(20,14,8,.72);color:#fff;font:800 20px/34px var(--body,system-ui);padding:0;box-shadow:0 2px 6px rgba(0,0,0,.35)}
+.mtzoom button.fit{font-size:16px}
+
 .mtplanbtn{display:block;margin:4px auto 6px;border:0;border-radius:99px;padding:7px 14px;background:#1E2233;color:#fff;font:800 .8rem var(--body,system-ui)}
 .mtplan{background:#FFF8E6;border:2px solid #F2D58A;border-radius:16px;padding:10px;margin:6px 0;display:flex;flex-direction:column;gap:8px}
 .mtph{display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap}.mtph b{font:800 .95rem var(--display,system-ui)}.mtph span{font-size:.75rem;color:#7A6330;font-weight:700}
@@ -10869,6 +10880,32 @@ function mtDeal(round,first,H){H=H||15;const E=12-(round%13),eng=mtS(E,E),all=[]
   who=who||first||'p1';hands[who]=hands[who].filter(x=>x!==eng);
   return {round,hands,bone,trains:{p1:{t:[],open:false},p2:{t:[],open:false},mx:{t:[]}},pend:null,drew:0,passes:0,turn:who,rstart:first,eng:{by:who,drawn}}}
 /* ---- train plan (Oct 31, Jen: "build out our own trains... like a plan"): line up your tiles in the order you mean to play them on your train. Private to this phone. */
+/* table zoom (Oct 31, Jen: "let me zoom in and out"): pinch, drag to look around, +/- buttons, ⤢ fits the whole table again. Kept per game on this phone. */
+const MTZ={};function mtZ(g){if(!MTZ[g.id]){let z=null;try{z=JSON.parse(localStorage.getItem('gn-mt-z-'+g.id)||'null')}catch(_){}MTZ[g.id]=z&&z.s?z:{s:1,x:0,y:0}}return MTZ[g.id]}
+function mtZSave(g){MTZ[g.id].user=true;try{localStorage.setItem('gn-mt-z-'+g.id,JSON.stringify(MTZ[g.id]))}catch(_){}}
+/* until you zoom yourself, the table frames whatever has been played so short trains are big and readable */
+function mtZAuto(g){const z=mtZ(g);if(z.user)return;const tb=document.querySelector('#view .mttable'),sv=tb&&tb.querySelector('svg');if(!sv)return;
+  const vb=(sv.getAttribute('viewBox')||'').split(/\s+/).map(Number);if(vb.length<4)return;let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;
+  for(const el of sv.children){if(el.tagName==='defs')continue;let b;try{b=el.getBBox()}catch(_){continue}if(!b||!b.width)continue;if(b.width>vb[2]*.9&&b.height>vb[3]*.9)continue;x0=Math.min(x0,b.x);y0=Math.min(y0,b.y);x1=Math.max(x1,b.x+b.width);y1=Math.max(y1,b.y+b.height)}
+  if(x1<=x0)return;const r=tb.getBoundingClientRect(),k=Math.min(r.width/vb[2],r.height/vb[3]),pad=22,bw=(x1-x0)*k+pad*2,bh=(y1-y0)*k+pad*2;
+  const s=Math.max(1,Math.min(2.2,Math.min(r.width/bw,r.height/bh)));const cx=((x0+x1)/2-vb[0]-vb[2]/2)*k,cy=((y0+y1)/2-vb[1]-vb[3]/2)*k;
+  z.s=s;z.x=-cx*s;z.y=-cy*s;mtZClamp(z,r.width,r.height);z.user=false;mtZApply(g)}
+function mtZClamp(z,w,h){z.s=Math.max(1,Math.min(3.5,z.s));const mx=(z.s-1)*w/2,my=(z.s-1)*h/2;z.x=Math.max(-mx,Math.min(mx,z.x));z.y=Math.max(-my,Math.min(my,z.y));if(z.s<=1.001){z.s=1;z.x=0;z.y=0}}
+const mtZoomCss=g=>{const z=mtZ(g);return `transform:translate(${z.x}px,${z.y}px) scale(${z.s})`};
+function mtZApply(g){const el=document.querySelector('.mttable .mtzw');if(el)el.style.transform=`translate(${mtZ(g).x}px,${mtZ(g).y}px) scale(${mtZ(g).s})`}
+function mtZBind(g){const tb=document.querySelector('#view .mttable');if(!tb||tb._z)return;tb._z=1;tb.style.touchAction='none';const pts=new Map();let st=null,moved=false;
+  const sz=()=>{const r=tb.getBoundingClientRect();return [r.width,r.height]};
+  tb.addEventListener('dblclick',e=>{if(e.target.closest('.mtzoom'))return;const z=mtZ(g),r=tb.getBoundingClientRect(),[w,h]=[r.width,r.height];if(z.s>1.05){z.s=1;z.x=0;z.y=0}else{const px=e.clientX-r.left-w/2,py=e.clientY-r.top-h/2;z.s=2;z.x=-px;z.y=-py}mtZClamp(z,w,h);mtZSave(g);mtZApply(g);render()});
+  tb.addEventListener('pointerdown',e=>{if(e.target.closest('.mtzoom'))return;pts.set(e.pointerId,[e.clientX,e.clientY]);const z=mtZ(g);moved=false;
+    if(pts.size===2){const [a,b]=[...pts.values()];st={d:Math.hypot(a[0]-b[0],a[1]-b[1]),s:z.s,x:z.x,y:z.y,cx:(a[0]+b[0])/2,cy:(a[1]+b[1])/2}}else st={px:e.clientX,py:e.clientY,x:z.x,y:z.y,s:z.s}});
+  tb.addEventListener('pointermove',e=>{if(!pts.has(e.pointerId)||!st)return;pts.set(e.pointerId,[e.clientX,e.clientY]);const z=mtZ(g),[w,h]=sz();
+    if(pts.size>=2&&st.d){const [a,b]=[...pts.values()],d=Math.hypot(a[0]-b[0],a[1]-b[1]);z.s=st.s*d/st.d;const cx=(a[0]+b[0])/2,cy=(a[1]+b[1])/2;z.x=st.x+(cx-st.cx);z.y=st.y+(cy-st.cy);moved=true}
+    else if(z.s>1&&st.px!=null){const dx=e.clientX-st.px,dy=e.clientY-st.py;if(Math.abs(dx)+Math.abs(dy)>6)moved=true;if(moved){z.x=st.x+dx;z.y=st.y+dy}}
+    mtZClamp(z,w,h);mtZApply(g)});
+  const up=e=>{pts.delete(e.pointerId);if(pts.size<2&&st&&st.d){const p=[...pts.values()][0];st=p?{px:p[0],py:p[1],x:mtZ(g).x,y:mtZ(g).y,s:mtZ(g).s}:null}if(!pts.size){mtZSave(g);if(moved)tb._swallow=Date.now()}};
+  tb.addEventListener('pointerup',up);tb.addEventListener('pointercancel',up);
+  /* a drag or pinch is not a tap on a train */
+  tb.addEventListener('click',e=>{if(tb._swallow&&Date.now()-tb._swallow<350){e.stopPropagation();e.preventDefault()}},true)}
 const mtPlanK=g=>'gn-mt-plan-'+g.id+'-'+me+'-'+(g.round||0);
 function mtPlan(g){let a=[];try{a=JSON.parse(localStorage.getItem(mtPlanK(g))||'[]')}catch(_){}const hand=new Set(g.hands[me]||[]);let cur=mtEnd(g,me);const out=[];
   for(const s of a){if(!hand.has(s))continue;const [x,y]=mtT(s);if(x===cur){out.push({s,a:x,b:y});cur=y}else if(y===cur){out.push({s,a:y,b:x});cur=x}else break}
@@ -10986,7 +11023,7 @@ G.mtrain={title:'Dominos',blurb:'Double-twelve dominoes. Build your train, empty
       else if(sent)cap=`<span class="mtcap sent">SENT ✓</span>`;else if(can)cap=`<span class="mtcap go">${g.pend?'COVER THE DOUBLE':sel?'TAP A GLOWING TRAIN':'YOUR TURN'}</span>`;else cap=`<span class="mtcap">WAITING FOR ${esc(nm(o)).toUpperCase()}..</span>`;
     const side=p=>`<div class="mtside ${p}${g.status==='active'&&g.turn===p?' on':''}"><span class="mtav">${ava(p)}</span><small>${p===me?'You':nm(p)}</small><b>${tot(p)}</b>${p===me?'':`<span class="mtcnt">${(g.hands[p]||[]).length} tiles</span>`}</div>`;
     const PL=mtPlan(g),pidx=new Map(PL.list.map((t,i)=>[t.s,i+1])),planning=!!ui.g.mtPlan&&g.status==='active',nextP=PL.list[0]&&PL.list[0].s;
-    const hand=(g.hands[me]||[]).slice().sort((x,y)=>{const [a,b]=mtT(x),[c,d]=mtT(y);return (a+b)-(c+d)||a-c}),pl=new Set(legal.map(m=>m.s));
+    if(ui.g.mtSort==null){try{ui.g.mtSort=localStorage.getItem('gn-mt-sort')||'tot'}catch(_){ui.g.mtSort='tot'}}const byNum=ui.g.mtSort==='num',hand=(g.hands[me]||[]).slice().sort((x,y)=>{const [a,b]=mtT(x),[c,d]=mtT(y);return byNum?(Math.max(c,d)-Math.max(a,b))||(Math.min(c,d)-Math.min(a,b)):(a+b)-(c+d)||a-c}),pl=new Set(legal.map(m=>m.s));
     /* the rack: two tiers (three when the hand is big); tiles shrink to fit the row */
     const short=innerHeight<700,tiers=short?Math.max(1,Math.ceil(hand.length/12)):hand.length>18?3:hand.length>8?2:1,per=Math.ceil(hand.length/tiers)||1;
     const tw=Math.max(22,Math.min(short?24:30,Math.floor((Math.min(innerWidth,560)-44)/per)-4)),TL=tw*2;
@@ -11001,16 +11038,18 @@ G.mtrain={title:'Dominos',blurb:'Double-twelve dominoes. Build your train, empty
     const lm=L&&L.by!==me&&g.status==='active'?(L.kind==='play'?`${esc(nm(L.by))} played ${L.s} on ${L.tr==='mx'?'shared':L.tr===me?'your train':'her train'}`:`${esc(nm(L.by))} picked up and passed · her train is on`):'';
     const round=`Round ${(g.round||0)+1} of ${g.R} · ${eg}${g.pend&&!can?` · ${esc(nm(g.turn))} must cover the double`:''}`;
     return `${head('Dominos')}<div class="mtwrap"><div class="mthud">${side(me)}<div class="mtmid">${cap}<small>${lm?`Round ${(g.round||0)+1} of ${g.R} · <b class="mtlast">${lm}</b>`:round}</small></div>${side(o)}</div>
-      <div class="mttable">${(mtSetVB(ui.g.mtAR),mtTable(g,sel,legal,fresh))}</div>
-      ${planning?mtPlanPanel(g,PL):g.status==='active'?`<button class="mtplanbtn" data-act="mtrain-plan">${PL.list.length?`📋 Train plan · ${PL.list.length} · next ${PL.list[0].s}`:'📋 Plan my train'}</button>`:''}<div class="mtrack${can||planning?' can':''}" style="--tw:${tw}px">${rows}<i class="mtlip"></i></div>${act?`<div class="mtact">${act}</div>`:''}</div>${rsheet}${seeSheet}`},
+      <div class="mttable"><div class="mtzw" style="${mtZoomCss(g)}">${(mtSetVB(ui.g.mtAR),mtTable(g,sel,legal,fresh))}</div><div class="mtzoom"><button data-act="mtrain-zin" aria-label="Zoom in">+</button><button data-act="mtrain-zout" aria-label="Zoom out">−</button>${mtZ(g).user?'<button data-act="mtrain-z0" aria-label="Back to auto view" class="fit">⤢</button>':''}</div></div>
+      ${planning?mtPlanPanel(g,PL):g.status==='active'?`<div class="mttools"><button class="mtplanbtn" data-act="mtrain-plan">${PL.list.length?`📋 Train plan · ${PL.list.length} · next ${PL.list[0].s}`:'📋 Plan my train'}</button><button class="mtsortbtn" data-act="mtrain-sort" aria-label="Change how your tiles are sorted">${byNum?'Sorted by number':'Sorted by total'}</button><span class="mtpts">${hand.length} tiles · ${mtPips(g.hands[me])} pts</span></div>`:''}<div class="mtrack${can||planning?' can':''}" style="--tw:${tw}px">${rows}<i class="mtlip"></i></div>${act?`<div class="mtact">${act}</div>`:''}</div>${rsheet}${seeSheet}`},
   after(g){const w=document.querySelector('#view .mtwrap');if(!w)return;
     const fit=()=>{const vh=Math.min(innerHeight,window.visualViewport?visualViewport.height:innerHeight),top=w.getBoundingClientRect().top,pb=parseFloat(getComputedStyle(document.documentElement).paddingBottom)||0;
       w.style.height=Math.max(380,Math.floor(vh-top))+'px';w.style.setProperty('--pb',pb+'px')};fit();
     const tb=w.querySelector('.mttable');if(tb){const b=tb.getBoundingClientRect();if(b.height>40){const ar=b.width/b.height;if(!ui.g.mtAR||Math.abs(ar-ui.g.mtAR)>.04){ui.g.mtAR=ar;render()}}}
-    const n=w.querySelector('.mtpiece.new');if(n)n.addEventListener('animationend',()=>n.classList.remove('new'),{once:true})},
+    const n=w.querySelector('.mtpiece.new');if(n)n.addEventListener('animationend',()=>n.classList.remove('new'),{once:true});mtZBind(g);mtZAuto(g)},
   async act(a,t,g){if(a==='mtrain-start'||a==='mtrain-again')return this.start();if(a==='mtrain-r'){ui.opt.mtR=+t.dataset.r;renderModal&&renderModal();return}if(a==='mtrain-h'){ui.opt.mtH=+t.dataset.h;renderModal&&renderModal();return}
     if(!g)return;if(a==='mtrain-see'){ui.g.mtSee=t.dataset.tr;render();return}if(a==='mtrain-seex'){ui.g.mtSee=null;render();return}if(a==='mtrain-rok'){mtSeenSet(g.id+'-r',String(g.rend&&g.rend.round));render();return}
     if(a==='mtrain-plan'){ui.g.mtPlan=!ui.g.mtPlan;render();return}
+    if(a==='mtrain-sort'){ui.g.mtSort=ui.g.mtSort==='num'?'tot':'num';try{localStorage.setItem('gn-mt-sort',ui.g.mtSort)}catch(_){}render();return}
+    if(a==='mtrain-zin'||a==='mtrain-zout'||a==='mtrain-z0'){const z=mtZ(g),tb=document.querySelector('#view .mttable'),r=tb?tb.getBoundingClientRect():{width:300,height:300};if(a==='mtrain-z0'){z.s=1;z.x=0;z.y=0;mtZSave(g);z.user=false;try{localStorage.removeItem('gn-mt-z-'+g.id)}catch(_){}render();return}else{const f=a==='mtrain-zin'?1.4:1/1.4;z.s*=f;z.x*=f;z.y*=f}mtZClamp(z,r.width,r.height);mtZSave(g);render();return}
     if(a==='mtrain-padd'){const P=mtPlan(g),s=t.dataset.s,arr=P.list.map(x=>x.s);if(arr.includes(s)){toast('Already in your plan. Tap it in the plan to take it out.');return}const [x,y]=mtT(s);if(x!==P.end&&y!==P.end){toast(`That one doesn't connect. Your plan needs a ${P.end}.`);return}arr.push(s);mtPlanSet(g,arr);render();return}
     if(a==='mtrain-pcut'){const P=mtPlan(g);mtPlanSet(g,P.list.slice(0,+t.dataset.i).map(x=>x.s));render();return}
     if(a==='mtrain-pclear'){mtPlanSet(g,[]);render();return}
