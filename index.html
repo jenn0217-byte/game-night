@@ -36,6 +36,7 @@ html.dark .bar .hq{background:#2A2F42;color:#fff}
 .wdrand{align-self:center;margin:2px 0 4px}
 .cpq{position:absolute;right:70px;top:22px;width:32px;height:32px;border-radius:50%;border:0;background:#1C1C1E;color:#fff;font:900 1rem var(--display,system-ui);display:grid;place-items:center;padding:0;box-shadow:0 2px 6px rgba(0,0,0,.35);z-index:3}
 .arhint{position:fixed;left:50%;bottom:calc(64px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:rgba(20,22,35,.82);color:#fff;font:800 .8rem var(--body,system-ui);padding:7px 14px;border-radius:99px;white-space:nowrap;pointer-events:none;z-index:2}
+.pushset{display:flex;flex-direction:column;gap:10px;padding:4px 2px}.pushset p{margin:0}.pushset ol{margin:0;padding-left:1.2em;display:flex;flex-direction:column;gap:6px}.pushcode{display:flex;gap:8px;align-items:center}.pushcode code{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;background:#F2F4F8;border-radius:10px;padding:10px;font:700 .9rem ui-monospace,monospace}html.dark .pushcode code{background:#22273A}.pushnote{color:#6B7189}
 .rules{display:flex;flex-direction:column;gap:10px}
 .rules .rk{margin:0;font-size:.72rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#6B7189}
 .rules h2{margin:0}
@@ -4167,6 +4168,7 @@ const store={db:null,local:{games:{},meta:null},remote:[],key(){return practice?
     this.db=db;shared=true;if(!practice){games=[];render()}
     db.collection('games').onSnapshot(s=>{splashOff();const pc=cur(),pt=pc&&pc.turn;this.remote=s.docs.filter(d=>d.exists).map(d=>({id:d.id,...d.data()}));Object.entries(this.pend).forEach(([id,P])=>{const d=this.remote.find(x=>x.id===id);if(d)deepMerge(d,clone(P.patch))});if(!practice){games=this.remote;render();try{const nc=cur();if(pc&&nc&&nc.id===pc.id&&pt!==me&&nc.turn===me&&nc.status==='active')gnSfx('ding')}catch(_){}}},()=>toast('Lost the connection. Reload to reconnect.'));
     db.doc('meta/players').onSnapshot(s=>{const d=s.exists?s.data():null;if(d&&d.names){names={...names,...d.names};render()}},()=>{});
+    db.doc('meta/push').onSnapshot(s=>{const d=s.exists?s.data():null;if(d){PUSH.t=d;if(route&&route.screen==='settings')render()}},()=>{});
     db.doc('meta/chars').onSnapshot(s=>{const d=s.exists?s.data():null;if(d){window.chars=d;CH.preload();render()}},()=>{});
     hereStart();
   },
@@ -4206,7 +4208,7 @@ const cur=()=>route.screen==='game'?games.find(x=>x.id===route.id):null;
 const upd=(g,patch)=>{try{gnSfx('tap')}catch(_){}return store.update(g.id,patch)};
 function base(type,extra){return Object.assign({type,status:'active',winner:null,by:me,createdAt:now(),updatedAt:now()},extra)}
 function go(id){route={screen:'game',id};ui.g={};ui.enter=true;ui.navDir=1;closeModal();render();scrollTo(0,0);setTimeout(relayout,350);setTimeout(relayout,1100)}
-async function create(doc){const id=newId();let from=ui.rematchFrom||null;ui.rematchFrom=null;if(!from){const c=cur();if(c&&c.status==='done'&&doc&&c.type===doc.type)from=c.id}if(from){const og=games.find(x=>x.id===from);if(og&&doc&&og.type===doc.type)doc.rematchOf=from;else from=null}await store.create(id,doc);if(from)await store.run(db=>db.doc('games/'+from).update({rematchId:id}),()=>{if(store.local.games[from])store.local.games[from].rematchId=id});go(id)}
+async function create(doc){const id=newId();let from=ui.rematchFrom||null;ui.rematchFrom=null;if(!from){const c=cur();if(c&&c.status==='done'&&doc&&c.type===doc.type)from=c.id}if(from){const og=games.find(x=>x.id===from);if(og&&doc&&og.type===doc.type)doc.rematchOf=from;else from=null}await store.create(id,doc);try{if(pushOn()&&doc&&G[doc.type]){const t=pushTitle(doc);let mine=false;try{mine=doc.status==='active'&&!!G[doc.type].myMove(doc)}catch(_){}PUSH.mm[id]=mine;if(mine){PUSH.ch[id]=1}else pushSend(other(me),`${nameOf(me)} challenged you!`,`${t}${from?' rematch':''} is waiting for you. Tap to play.`).then(ok=>{if(ok)toast(`Sent! ${nameOf(other(me))} gets a notification.`)});if(!mine)PUSH.last[id]=Date.now()}}catch(_){}if(from)await store.run(db=>db.doc('games/'+from).update({rematchId:id}),()=>{if(store.local.games[from])store.local.games[from].rematchId=id});go(id)}
 
 /* ---------- shared ui bits ---------- */
 /* hosted copy: one tap texts the other player that it's their turn (GamePigeon lives in Messages; this brings that ping back) */
@@ -4252,6 +4254,25 @@ function rulesHtml(k){const r=RULES[k];if(!r)return '';const t=(G[k]&&G[k].title
  return `<div class="rules"><p class="rk">How to play ${esc(t)}</p><h2>${esc(r[0])}</h2><ol>${r.slice(1).map(x=>`<li>${esc(x)}</li>`).join('')}</ol><button class="btn" data-act="close">Got it</button></div>`}
 function rulesBtn(){const g=cur();return g&&RULES[g.type]&&!OWNHELP.has(g.type)?`<button class="hq" data-act="rules" aria-label="How to play">?</button>`:''}
 function rulesAuto(g){try{if(!g||!AUTORULES.has(g.type)||ui.modal||practice)return;if(g.by===me&&!NOSHEET.has(g.type)&&Date.now()-(g.createdAt||0)<60000){try{localStorage.setItem('gn-rules-'+g.type,'1')}catch(_){}return}const k='gn-rules-'+g.type;if(localStorage.getItem(k))return;localStorage.setItem(k,'1');setTimeout(()=>{if(!ui.modal&&cur()&&cur().type===g.type)openModal('rules-'+g.type)},500)}catch(_){}}
+
+/* ---- Lock-screen notifications through the free ntfy app (no accounts). Each phone owner gets a private code (topic) saved in the room. ---- */
+const PUSH={t:{},mm:{},last:{},q:{},ch:{}};
+function pushOn(){return !!(window.GN_FB&&store.db&&!practice)}
+function pushMyTopic(){return PUSH.t[me]||''}
+async function pushSetup(){if(!pushOn())return;if(PUSH.t[me])return;const a='abcdefghijkmnpqrstuvwxyz23456789';let s='gn-';for(let i=0;i<14;i++)s+=a[Math.floor(Math.random()*a.length)];PUSH.t={...PUSH.t,[me]:s};try{await store.db.doc('meta/push').set(PUSH.t)}catch(_){}render()}
+function pushSend(p,title,msg,test){const tp=PUSH.t[p];if(!tp||!pushOn())return Promise.resolve(false);
+  return fetch('https://ntfy.sh/',{method:'POST',body:JSON.stringify({topic:tp,title,message:msg,tags:['game_die'],click:location.origin+location.pathname,priority:test?3:4})}).then(r=>r.ok).catch(()=>false)}
+function pushTitle(g){return (G[g.type]&&G[g.type].title)||'a game'}
+/* after each render: did a game just stop being my move? then tell the other phone it's their turn (after the 3-second undo window) */
+function pushWatch(){if(!pushOn()||!me)return;const op=other(me);
+  for(const g of games){if(!g||g.archived||!G[g.type]||g.type==='bb')continue;let mm=false;try{mm=g.status==='active'&&!!G[g.type].myMove(g)}catch(_){}
+    const was=PUSH.mm[g.id];PUSH.mm[g.id]=mm;if(was===undefined)continue;
+    const ended=was&&g.status==='done'&&PUSH.mm[g.id+':s']==='active';PUSH.mm[g.id+':s']=g.status;
+    if((was&&!mm&&g.status==='active')||ended){clearTimeout(PUSH.q[g.id]);PUSH.q[g.id]=setTimeout(()=>{const gg=games.find(x=>x.id===g.id);if(!gg)return;let still=false;try{still=gg.status==='active'&&!!G[gg.type].myMove(gg)}catch(_){}if(still)return;
+        if(HERE.opp&&hereNow()&&hereIn(gg.id))return;if(Date.now()-(PUSH.last[gg.id]||0)<45000&&gg.status==='active'&&!PUSH.ch[gg.id])return;PUSH.last[gg.id]=Date.now();
+        const nm1=nameOf(me),t=pushTitle(gg);
+        if(gg.status==='done')pushSend(op,t,gg.winner===op?`You won ${t}! 🎉`:gg.winner===me?`${nm1} won ${t}. Rematch?`:`${t} is over.`);
+        else if(PUSH.ch[gg.id]){delete PUSH.ch[gg.id];pushSend(op,`${nm1} challenged you!`,`${t}: ${nm1} went first, now it's your turn.`).then(ok=>{if(ok)toast(`Sent! ${nameOf(op)} gets a notification.`)})}else pushSend(op,`Your turn: ${t}`,`${nm1} made a move. Tap to play.`)},3600)}}}
 
 const startRow=k=>`<div class="row"><button class="btn" data-act="${k}-start">Start game</button><button class="btn ghost" data-act="close">Cancel</button></div>`;
 function kbd(act,state,extra){const rows=['QWERTYUIOP','ASDFGHJKL','ZXCVBNM'];
@@ -11852,7 +11873,7 @@ function boardZoom(g){const sel=BZ_SEL[g.type];if(!sel)return;const el=document.
   box.addEventListener('dblclick',e=>{if(e.target.closest('.bzbtns'))return;const r=box.getBoundingClientRect();if(z.s>1.05){z.s=1;z.x=0;z.y=0}else{z.s=2;z.x=-(e.clientX-r.left-r.width/2);z.y=-(e.clientY-r.top-r.height/2)}bzClamp(z,r.width,r.height);bzSave(g.id);apply()});
   apply()}
 /* ---------- real-app shell (Nov 1): settings, splash, slide transitions, swipe back, connection banner, profile cards, achievements, holiday looks ---------- */
-const GN_VER='92';
+const GN_VER='93';
 /* --- achievements, worked out from finished games (nothing extra stored) --- */
 const ACH=[
  ['first','🏆','First win','Win any game',(w,all,p)=>w.length>=1],
@@ -11918,6 +11939,7 @@ function viewSettings(){const F=homePrefs(),dk=(()=>{try{return localStorage.get
   return `<div class="bar"><button class="back" data-act="set-back">←</button><h1>Settings</h1></div><div class="setw">
   <div class="setcard"><div class="setme"><span class="setfig">${CH.full(me,'happy')}</span><div><b>${esc(nameOf(me))}</b><small>This phone plays as ${esc(nameOf(me))}</small><div class="row"><button class="btn ghost" data-act="chars">Edit character</button><button class="btn ghost" data-act="prof" data-p="${me}">My profile</button></div></div></div></div>
   <h3 class="sethd">Players</h3><div class="setcard">${row('Names',esc(nameOf('p1'))+' and '+esc(nameOf('p2')),'<button class="btn ghost" data-act="names">Change</button>')}${row('Switch phone','Only if '+esc(nameOf(other(me)))+' is using this phone',`<button class="btn ghost" data-act="who" data-p="${other(me)}">Play as ${esc(nameOf(other(me)))}</button>`)}</div>
+  ${pushOn()?`<h3 class="sethd">Notifications</h3><div class="setcard">${pushMyTopic()?`<div class="pushset"><p>Get a lock-screen alert when ${esc(nameOf(other(me)))} challenges you or it's your turn.</p><ol><li>Get the free <a href="https://apps.apple.com/us/app/ntfy/id1625396347" target="_blank" rel="noopener">ntfy app</a> (no account).</li><li>In ntfy tap <b>+</b>, paste your code, tap Subscribe. Allow notifications.</li></ol><div class="pushcode"><code>${esc(pushMyTopic())}</code><button class="btn ghost" data-act="push-copy">Copy</button></div><button class="btn" data-act="push-test">Send me a test</button><small class="pushnote">Keep your code private: anyone with it can see your game alerts.</small></div>`:row('Lock-screen alerts',`Know when ${esc(nameOf(other(me)))} challenges you`,'<button class="btn" data-act="push-setup">Set up</button>')}</div>`:''}
   <h3 class="sethd">Sound and look</h3><div class="setcard">${row('Sound and vibration','Clicks, turn chime, win and lose tunes',seg('set-snd',GN_SND.muted?'off':'on',[['on','On'],['off','Off']]))}${row('Appearance','Auto follows your phone',seg('set-dark',dk,[['auto','Auto'],['off','Light'],['on','Dark']]))}${row('Holiday looks','Decorations on holidays',seg('set-hol',hl,[['auto','On'],['off','Off']]))}</div>
   <h3 class="sethd">Games list</h3><div class="setcard">${row('Favorites',F.fav.length?F.fav.filter(k=>G[k]).map(k=>titleOf(k)).join(', '):'None yet','<button class="btn ghost" data-act="set-editlist">Edit list</button>')}${F.hide.length?F.hide.filter(k=>G[k]).map(k=>row(titleOf(k),'Hidden',`<button class="btn ghost" data-act="hide" data-k="${k}">Show</button>`)).join(''):row('Hidden games','None','')}</div>
   <h3 class="sethd">Notifications</h3><div class="setcard">${row('Lock-screen alerts','Needs a one-time setup on Jen’s PC (coming soon)',`<span class="setpill">Soon</span>`)}</div>
@@ -11933,7 +11955,7 @@ let pracT=null;
 function practiceHandoff(){clearTimeout(pracT);if(!practice)return;pracT=setTimeout(()=>{const g=cur();if(!g||g.status==='done'||ui.modal||!me)return;if(drag){practiceHandoff();return}const T=G[g.type];if(!T||!T.myMove)return;
   if(T.busy&&T.busy(g)){practiceHandoff();return}let mine=false,theirs=false;try{mine=!!T.myMove(g)}catch(e){}if(mine)return;const keep=me;me=other(keep);try{theirs=!!T.myMove(g)}catch(e){}me=keep;
   if(theirs){me=other(keep);ui.g={};ui.enter=true;cvDestroy();render();if(!G[g.type].cv&&g.type!=='tower')toast(nameOf(me)+'’s turn')}},1800)}
-function render(){
+function render(){try{pushWatch()}catch(_){}
   if(drag){ui.needRender=true;return}
   ui.vpKey=vpKey();renderChips();
   const v=$('#view'),ae=document.activeElement,fid=ae&&ae.id&&v.contains(ae)?ae.id:null,pos=fid?ae.selectionStart:null;
@@ -11973,6 +11995,9 @@ document.addEventListener('click',async e=>{
     case 'dark':{const on=!document.documentElement.classList.contains('dark');try{localStorage.setItem('gn-dark',on?'on':'off')}catch(_){}gnDark();render();return}
     case 'settings':route={screen:'settings',id:null};ui.navDir=1;render();scrollTo(0,0);return;
     case 'set-back':route={screen:'home',id:null};ui.navDir=-1;render();scrollTo(0,0);return;
+    case 'push-setup':await pushSetup();return;
+    case 'push-copy':{const c=pushMyTopic();try{await navigator.clipboard.writeText(c);toast('Code copied')}catch(_){toast(c)}return}
+    case 'push-test':{const ok=await pushSend(me,'Game Night','Notifications work! 🎲',true);toast(ok?'Test sent. Check your lock screen.':'Could not reach ntfy. Check your connection.');return}
     case 'set-snd':gnMute(t.dataset.v==='off');render();return;
     case 'set-dark':try{localStorage.setItem('gn-dark',t.dataset.v)}catch(_){}gnDark();render();return;
     case 'set-hol':try{localStorage.setItem('gn-hol',t.dataset.v)}catch(_){}render();return;
