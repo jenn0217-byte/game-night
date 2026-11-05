@@ -119,6 +119,10 @@ html.dark .bar .hq{background:#2A2F42;color:#fff}
 .rrec{margin:0;font-size:.85rem;color:#6B7189}.rrec .p1{color:#FF2D87}.rrec .p2{color:#1F6BFF}
 .rres{align-self:center;color:#E0303A}
 .tmk:empty{display:none}
+.c4land{position:absolute;width:11.7%;aspect-ratio:1;border-radius:50%;z-index:1;opacity:0;pointer-events:none;transition:opacity .12s}.c4land.on{opacity:1}.c4land.p1{background:radial-gradient(circle,rgba(255,45,135,.38) 0 52%,transparent 54%);box-shadow:0 0 0 3px rgba(255,45,135,.55) inset}.c4land.p2{background:radial-gradient(circle,rgba(31,107,255,.38) 0 52%,transparent 54%);box-shadow:0 0 0 3px rgba(31,107,255,.55) inset}
+.ln{position:relative}.ln.h::after{content:"";position:absolute;left:0;right:0;top:-14px;bottom:-14px}.ln.v::after{content:"";position:absolute;top:0;bottom:0;left:-14px;right:-14px}.ln:disabled::after{display:none}.dots .box,.dots .dot{pointer-events:none}.ln:not(:disabled){z-index:1}
+.fcard{position:relative}.fcard .fx{position:absolute;right:-4px;top:-6px;min-width:22px;height:22px;border-radius:11px;background:#1E2233;color:#fff;font:900 .72rem/22px var(--body);font-style:normal;text-align:center;box-shadow:0 0 0 2px #fff;z-index:2}.fcard .fx.hot{background:#FFD60A;color:#3A2E00}
+.dggal{display:grid;grid-template-columns:1fr 1fr;gap:10px}.dggal figure{margin:0;background:#fff;border-radius:14px;overflow:hidden;box-shadow:0 4px 10px rgba(0,0,0,.2)}.dggal canvas{display:block;width:100%}.dggal figcaption{padding:6px 8px;font:700 .75rem var(--body);color:#1E2233}
 .rules{display:flex;flex-direction:column;gap:10px}
 .rules .rk{margin:0;font-size:.72rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#6B7189}
 .rules h2{margin:0}
@@ -4339,6 +4343,7 @@ const AUTORULES=new Set(['race','mtrain','who','bb','uttt','pong','dg']);
 /* head-to-head record for one game type, from every finished game (cleared ones too) */
 function h2h(k){const r={p1:0,p2:0};for(const g of games){if(g.type===k&&g.status==='done'&&(g.winner==='p1'||g.winner==='p2'))r[g.winner]++}return r}
 const NORESIGN=new Set(['bb','pong']);
+function gnSpeed(){try{return localStorage.getItem('gn-fast')==='1'?2.2:1}catch(_){return 1}}
 function rulesHtml(k){const r=RULES[k];if(!r)return '';const t=(G[k]&&G[k].title)||'';
  const g=cur(),rec=h2h(k),canRes=g&&g.type===k&&g.status==='active'&&!NORESIGN.has(k)&&!practice;
  return `<div class="rules"><p class="rk">How to play ${esc(t)}</p><h2>${esc(r[0])}</h2><ol>${r.slice(1).map(x=>`<li>${esc(x)}</li>`).join('')}</ol>${rec.p1+rec.p2?`<p class="rrec">All-time: <b class="p1">${esc(nameOf('p1'))} ${rec.p1}</b> · <b class="p2">${esc(nameOf('p2'))} ${rec.p2}</b></p>`:''}<button class="btn" data-act="close">Got it</button>${canRes?'<button class="link rres" data-act="resign">Resign this game</button>':''}</div>`}
@@ -5544,7 +5549,7 @@ G.dots={title:'Dots & Boxes',blurb:'Draw lines. Close a box to claim it and go a
     ui.g.dotsInit=true;ui.g.dotsLast=g.last;
     const st=g.status,av=p=>`<div class="dav ${p}${st==='active'&&g.turn===p?' on':''}"><span class="dring">${ava(p)}</span><em>${p===me?'You':nm(p)}</em><b class="dsc">${c[p]}</b></div>`;
     let cap;if(st==='done'){cap=g.winner==='tie'?'<span class="dcap">TIE GAME</span>':g.winner===me?'<span class="dcap win">YOU WON!</span>':`<span class="dcap lose">${nm(g.winner).toUpperCase()} WON</span>`}
-    else cap=can?'<span class="dcap go">YOUR TURN</span>':`<span class="dcap">WAITING FOR ${nm(g.turn).toUpperCase()}...</span>`;
+    else cap=can?(g.again&&(g.lines||{})[g.last]===me?`<span class="dcap go">${g.again>1?'DOUBLE! ':''}GO AGAIN!</span>`:'<span class="dcap go">YOUR TURN</span>'):`<span class="dcap">WAITING FOR ${nm(g.turn).toUpperCase()}...</span>`;
     const left=n*n-c.p1-c.p2;
     const sub=st==='done'?`${Math.max(c.p1,c.p2)} boxes to ${Math.min(c.p1,c.p2)}`:since||(can&&dtHintOn()?'Tap between two dots to draw a line. Close a box to go again.':`${left} box${left===1?'':'es'} left`);
     const foot=st==='done'?`<div class="dfoot">${wgAgain(g,`<button class="btn" data-act="dots-again">Play again</button>`)}<button class="btn ghost" data-act="archive" data-id="${g.id}">Clear</button></div>`:'';
@@ -5579,8 +5584,8 @@ G.dots={title:'Dots & Boxes',blurb:'Draw lines. Close a box to claim it and go a
       const cand=d==='h'?[[r-1,cc],[r,cc]]:[[r,cc-1],[r,cc]];const nb={};
       cand.forEach(([br,bc])=>{if(br<0||bc<0||br>=g.n||bc>=g.n)return;const key=br+'-'+bc;if((g.boxes||{})[key])return;
         if(L[`h-${br}-${bc}`]&&L[`h-${br+1}-${bc}`]&&L[`v-${br}-${bc}`]&&L[`v-${br}-${bc+1}`])nb[key]=me});
-      const patch={lines:{[k]:me},last:k};
-      if(Object.keys(nb).length){patch.boxes=nb;const all={...(g.boxes||{}),...nb};
+      const patch={lines:{[k]:me},last:k,again:0};
+      if(Object.keys(nb).length){patch.boxes=nb;patch.again=Object.keys(nb).length;const all={...(g.boxes||{}),...nb};
         if(Object.keys(all).length===g.n*g.n){const c={p1:0,p2:0};Object.values(all).forEach(p=>c[p]++);patch.status='done';patch.winner=c.p1===c.p2?'tie':(c.p1>c.p2?'p1':'p2')}}
       else{patch.turn=other(me);ui.g.dtSent=Date.now()}
       await upd(g,patch)}
@@ -5626,7 +5631,7 @@ G.c4={title:'Connect 4',busy:()=>!!ui.g.c4anim,blurb:'Drop discs. First to line 
     else if(g.last>=0&&lastBy!==me)over=`<circle class="c4last" cx="${C4X(g.last%7)}" cy="${C4Y(Math.floor(g.last/7))}" r="44"/>`;
     const cols=Array.from({length:7},(_,c)=>{const full=g.board[c]!=='.';return `<button class="c4col${full?' full':''}" style="left:${pct(C4X(c)-50,C4W)}" data-c="${c}" ${can?'data-act="c4-drop"':'disabled'} aria-label="Column ${c+1}${full?', full':''}"></button>`}).join('');
     return `${head('Connect 4')}<div class="c4scene${can?' can':''}">${c4Hud(g,can)}<div class="c4stage"><div class="c4rig ${me}">
-      <div class="c4back"></div>${discs}<i class="c4ghost ${me}" aria-hidden="true"></i><i class="c4glow" aria-hidden="true"></i>${c4FrameSVG()}<svg class="c4over" viewBox="0 0 ${C4W} ${C4H}" aria-hidden="true">${over}</svg>${cols}</div></div>${g.status==='done'?doneRow(g):''}</div>`},
+      <div class="c4back"></div>${discs}<i class="c4ghost ${me}" aria-hidden="true"></i><i class="c4land ${me}" aria-hidden="true"></i><i class="c4glow" aria-hidden="true"></i>${c4FrameSVG()}<svg class="c4over" viewBox="0 0 ${C4W} ${C4H}" aria-hidden="true">${over}</svg>${cols}</div></div>${g.status==='done'?doneRow(g):''}</div>`},
   after(g){
     const v=document.getElementById('view'),sc=document.querySelector('#view .c4scene'),st=sc&&sc.querySelector('.c4stage'),rig=st&&st.querySelector('.c4rig');if(!rig)return;
     /* fit by measurement (never 100vh): the view takes the real viewport, the rig is as big as the stage allows */
@@ -5647,8 +5652,9 @@ G.c4={title:'Connect 4',busy:()=>!!ui.g.c4anim,blurb:'Drop discs. First to line 
       setTimeout(()=>{if(!d.isConnected){ui.g.c4anim=0;return}if(!drag)drag={c4:1};last=performance.now();requestAnimationFrame(tick)},0)}
     if(!sc.classList.contains('can'))return;
     /* aim: finger down shows your disc above the column and lights it; lift drops it there. Pointer capture on the stage, rect cached at pointerdown. */
-    const ghost=rig.querySelector('.c4ghost'),glow=rig.querySelector('.c4glow');let col=null,rect=null,pid=null,off=false;
-    const set=c=>{col=c;if(c==null){ghost.classList.remove('on');glow.classList.remove('on');return}
+    const ghost=rig.querySelector('.c4ghost'),glow=rig.querySelector('.c4glow'),land=rig.querySelector('.c4land');let col=null,rect=null,pid=null,off=false;
+    const set=c=>{col=c;if(c==null){ghost.classList.remove('on');glow.classList.remove('on');land&&land.classList.remove('on');return}
+      if(land){let r=-1;for(let rr=5;rr>=0;rr--)if(g.board[rr*7+c]==='.'){r=rr;break}if(r<0)land.classList.remove('on');else{land.style.left=((C4X(c)-44)/C4W*100)+'%';land.style.top=((C4Y(r)-44)/C4H*100)+'%';land.classList.add('on')}}
       ghost.style.left=((C4X(c)-44)/C4W*100)+'%';glow.style.left=((C4X(c)-50)/C4W*100)+'%';ghost.classList.add('on');glow.classList.add('on');glow.classList.toggle('full',g.board[c]!=='.')};
     const colAt=x=>Math.max(0,Math.min(6,Math.floor(((x-rect.left)/rect.width*C4W-26)/100)));
     st.addEventListener('pointerdown',e=>{if(pid!=null||!e.isPrimary)return;pid=e.pointerId;rect=rig.getBoundingClientRect();off=false;try{st.setPointerCapture(e.pointerId)}catch(_){}if(!drag)drag={c4g:1};set(colAt(e.clientX))});
@@ -8387,7 +8393,8 @@ G.fish={title:'Go Fish',blurb:'Ask for ranks and collect sets of four.',
     const status=g.status==='done'?'':can?`<span class="fpill go">YOUR TURN</span>`:`<span class="fpill">WAITING FOR ${esc(nameOf(opp).toUpperCase())}...</span>`;
     /* my hand: fanned rows (row split is done by measurement in after so every card keeps a >= 44px band) */
     const n=hand.length;
-    const cardsH=hand.map((cd,k)=>`<button class="fcard${seen&&!seen.includes(cd)?' new':''}" style="--c:0;--row:0;z-index:${k+1}" ${can?`data-act="fish-ask" data-r="${rankOf(cd)}"`:'disabled'} aria-label="${rankOf(cd)} of ${suitOf(cd)}">${fsCardSvg(cd)}</button>`).join('');
+    const rc={};hand.forEach(cd=>{const r=rankOf(cd);rc[r]=(rc[r]||0)+1});
+    const cardsH=hand.map((cd,k)=>{const r=rankOf(cd),lastOf=k===n-1||rankOf(hand[k+1])!==r;return `<button class="fcard${seen&&!seen.includes(cd)?' new':''}" style="--c:0;--row:0;z-index:${k+1}" ${can?`data-act="fish-ask" data-r="${r}"`:'disabled'} aria-label="${r} of ${suitOf(cd)}">${fsCardSvg(cd)}${lastOf&&rc[r]>1?`<i class="fx${rc[r]===3?' hot':''}" aria-hidden="true">×${rc[r]}</i>`:''}</button>`}).join('');
     const foot=g.status==='done'?`<div class="ffoot">${wgAgain(g,`<button class="btn" data-act="fish-again">Play again</button>`)}<button class="btn ghost" data-act="archive" data-id="${g.id}">Clear</button></div>`:'';
     return `${head('Go Fish')}${FS_DEFS}<div class="fsc${can?' mine':''}">
       <div class="fhud">${av(me)}<div class="ofan" aria-label="${nm(opp)} has ${on} cards">${ofan}<span class="fcnt">${on}</span></div>${av(opp)}</div>
@@ -8554,7 +8561,7 @@ function cdlSet(p,x,y,lift,extra){const el=document.getElementById('cdl-pw-'+p),
 function cdlSpot(g,p){const pos=g.pos||{},a=pos[p],o=other(p),[x,y]=cdlXY(a);const share=a!=null&&a===pos[o];return share?[x+(p==='p1'?-5:5),y]:[x,y]}
 function cdlPlace(g){P.forEach(p=>{const [x,y]=cdlSpot(g,p);cdlSet(p,x,y)})}
 /* timeline for one draw: card flips up and stays readable, then the pawn hops square by square (or glides for picture cards, climbs for shortcuts) */
-function cdlPlan(mv){const pts=[],a=mv.from==null?-1:mv.from,b=mv.to;let per=CDL_HOP,kind='hop';
+function cdlPlan(mv){const pts=[],a=mv.from==null?-1:mv.from,b=mv.to;let per=CDL_HOP/gnSpeed(),kind='hop';
   if(mv.still||mv.over||mv.swap)return {pts:[cdlXY(a)],per,kind};
   if(mv.card[0]==='p'){kind='glide';const dir=b>=a?1:-1;for(let i=a;i!==b+dir;i+=dir)pts.push(cdlXY(i));per=Math.max(45,Math.min(110,2600/Math.max(1,pts.length)))}
   else{const end=mv.via!=null?mv.via:b;for(let i=a;i<=Math.min(end,CDL_N);i++)pts.push(cdlXY(i));if(b>=CDL_N&&end<CDL_N)pts.push(CDL_CASTLE)}
@@ -10385,15 +10392,18 @@ G.dg={title:'Draw & Guess',blurb:'Draw a word, they guess it from letter tiles, 
       const blanks=[...w].map(ch=>/[A-Z]/.test(ch)?(()=>{const j=k++;const f=fill[j];return `<button class="dgbl${f!=null?' on':''}" ${f!=null?`data-act="dg-unfill" data-j="${j}"`:'disabled'}>${f!=null?bank[f]:''}</button>`})():'<span class="dgsp"></span>').join('');
       body=`<div class="dgcvw"><canvas id="dgcv" class="dgcv"></canvas><button class="dgreplay" data-act="dg-replay" aria-label="Replay drawing">↻</button></div><div class="dgblanks">${blanks}</div>
         <div class="dgbank">${bank.map((L,i)=>`<button class="dgt${fill.includes(i)?' used':''}" ${fill.includes(i)?'disabled':`data-act="dg-tile" data-i="${i}"`}>${L}</button>`).join('')}</div>
-        <div class="dgrow"><button class="dgb" data-act="dg-shuffle">Clear letters</button><button class="dgb" data-act="dg-giveup">Give up</button></div>`}
+        <div class="dgrow"><button class="dgb" data-act="dg-hint">💡 Hint (−1 coin)</button><button class="dgb" data-act="dg-shuffle">Clear</button><button class="dgb" data-act="dg-giveup">Give up</button></div>`}
     else{const txt=g.phase==='guess'?`${esc(nameOf(dgGuesser(g)))} is guessing your drawing of <b>${esc((g.word||'').toUpperCase())}</b>`:`${esc(nameOf(g.drawer))} is picking a word to draw`;
       body=`${g.last&&g.last.by===opp?`<div class="dglast ${g.last.ok?'ok':'no'}">${g.last.ok?`${esc(nameOf(opp))} guessed <b>${esc(g.last.word.toUpperCase())}</b>! +${g.last.tier} coins each`:`${esc(nameOf(opp))} gave up on <b>${esc(g.last.word.toUpperCase())}</b>.`}</div>`:''}<div class="dgwait">${txt}</div>${g.phase==='guess'&&g.strokes?'<div class="dgcvw"><canvas id="dgcv" class="dgcv"></canvas></div>':''}<div class="dgrow"><button class="dgb" data-act="dg-end">End game</button></div>`}
+    const gal=g.gal||[];if(ui.g.dgGal===g.id)body=`<div class="dggal">${gal.length?gal.slice().reverse().map((d,i)=>`<figure><canvas class="dggc" data-gi="${gal.length-1-i}"></canvas><figcaption><b>${esc(d.w.toUpperCase())}</b> by ${esc(nameOf(d.by))}${d.ok?'':' · not guessed'}</figcaption></figure>`).join(''):'<p class="dgwait">No drawings yet</p>'}</div><div class="dgrow"><button class="btn" data-act="dg-galx">Back to the game</button></div>`;
+    else if(gal.length&&!(g.phase==='draw'&&mine))body+=`<div class="dgrow"><button class="dgb" data-act="dg-gal">🖼 Gallery (${gal.length})</button></div>`;
     return `${head('Draw & Guess')}<div class="tsc dgsc">${hud}<div class="dgbody">${body}</div></div>`},
-  after(g){wgRmToast(g);const cv=document.getElementById('dgcv');if(!cv)return;const w=cv.parentElement.clientWidth,dpr=Math.min(2,devicePixelRatio||1);cv.width=w*dpr;cv.height=w*dpr;cv.style.height=w+'px';
+  after(g){wgRmToast(g);{const sc=document.querySelector('#view .tsc.dgsc');if(sc){const vv=window.visualViewport,vh=vv?vv.height:innerHeight,top=sc.getBoundingClientRect().top,pb=parseFloat(getComputedStyle(document.documentElement).paddingBottom)||0;sc.style.minHeight=Math.max(300,Math.floor(vh-top-pb))+'px'}}document.querySelectorAll('.dggc').forEach(c=>{const d=(g.gal||[])[+c.dataset.gi];if(!d)return;const w=c.parentElement.clientWidth;c.width=w*2;c.height=w*2;c.style.height=w+'px';let S=[];try{S=JSON.parse(d.s)}catch(_){}dgPaint(c,S,1)});const cv=document.getElementById('dgcv');if(!cv)return;const w=cv.parentElement.clientWidth,dpr=Math.min(2,devicePixelRatio||1);cv.width=w*dpr;cv.height=w*dpr;cv.style.height=w+'px';
     if(g.phase==='draw'&&g.turn===me){if(DG.gid!==g.id+':'+g.n){DG.gid=g.id+':'+g.n;try{DG.strokes=JSON.parse(localStorage.getItem('gn-dg-'+g.id)||'[]')}catch(_){DG.strokes=[]}}dgPaint(cv,DG.strokes,1);dgBind(cv,g)}
     else if(g.strokes){let S=[];try{S=JSON.parse(g.strokes)}catch(_){}const key=g.id+':'+g.n;if(g.phase==='guess'&&g.turn===me&&ui.g.dgPlayed!==key){ui.g.dgPlayed=key;dgReplay(cv,S)}else if(!DG.play||DG.play.cv!==cv)dgPaint(cv,S,1)}},
   async act(a,t,g){if(a==='dg-again'||a==='dg-start')return this.start();if(!g||g.status!=='active')return;
     if(a==='dg-end'||a==='dg-end2'){if(a==='dg-end'){toast('Tap End game again to finish');t.dataset.act='dg-end2';return}const p=g.pts||{};await store.update(g.id,{status:'done',winner:(p.p1||0)>(p.p2||0)?'p1':(p.p2||0)>(p.p1||0)?'p2':'tie'});return}
+    if(a==='dg-gal'){ui.g.dgGal=g.id;render();return}if(a==='dg-galx'){ui.g.dgGal=null;render();return}
     if(g.turn!==me)return;
     if(a==='dg-reroll'){await store.update(g.id,{choices:dgPick((Date.now()%2147483647)||3)});return}
     if(a==='dg-word'||a==='dg-own'){let w,tier;if(a==='dg-word'){const i=+t.dataset.i;w=g.choices[i];tier=i+1}else{const el=document.getElementById('dg-own');w=(el&&el.value||'').trim().toLowerCase().replace(/[^a-z ]/g,'').replace(/\s+/g,' ');tier=2;if(w.replace(/ /g,'').length<2){toast('Type a word with letters');return}}
@@ -10408,13 +10418,17 @@ G.dg={title:'Draw & Guess',blurb:'Draw a word, they guess it from letter tiles, 
     if(a==='dg-replay'){const cv=document.getElementById('dgcv');let S=[];try{S=JSON.parse(g.strokes)}catch(_){}cv&&dgReplay(cv,S);return}
     if(a==='dg-shuffle'){ui.g.dgFill={id:key,v:[]};render();return}
     if(a==='dg-unfill'){const v=F();v.splice(+t.dataset.j,1);render();return}
+    if(a==='dg-hint'){const v=F(),w=(g.word||'').toUpperCase().replace(/[^A-Z]/g,''),bank=dgBank(g);
+      /* keep the correct prefix, drop the rest, then add the next right letter */
+      let ok=0;while(ok<v.length&&bank[v[ok]]===w[ok])ok++;v.length=ok;if(ok>=w.length-1){toast('Almost there, you got this!');render();return}
+      const j=bank.findIndex((L,i)=>L===w[ok]&&!v.includes(i));if(j>=0){v.push(j);ui.g.dgHints=(ui.g.dgHints&&ui.g.dgHints.k===key?ui.g.dgHints.n:0)+1;ui.g.dgHints={k:key,n:ui.g.dgHints}}render();return}
     if(a==='dg-tile'){const v=F(),w=(g.word||'').toUpperCase().replace(/[^A-Z]/g,''),bank=dgBank(g);if(v.length>=w.length)return;v.push(+t.dataset.i);try{gnSfx('tap')}catch(_){}
-      if(v.length===w.length){const guess=v.map(i=>bank[i]).join('');if(guess===w){const tier=g.tier||1,pts={...(g.pts||{p1:0,p2:0})};pts[me]=(pts[me]||0)+tier;pts[g.drawer]=(pts[g.drawer]||0)+tier;const st=(g.streak||0)+1;
-          try{gnSfx('win')}catch(_){}ui.g.dgFill=null;await store.update(g.id,{pts,streak:st,best:Math.max(g.best||0,st),phase:'pick',drawer:me,n:(g.n||1)+1,turn:me,choices:dgPick(dgSeed(g)+st),last:{word:g.word,tier,by:me,ok:true},strokes:'',word:''});return}
+      if(v.length===w.length){const guess=v.map(i=>bank[i]).join('');if(guess===w){const tier=g.tier||1,hn=ui.g.dgHints&&ui.g.dgHints.k===key?ui.g.dgHints.n:0,pts={...(g.pts||{p1:0,p2:0})};pts[me]=(pts[me]||0)+Math.max(0,tier-hn);pts[g.drawer]=(pts[g.drawer]||0)+tier;const st=(g.streak||0)+1;
+          try{gnSfx('win')}catch(_){}ui.g.dgFill=null;await store.update(g.id,{pts,streak:st,best:Math.max(g.best||0,st),phase:'pick',drawer:me,n:(g.n||1)+1,turn:me,choices:dgPick(dgSeed(g)+st),last:{word:g.word,tier,by:me,ok:true},strokes:'',word:'',gal:[...(g.gal||[]),{w:g.word,by:g.drawer,s:g.strokes,ok:1}].slice(-6)});return}
         render();setTimeout(()=>{const b=document.querySelector('.dgblanks');if(b){b.classList.add('dgshake');setTimeout(()=>{ui.g.dgFill={id:key,v:[]};render()},450)}},10);return}
       render();return}
     if(a==='dg-giveup'||a==='dg-giveup2'){if(a==='dg-giveup'){toast(`Tap Give up again to see the word`);t.dataset.act='dg-giveup2';return}
-      ui.g.dgFill=null;await store.update(g.id,{streak:0,phase:'pick',drawer:me,n:(g.n||1)+1,turn:me,choices:dgPick(dgSeed(g)+7),last:{word:g.word,tier:g.tier,by:me,ok:false},strokes:'',word:''});return}}
+      ui.g.dgFill=null;await store.update(g.id,{streak:0,phase:'pick',drawer:me,n:(g.n||1)+1,turn:me,choices:dgPick(dgSeed(g)+7),last:{word:g.word,tier:g.tier,by:me,ok:false},strokes:'',word:'',gal:[...(g.gal||[]),{w:g.word,by:g.drawer,s:g.strokes,ok:0}].slice(-6)});return}}
 };
 function dgCap(g){const mine=g.turn===me;if(g.status==='done')return 'GAME OVER';if(g.phase==='pick')return mine?'PICK A WORD':`${esc(nameOf(g.drawer)).toUpperCase()} IS PICKING`;if(g.phase==='draw')return mine?'DRAW IT!':`${esc(nameOf(g.drawer)).toUpperCase()} IS DRAWING`;return mine?'WHAT IS IT?':`${esc(nameOf(dgGuesser(g))).toUpperCase()} IS GUESSING`}
 function dgSave(g){try{localStorage.setItem('gn-dg-'+g.id,JSON.stringify(DG.strokes))}catch(_){}}
@@ -10512,7 +10526,7 @@ function slRun(g,A){const disc=document.getElementById('sl-disc'),mv=A.mv,p=mv.b
   const hops=mv.land>mv.from?mv.land-mv.from:0,ride=mv.to!==mv.land,T1=SL_SPIN_MS+450,T2=T1+hops*SL_HOP_MS,TP=T2+(ride?500:0),T3=TP+(ride?SL_RIDE_MS:0),END=T3+250;
   const easeOut=u=>1-Math.pow(1-u,4),io=u=>u<.5?2*u*u:1-Math.pow(-2*u+2,2)/2;let popped=false,hinted=false;
   {const [ox,oy]=slAt(g.pos[o],o,{});slSet(o,ox,oy)}
-  const tick=now=>{const t=now-A.t0;const el=document.getElementById('slpw-'+p);if(!el||!el.isConnected){A.done=true;return}
+  const tick=now=>{const t=(now-A.t0)*gnSpeed();const el=document.getElementById('slpw-'+p);if(!el||!el.isConnected){A.done=true;return}
     if(disc&&disc.isConnected){const u=Math.min(1,t/SL_SPIN_MS);disc.style.transform=`rotate(${A.a0+(A.a1-A.a0)*easeOut(u)}deg)`}
     let x,y,lift=0;
     if(t<T1){[x,y]=slAt(mv.from,p,{})}
@@ -11361,7 +11375,7 @@ function rhAnimate(g,movers,bumped,settle){
   const eo=u=>1-(1-u)*(1-u),io=u=>u<.5?2*u*u:1-Math.pow(-2*u+2,2)/2;
   const run=(e,list,vEnd)=>new Promise(res=>{if(!e||!list.length)return res();let si=0,t=0,last=performance.now();if(e&&vEnd!=null&&!(vEnd<0||vEnd===105))scl(e,vEnd);
     const tick=now=>{const r=RH_MOVE.run;if(!r||r.gid!==g.id||!e.isConnected||route.screen!=='game'){place(e,list[list.length-1].t[0],list[list.length-1].t[1]);return res()}
-      const p0=window.__prof?performance.now():0;t+=Math.min(50,Math.max(0,now-last));last=now;const s=list[si];let u=Math.min(1,t/s.d);const [x0,y0]=s.f,[x1,y1]=s.t;let x,y,h=0,sx=1,sy=1;
+      const p0=window.__prof?performance.now():0;t+=Math.min(50,Math.max(0,now-last))*gnSpeed();last=now;const s=list[si];let u=Math.min(1,t/s.d);const [x0,y0]=s.f,[x1,y1]=s.t;let x,y,h=0,sx=1,sy=1;
       if(s.k==='glide'){const w=io(u);x=x0+(x1-x0)*w;y=y0+(y1-y0)*w}
       else if(s.k==='arc'){const w=io(u);x=x0+(x1-x0)*w;y=y0+(y1-y0)*w;h=Math.sin(u*Math.PI)*s.h;if(u>.86){const q=(u-.86)/.14;sy=1-.12*Math.sin(q*Math.PI);sx=2-sy}}
       else{const w=eo(u);x=x0+(x1-x0)*w;y=y0+(y1-y0)*w;h=Math.sin(u*Math.PI)*s.h}
@@ -12239,7 +12253,7 @@ function boardZoom(g){const sel=BZ_SEL[g.type];if(!sel)return;const el=document.
   box.addEventListener('dblclick',e=>{if(e.target.closest('.bzbtns'))return;const r=box.getBoundingClientRect();if(z.s>1.05){z.s=1;z.x=0;z.y=0}else{z.s=2;z.x=-(e.clientX-r.left-r.width/2);z.y=-(e.clientY-r.top-r.height/2)}bzClamp(z,r.width,r.height);bzSave(g.id);apply()});
   apply()}
 /* ---------- real-app shell (Nov 1): settings, splash, slide transitions, swipe back, connection banner, profile cards, achievements, holiday looks ---------- */
-const GN_VER='94';
+const GN_VER='95';
 /* --- achievements, worked out from finished games (nothing extra stored) --- */
 const ACH=[
  ['first','🏆','First win','Win any game',(w,all,p)=>w.length>=1],
@@ -12306,7 +12320,7 @@ function viewSettings(){const F=homePrefs(),dk=(()=>{try{return localStorage.get
   <div class="setcard"><div class="setme"><span class="setfig">${CH.full(me,'happy')}</span><div><b>${esc(nameOf(me))}</b><small>This phone plays as ${esc(nameOf(me))}</small><div class="row"><button class="btn ghost" data-act="chars">Edit character</button><button class="btn ghost" data-act="prof" data-p="${me}">My profile</button></div></div></div></div>
   <h3 class="sethd">Players</h3><div class="setcard">${row('Names',esc(nameOf('p1'))+' and '+esc(nameOf('p2')),'<button class="btn ghost" data-act="names">Change</button>')}${row('Switch phone','Only if '+esc(nameOf(other(me)))+' is using this phone',`<button class="btn ghost" data-act="who" data-p="${other(me)}">Play as ${esc(nameOf(other(me)))}</button>`)}</div>
   ${pushOn()?`<h3 class="sethd">Notifications</h3><div class="setcard">${pushMyTopic()?`<div class="pushset"><p>Get a lock-screen alert when ${esc(nameOf(other(me)))} challenges you or it's your turn.</p><ol><li>Get the free <a href="https://apps.apple.com/us/app/ntfy/id1625396347" target="_blank" rel="noopener">ntfy app</a> (no account).</li><li>In ntfy tap <b>+</b>, paste your code, tap Subscribe. Allow notifications.</li></ol><div class="pushcode"><code>${esc(pushMyTopic())}</code><button class="btn ghost" data-act="push-copy">Copy</button></div><button class="btn" data-act="push-test">Send me a test</button><small class="pushnote">Keep your code private: anyone with it can see your game alerts.</small></div>`:row('Lock-screen alerts',`Know when ${esc(nameOf(other(me)))} challenges you`,'<button class="btn" data-act="push-setup">Set up</button>')}</div>`:''}
-  <h3 class="sethd">Sound and look</h3><div class="setcard">${row('Sound and vibration','Clicks, turn chime, win and lose tunes',seg('set-snd',GN_SND.muted?'off':'on',[['on','On'],['off','Off']]))}${row('Appearance','Auto follows your phone',seg('set-dark',dk,[['auto','Auto'],['off','Light'],['on','Dark']]))}${row('Holiday looks','Decorations on holidays',seg('set-hol',hl,[['auto','On'],['off','Off']]))}</div>
+  <h3 class="sethd">Sound and look</h3><div class="setcard">${row('Sound and vibration','Clicks, turn chime, win and lose tunes',seg('set-snd',GN_SND.muted?'off':'on',[['on','On'],['off','Off']]))}${row('Appearance','Auto follows your phone',seg('set-dark',dk,[['auto','Auto'],['off','Light'],['on','Dark']]))}${row('Holiday looks','Decorations on holidays',seg('set-hol',hl,[['auto','On'],['off','Off']]))}${row('Fast moves','Pawns hop faster in Sorry!, Candy Land and Chutes',seg('set-fast',gnSpeed()>1?'on':'off',[['off','Normal'],['on','Fast']]))}</div>
   <h3 class="sethd">Games list</h3><div class="setcard">${row('Favorites',F.fav.length?F.fav.filter(k=>G[k]).map(k=>titleOf(k)).join(', '):'None yet','<button class="btn ghost" data-act="set-editlist">Edit list</button>')}${F.hide.length?F.hide.filter(k=>G[k]).map(k=>row(titleOf(k),'Hidden',`<button class="btn ghost" data-act="hide" data-k="${k}">Show</button>`)).join(''):row('Hidden games','None','')}</div>
   <h3 class="sethd">Notifications</h3><div class="setcard">${row('Lock-screen alerts','Needs a one-time setup on Jen’s PC (coming soon)',`<span class="setpill">Soon</span>`)}</div>
   <h3 class="sethd">About</h3><div class="setcard">${row('Game Night','Version '+GN_VER+' · '+(window.GN_FB?'online copy':'Claude copy')+' · '+(shared?'synced':'this phone only'),'')}${row('Practice solo','Play both sides, nothing is sent',`<button class="btn ghost" data-act="${practice?'practice-off':'practice-on'}">${practice?'Stop':'Start'}</button>`)}</div></div>`}
@@ -12364,6 +12378,7 @@ document.addEventListener('click',async e=>{
     case 'push-setup':await pushSetup();return;
     case 'push-copy':{const c=pushMyTopic();try{await navigator.clipboard.writeText(c);toast('Code copied')}catch(_){toast(c)}return}
     case 'push-test':{const ok=await pushSend(me,'Game Night','Notifications work! 🎲',true);toast(ok?'Test sent. Check your lock screen.':'Could not reach ntfy. Check your connection.');return}
+    case 'set-fast':try{localStorage.setItem('gn-fast',t.dataset.v==='on'?'1':'0')}catch(_){}render();return;
     case 'set-snd':gnMute(t.dataset.v==='off');render();return;
     case 'set-dark':try{localStorage.setItem('gn-dark',t.dataset.v)}catch(_){}gnDark();render();return;
     case 'set-hol':try{localStorage.setItem('gn-hol',t.dataset.v)}catch(_){}render();return;
