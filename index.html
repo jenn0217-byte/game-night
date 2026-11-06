@@ -104,7 +104,7 @@ html.dark .bgcard{background:#1E2233}html.dark .bgsq{background:#2A2F42;color:#f
 .dgpick h3{margin:0;color:#fff;text-align:center;font-family:var(--display)}
 .dgw{border:0;border-radius:16px;background:#fff;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 4px 0 rgba(0,0,0,.15)}
 .dgw b{flex:1;min-width:0;text-align:left;font:900 1.15rem var(--display);color:#1E2233;letter-spacing:.03em;overflow-wrap:anywhere}.dgw span{flex:none;margin-left:10px;font:800 .72rem var(--body);color:#6B7189}
-.dgw.t1{border-left:6px solid #2BB673}.dgw.t2{border-left:6px solid #FF9F1C}.dgw.t3{border-left:6px solid #9B5CFF}
+.dgw.dgt1{border-left:6px solid #2BB673}.dgw.dgt2{border-left:6px solid #FF9F1C}.dgw.dgt3{border-left:6px solid #9B5CFF}
 .dgown{display:flex;gap:8px}.dgown input{flex:1;min-width:0;border:0;border-radius:12px;padding:10px 12px;font:700 .95rem var(--body)}
 .dgpick .link{color:#fff;align-self:center}
 .dgblanks{display:flex;gap:4px;justify-content:center;flex-wrap:wrap}
@@ -139,6 +139,8 @@ html.dark .bar .hq{background:#2A2F42;color:#fff}
 .slot.rv{color:#FF4D4D!important;animation:hgrv .35s var(--ease,ease-out) both;animation-delay:calc(var(--i)*.14s + .3s)}@keyframes hgrv{from{opacity:0;transform:translateY(-8px) scale(1.3)}}
 .c4rig.drain .c4d{animation:c4drain .75s cubic-bezier(.5,0,.9,.6) forwards;animation-delay:calc((5 - var(--rr,0)) * 40ms)}@keyframes c4drain{to{transform:translateY(520%);opacity:0}}.c4rig.drain .c4wl,.c4rig.drain .c4wr{opacity:0;transition:opacity .3s}
 #ws-grid .cell.pop{animation:wspop .16s ease-out}@keyframes wspop{50%{transform:scale(1.28)}}
+#ws-mid.wsmid{box-sizing:border-box;height:26px;line-height:16px;min-height:0;width:auto}
+.wgcap.res{border-bottom:0}
 .rules{display:flex;flex-direction:column;gap:10px}
 .rules .rk{margin:0;font-size:.72rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#6B7189}
 .rules h2{margin:0}
@@ -166,7 +168,7 @@ html.dark .rules .rk{color:#A9B0C7}
 .splbrand .d{width:34px;height:34px;border-radius:9px;background:#111114;position:relative;display:inline-block}.splbrand .d i{position:absolute;width:6px;height:6px;border-radius:50%;background:#FFD60A}.splbrand .d i:nth-child(1){left:7px;top:7px}.splbrand .d i:nth-child(2){right:7px;top:7px}.splbrand .d i:nth-child(3){left:7px;bottom:7px}.splbrand .d i:nth-child(4){right:7px;bottom:7px}
 #splash small{font-weight:800;color:#5A4A00}
 @keyframes slidein{from{transform:translateX(28%);opacity:.4}to{transform:none;opacity:1}}@keyframes slideback{from{transform:translateX(-28%);opacity:.4}to{transform:none;opacity:1}}
-#view.zoomin{animation:gnzoom .3s cubic-bezier(.2,.8,.2,1) both}@keyframes gnzoom{from{transform:scale(.22);opacity:0;border-radius:24px}to{transform:none;opacity:1}}
+#view.zoomin{animation:gnzoom .32s cubic-bezier(.2,.8,.2,1) both}@keyframes gnzoom{from{clip-path:circle(0 at var(--zx) var(--zy));opacity:.6}to{clip-path:circle(150% at var(--zx) var(--zy));opacity:1}}
 #view.slidein{animation:slidein .3s var(--ease) both}#view.slideback{animation:slideback .3s var(--ease) both}
 #netbar{position:fixed;left:50%;top:calc(8px + env(safe-area-inset-top,0px));transform:translateX(-50%);z-index:9997;background:#1E2233;color:#fff;border-radius:99px;padding:7px 14px;font:800 .78rem var(--body);box-shadow:0 6px 16px rgba(0,0,0,.25);white-space:nowrap}
 .chhome{display:flex;align-items:flex-end;gap:4px}.chhome .chf{border:0;background:none;padding:0;cursor:pointer}.chhome .chtx{border:0;background:none;text-align:left;cursor:pointer;flex:1;min-width:0;align-self:center;padding-left:6px}
@@ -2750,8 +2752,8 @@ body.ingame #view:has(.rhscene){min-height:0;gap:8px}
 .wsmid.opp{animation:wsmsg .3s ease-out both}
 .wsmid.opp.p1{background:#FF2D87;color:#fff}.wsmid.opp.p2{background:#1F6BFF;color:#fff}
 .wsmid b{font-weight:900;letter-spacing:.02em}
-.wsmid.note{animation:wsmsg .3s ease-out both;font-weight:900;letter-spacing:.08em;background:rgba(0,0,0,.45)}
-.wsmid.note.p1{background:#FF2D87}.wsmid.note.p2{background:#1F6BFF}
+.wsmid.wsn{animation:wsmsg .3s ease-out both;font-weight:900;letter-spacing:.08em;background:rgba(0,0,0,.45)}
+.wsmid.wsn.p1{background:#FF2D87}.wsmid.wsn.p2{background:#1F6BFF}
 @keyframes wsmsg{from{opacity:0}}
 .wgw.ws .wsmeta{font-weight:900;font-size:.8rem}
 .wsmidrow{display:flex;align-items:center;justify-content:center;gap:10px;width:100%}
@@ -4429,7 +4431,7 @@ function miniBoard(g){try{const C={p1:'#FF2D87',p2:'#1F6BFF'},wrap=(bg,inner)=>`
 function rulesHtml(k){const r=RULES[k];if(!r)return '';const t=(G[k]&&G[k].title)||'';
  const g=cur(),rec=h2h(k),canRes=g&&g.type===k&&g.status==='active'&&!NORESIGN.has(k)&&!practice;
  return `<div class="rules"><p class="rk">How to play ${esc(t)}</p><h2>${esc(r[0])}</h2><ol>${r.slice(1).map(x=>`<li>${esc(x)}</li>`).join('')}</ol>${rec.p1+rec.p2?`<p class="rrec">All-time: <b class="p1">${esc(nameOf('p1'))} ${rec.p1}</b> · <b class="p2">${esc(nameOf('p2'))} ${rec.p2}</b></p>`:''}<button class="btn" data-act="close">Got it</button>${canRes?'<button class="link rres" data-act="resign">Resign this game</button>':''}</div>`}
-function rulesBtn(){const g=cur();return g&&RULES[g.type]&&!OWNHELP.has(g.type)?`<button class="hq" data-act="rules" aria-label="How to play">?</button>`:''}
+function rulesBtn(){const g=cur();if(g&&g.type==='trail')return `<button class="hq" data-act="trail-help" aria-label="How to play">?</button>`;return g&&RULES[g.type]&&!OWNHELP.has(g.type)?`<button class="hq" data-act="rules" aria-label="How to play">?</button>`:''}
 function rulesAuto(g){try{if(!g||!AUTORULES.has(g.type)||ui.modal||practice)return;if(g.by===me&&!NOSHEET.has(g.type)&&Date.now()-(g.createdAt||0)<60000){try{localStorage.setItem('gn-rules-'+g.type,'1')}catch(_){}return}const k='gn-rules-'+g.type;if(localStorage.getItem(k))return;localStorage.setItem(k,'1');setTimeout(()=>{if(!ui.modal&&cur()&&cur().type===g.type)openModal('rules-'+g.type)},500)}catch(_){}}
 
 /* ---- Lock-screen notifications through the free ntfy app (no accounts). Each phone owner gets a private code (topic) saved in the room. ---- */
@@ -4635,11 +4637,11 @@ function wsFadeDrag(near){const l=wsDragLine();if(!l||l.getAttribute('visibility
 function wsDot(i,n){const d=document.getElementById('ws-dot');if(!d)return;if(i==null){d.setAttribute('visibility','hidden');return}
   d.setAttribute('cx',i%n+.5);d.setAttribute('cy',Math.floor(i/n)+.5);d.setAttribute('visibility','visible')}
 async function wsTry(g,s,e){
-  if(wsOver(g)){wsFadeDrag();wsMsg('TIME’S UP','note',1500);return}
+  if(wsOver(g)){wsFadeDrag();wsMsg('TIME’S UP','wsn',1500);return}
   const n=g.n,r1=Math.floor(s/n),c1=s%n,r2=Math.floor(e/n),c2=e%n;
   const hit=g.words.find(p=>{const er=p.r+p.dr*(p.w.length-1),ec=p.c+p.dc*(p.w.length-1);return (p.r===r1&&p.c===c1&&er===r2&&ec===c2)||(p.r===r2&&p.c===c2&&er===r1&&ec===c1)});
   const own=wsOwn(g);
-  if(hit&&own[hit.w]){wsFadeDrag();wsMsg('FOUND','note '+own[hit.w],1200);return}
+  if(hit&&own[hit.w]){wsFadeDrag();wsMsg('FOUND','wsn '+own[hit.w],1200);return}
   if(!hit){wsNear(g,s,e,own);return}
   try{navigator.vibrate&&navigator.vibrate(12)}catch(_){}
   try{localStorage.setItem('gn2-ws-guide','1')}catch(_){}
@@ -4663,9 +4665,9 @@ function wsNear(g,s,e,fm){const n=g.n,path=linePath(s,e,n)||[e];
   const ids=p=>Array.from({length:p.w.length},(_,i)=>(p.r+p.dr*i)*n+p.c+p.dc*i);let msg=null;
   for(const p of g.words){if(fm[p.w])continue;let w=ids(p);if(w[0]!==s)w=w.slice().reverse();if(w[0]!==s)continue;
     const d=w.length>1?w[1]-w[0]:0;if(path.length<2||path[1]-path[0]!==d)continue;
-    if(path.length<w.length){msg='SHORT';break}
-    if(path.length>w.length){msg='LONG';break}}
-  wsFadeDrag(!!msg);if(msg)wsMsg(msg,'note',1200)}
+    if(path.length<w.length){msg='TOO SHORT';break}
+    if(path.length>w.length){msg='TOO LONG';break}}
+  wsFadeDrag(!!msg);if(msg)wsMsg(msg,'wsn',1200)}
 /* tie-grab: a snapshot says the other player claimed a word I grabbed (my claim may already have landed locally) */
 function wsLost(g){const cl=ui.g.claims;if(!cl||g.mode==='speed')return;const f=wsF(g),p=ui.g.pend||{};
   for(const w in cl){const o=f[w];if(o&&o!==me){delete cl[w];delete p[w];wsMsg(`${nm(o)} got <b>${esc(w)}</b> first!`,'opp lost '+o,2800);try{navigator.vibrate&&navigator.vibrate([20,40,20])}catch(_){}}
@@ -10477,7 +10479,7 @@ G.dg={title:'Draw & Guess',blurb:'Draw a word, they guess it from letter tiles, 
     let body='';
     if(g.status==='done')body=`<div class="tfoot">${wgAgain(g,'<button class="btn" data-act="dg-again">New game</button>')}<button class="btn ghost" data-act="archive" data-id="${g.id}">Clear</button></div>`;
     else if(g.phase==='pick'&&mine){const last=g.last?`<div class="dglast ${g.last.ok?'ok':'no'}">${g.last.ok?`${esc(nameOf(g.last.by))} got <b>${esc(g.last.word.toUpperCase())}</b>! +${g.last.tier} coins each`:`${esc(nameOf(g.last.by))} gave up on <b>${esc(g.last.word.toUpperCase())}</b>. Streak reset.`}</div>`:'';
-      body=`${last}<div class="dgpick"><h3>Pick a word to draw</h3>${(g.choices||[]).map((w,i)=>`<button class="dgw t${i+1}" data-act="dg-word" data-i="${i}"><b>${esc(w.toUpperCase())}</b><span>${['Easy','Medium','Hard'][i]} · ${i+1} coin${i?'s':''}</span></button>`).join('')}
+      body=`${last}<div class="dgpick"><h3>Pick a word to draw</h3>${(g.choices||[]).map((w,i)=>`<button class="dgw dgt${i+1}" data-act="dg-word" data-i="${i}"><b>${esc(w.toUpperCase())}</b><span>${['Easy','Medium','Hard'][i]} · ${i+1} coin${i?'s':''}</span></button>`).join('')}
         <form class="dgown" data-act="dg-own-form"><input id="dg-own" maxlength="20" placeholder="Or type your own (inside jokes!)" autocomplete="off"><button class="btn" type="button" data-act="dg-own">Draw it</button></form>
         <button class="link" data-act="dg-reroll">New words</button></div>`}
     else if(g.phase==='draw'&&mine){body=`<div class="dgword">Draw: <b>${esc(g.word.toUpperCase())}</b></div><div class="dgcvw"><canvas id="dgcv" class="dgcv"></canvas></div>
@@ -12351,7 +12353,7 @@ function boardZoom(g){const sel=BZ_SEL[g.type];if(!sel)return;const el=document.
   box.addEventListener('dblclick',e=>{if(e.target.closest('.bzbtns'))return;const r=box.getBoundingClientRect();if(z.s>1.05){z.s=1;z.x=0;z.y=0}else{z.s=2;z.x=-(e.clientX-r.left-r.width/2);z.y=-(e.clientY-r.top-r.height/2)}bzClamp(z,r.width,r.height);bzSave(g.id);apply()});
   apply()}
 /* ---------- real-app shell (Nov 1): settings, splash, slide transitions, swipe back, connection banner, profile cards, achievements, holiday looks ---------- */
-const GN_VER='97';
+const GN_VER='98';
 /* --- achievements, worked out from finished games (nothing extra stored) --- */
 const ACH=[
  ['first','🏆','First win','Win any game',(w,all,p)=>w.length>=1],
@@ -12408,7 +12410,7 @@ function splashOn(){if(document.getElementById('splash'))return;const s=document
   document.body.appendChild(s);setTimeout(splashOff,4000)}
 /* --- slide between screens, swipe from the left edge to go back --- */
 function navSlide(dir){const v=document.getElementById('view');const zf=ui.zoomFrom;ui.zoomFrom=null;if(!v||matchMedia('(prefers-reduced-motion: reduce)').matches)return;v.classList.remove('slidein','slideback','zoomin');void v.offsetWidth;
-  if(dir>0&&zf){const r=v.getBoundingClientRect();v.style.transformOrigin=`${Math.round(zf.x-r.left)}px ${Math.round(zf.y-r.top)}px`;v.classList.add('zoomin')}else v.classList.add(dir>0?'slidein':'slideback');clearTimeout(navSlide.t);navSlide.t=setTimeout(()=>{v.classList.remove('slidein','slideback','zoomin');v.style.transformOrigin=''},400)}
+  if(dir>0&&zf){const r=v.getBoundingClientRect();v.style.setProperty('--zx',Math.round(zf.x-r.left)+'px');v.style.setProperty('--zy',Math.round(zf.y-r.top)+'px');v.classList.add('zoomin')}else v.classList.add(dir>0?'slidein':'slideback');clearTimeout(navSlide.t);navSlide.t=setTimeout(()=>{v.classList.remove('slidein','slideback','zoomin');v.style.transformOrigin=''},400)}
 (()=>{let sx=null,sy=0,t0=0;addEventListener('touchstart',e=>{const t=e.touches[0];if(e.touches.length===1&&t.clientX<22&&route.screen!=='home'){sx=t.clientX;sy=t.clientY;t0=Date.now()}else sx=null},{passive:true});
   addEventListener('touchend',e=>{if(sx==null)return;const t=e.changedTouches[0],dx=t.clientX-sx,dy=Math.abs(t.clientY-sy);sx=null;if(dx>80&&dy<60&&Date.now()-t0<700){const b=document.querySelector('[data-act=home],[data-act=ch-back],[data-act=set-back]');if(b)b.click()}},{passive:true})})();
 /* --- settings screen --- */
