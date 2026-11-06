@@ -73,6 +73,7 @@ document.addEventListener('touchmove',e=>{if(!document.body.classList.contains('
 .bgsq.dab{color:#fff}.bgsq.dab::after{content:none}
 .bgsq.win i.dab{background:radial-gradient(circle at 40% 35%,#FFE45C,#F2B600)}
 @keyframes bgdab{from{transform:rotate(var(--rot)) scale(.6);opacity:0}}
+.bgsq.no{animation:wshake .35s ease-in-out}
 .bgsq.near:not(.dab){background:linear-gradient(110deg,#F1EEF9 30%,#FFF6C9 50%,#F1EEF9 70%);background-size:250% 100%;animation:bgshim 1.4s linear infinite}@keyframes bgshim{from{background-position:120% 0}to{background-position:-120% 0}}
 .bgctl{flex:none;display:flex;gap:10px;margin-top:10px;position:relative;z-index:1}
 .bgcall{flex:1.4;border:0;border-radius:16px;background:#FFD60A;color:#3A2E00;font:900 1rem var(--body);min-height:52px;box-shadow:0 4px 0 #C9A400}
@@ -137,6 +138,7 @@ html.dark .bar .hq{background:#2A2F42;color:#fff}
 .dggal{display:grid;grid-template-columns:1fr 1fr;gap:10px}.dggal figure{margin:0;background:#fff;border-radius:14px;overflow:hidden;box-shadow:0 4px 10px rgba(0,0,0,.2)}.dggal canvas{display:block;width:100%}.dggal figcaption{padding:6px 8px;font:700 .75rem var(--body);color:#1E2233}
 .slot.rv{color:#FF4D4D!important;animation:hgrv .35s var(--ease,ease-out) both;animation-delay:calc(var(--i)*.14s + .3s)}@keyframes hgrv{from{opacity:0;transform:translateY(-8px) scale(1.3)}}
 .c4rig.drain .c4d{animation:c4drain .75s cubic-bezier(.5,0,.9,.6) forwards;animation-delay:calc((5 - var(--rr,0)) * 40ms)}@keyframes c4drain{to{transform:translateY(520%);opacity:0}}.c4rig.drain .c4wl,.c4rig.drain .c4wr{opacity:0;transition:opacity .3s}
+#ws-grid .cell.pop{animation:wspop .16s ease-out}@keyframes wspop{50%{transform:scale(1.28)}}
 .rules{display:flex;flex-direction:column;gap:10px}
 .rules .rk{margin:0;font-size:.72rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#6B7189}
 .rules h2{margin:0}
@@ -4380,7 +4382,7 @@ const optChips=(k,f,list,val,num)=>`<div class="opts">${list.map(([v,l])=>`<butt
 /* ---- How to play: one short card per game, opened from the ? in the game bar (or the game menu) ---- */
 const RULES={
  uttt:['Win three little boards in a row','Each little board is its own tic tac toe.','The square you pick sends them to that same board (top right square, top right board).','Play in the glowing board. If it is finished, play anywhere.','Win three little boards in a line to win the game.'],
- bingo:['Shout BINGO first','You each get your own card.','On your turn, call two balls. Called numbers on your card glow.','Tap them to daub, or leave Auto-daub on.','When you finish the pattern, tap BINGO! The mini card shows how close they are.'],
+ bingo:['Shout BINGO first','You each get your own card.','On your turn, call two balls. Called numbers on your card glow.','Tap your called numbers to mark them. Auto-daub can do it for you.','When you finish the pattern, tap BINGO! The mini card shows how close they are.'],
  pong:['First to 7 points','A live game: open it together.','Drag anywhere to slide your paddle.','Hit near the edge of the paddle to angle the ball. It speeds up every hit.','Miss it and they score. The player who lost the point serves.'],
  dg:['Keep the streak going','Pick a word (easy, medium or hard) or type your own, then draw it.','They watch your drawing play back and spell the word from letter tiles.','Get it right and you both earn coins and the streak grows. Then they draw back.','Give up and the streak resets.'],
  ttt:['Get three in a row','Tap an empty square to place your mark.','Three across, down or diagonal wins.','Best of 5: first to 3 games takes the match.'],
@@ -4810,7 +4812,7 @@ function wsDrawDrag(d,x,y){const l=d.line||(d.line=wsDragLine());if(!l)return;
     const mr=dr>0?n-1-r0:dr<0?r0:n,mc=dc>0?n-1-c0:dc<0?c0:n,max=Math.min(mr,mc);
     const t=Math.max(0,Math.min((dx*dc+dy*dr)/L,max*L)),steps=Math.round(t/L);
     x2=c0+.5+dc/L*t;y2=r0+.5+dr/L*t;end=(r0+dr*steps)*n+c0+dc*steps}
-  if(d.lastEnd!==end){const st=Math.max(Math.abs(Math.floor(end/n)-r0),Math.abs(end%n-c0));if(d.lastEnd!=null)try{gnFx('note',{pitch:1+st*.09,vol:.7})}catch(_){}d.lastEnd=end}
+  if(d.lastEnd!==end){const st=Math.max(Math.abs(Math.floor(end/n)-r0),Math.abs(end%n-c0));if(d.lastEnd!=null)try{gnFx('note',{pitch:1+st*.09,vol:.7})}catch(_){}d.lastEnd=end;const ce=document.querySelector(`#ws-grid .cell[data-i="${end}"]`);if(ce){ce.classList.remove('pop');void ce.offsetWidth;ce.classList.add('pop')}}
   d.end=end;
   l.setAttribute('x1',c0+.5);l.setAttribute('y1',r0+.5);l.setAttribute('x2',x2===c0+.5&&y2===r0+.5?x2+.001:x2);l.setAttribute('y2',y2);
   if(!d.shown){d.shown=true;l.setAttribute('visibility','visible')}}
@@ -7316,7 +7318,8 @@ G.bowl={title:'Bowling',blurb:'Swipe to bowl. Curve your swipe for spin.',
     step(cv,dt){const st=cv.st;st.clock+=dt;if(st.pop){st.pop.t+=dt;if(st.pop.t>(st.pop.dur||1.15))st.pop=null}if(st.sent!=null){st.sent+=dt;if(st.sent>1.45)st.sent=null}
       st.fitT+=dt;if(st.fitT>.5&&!st.gest){st.fitT=0;const vh=bwVH(),host=cv.canvas.parentNode,g=cur();if(host&&g&&g.type==='bowl'&&(st.vh!==vh||st.vw!==host.clientWidth)){st.vh=vh;st.vw=host.clientWidth;bowlFit(g)}}
       if(st.rest>0){st.rest-=dt;if(st.rest<=0){st.rest=0;st.lying=null;if(st.queue.length)this.next(cv);else{const f=st.restDone;st.restDone=null;if(f)f();const gg=cur();if(gg&&gg.id===st.gid)this.sync(cv,gg)}}}
-      const pl=st.play;if(pl){pl.t+=dt;const [bx,by,gone]=this.ballAt(pl,pl.t);if(pl.lastY!=null)st.rot+=Math.max(0,pl.lastY-by)*.2;pl.lastY=by;pl.bx=bx;pl.by=by;pl.gone=gone;
+      const pl=st.play;if(pl){if(pl.strk==null){try{pl.strk=st.simUp===10&&pl.run.pins.every(q=>!q.up||q.moved)}catch(_){pl.strk=false}}
+        /* a strike: the moment the ball meets the pins plays in slow motion */const slow=pl.strk&&pl.t>pl.TR-.05&&pl.t<pl.TR+.35?.32:1;pl.t+=dt*slow;const [bx,by,gone]=this.ballAt(pl,pl.t);if(pl.lastY!=null)st.rot+=Math.max(0,pl.lastY-by)*.2;pl.lastY=by;pl.bx=bx;pl.by=by;pl.gone=gone;
         if(pl.t>=pl.popAt){st.lying=this.pinList(st).filter(q=>q.k>0).map(q=>({...q,moving:false}));st.play=null;if(st.onDone)st.onDone(pl.run)}}},
     live(cv,g){const st=cv.st;return g&&g.turn===me&&g.status==='active'&&!st.play&&!st.queue.length&&!(st.rest>0)},
     onDown(cv,p,g,id){const st=cv.st;st.gest=null;if(!this.live(cv,g))return;if(p.y<.42*BW.H)return;st.gest={id,pts:[p],mode:null,bx0:st.ballX}},
@@ -10010,7 +10013,8 @@ G.archery={title:'Archery',blurb:'Sets of 3 arrows. Read the wind, first to 6 se
       /* target: one deterministic thud nudge (150 ms) when an arrow lands, nothing random */
       const nudge=st.land?Math.sin(Math.PI*st.land.t/AR.THUD)*R*.045:0;if(nudge)c.translate(0,nudge);
       const tg=arTargetSprite(di,Math.min(ps*arZ(di)*1.2,12));c.drawImage(tg.cv,tg.x0,tg.y0,tg.w,tg.h);
-      ['p1','p2'].forEach(p=>(set[p]||[]).forEach((a,i)=>{if(d.hide&&d.hide.by===p&&d.hide.i===i)return;if(Math.abs(a.x)>1.25||Math.abs(a.y)>1.25)return;arStuck(c,50+a.x*R,cy+a.y*R,R,p)}));
+      {const wob=st.tLand?(performance.now()-st.tLand)/1000:9,LS=g.lastShot;['p1','p2'].forEach(p=>(set[p]||[]).forEach((a,i)=>{if(d.hide&&d.hide.by===p&&d.hide.i===i)return;if(Math.abs(a.x)>1.25||Math.abs(a.y)>1.25)return;const x=50+a.x*R,y=cy+a.y*R;
+        /* the newest arrow quivers for half a second after it lands */if(wob<.55&&LS&&LS.by===p&&i===(set[p]||[]).length-1){c.save();c.translate(x,y);c.rotate(Math.sin(wob*42)*.4*(1-wob/.55));c.translate(-x,-y);arStuck(c,x,y,R,p);c.restore()}else arStuck(c,x,y,R,p)}))}
       if(st.ghost&&g.lastShot&&g.lastShot.id!==st.ghost.id&&set===(g.sets||[])[st.ghost.k]&&Math.abs(st.ghost.x)<=1.25&&Math.abs(st.ghost.y)<=1.25)arStuck(c,50+st.ghost.x*R,cy+st.ghost.y*R,R,me);
       if(nudge)c.translate(0,-nudge);
       c.restore();
@@ -10319,7 +10323,7 @@ function bgDaub(g,p){const s=g['d'+p]||'';return i=>i===12||s[i]==='1'}
 function bgCalled(g){return new Set(g.balls||[])}
 /* how close: fewest squares still needed for any line, counting only called-and-daubed squares as done */
 function bgNeed(g,p,daubOnly){const card=g.cards[p],cl=bgCalled(g),dd=bgDaub(g,p);let best=99;for(const l of bgLines(g.pat)){let n=0;for(const i of l){const ok=i===12||(daubOnly?dd(i)&&cl.has(card[i]):cl.has(card[i]));if(!ok)n++}best=Math.min(best,n)}return best}
-function bgAuto(){try{return localStorage.getItem('gn-bingo-auto')!=='0'}catch(_){return true}}
+function bgAuto(){try{return localStorage.getItem('gn-bingo-auto')==='1'}catch(_){return false}}
 G.bingo={title:'Bingo',blurb:'Your own card. Take turns calling balls. First to shout BINGO wins.',
   modal(){const o=ui.opt.bingo||(ui.opt.bingo={pat:'line'});return `<h2>New Bingo</h2><div class="field"><span class="lbl">Win with</span>${optChips('bingo','pat',Object.entries(BG_PAT).map(([k,v])=>[k,v.n]),o.pat)}</div><p class="sub">${BG_PAT[o.pat].d}. You each get your own card and take turns calling two balls. Daub your numbers, then tap BINGO.</p>${startRow('bingo')}`},
   async start(){const o=ui.opt.bingo||{pat:'line'};const deck=shuffle([...Array(75).keys()].map(i=>i+1));await create(base('bingo',{pat:o.pat||'line',cards:{p1:bgCard(),p2:bgCard()},deck,balls:[],turn:me,dp1:'',dp2:''}))},
@@ -10331,7 +10335,7 @@ G.bingo={title:'Bingo',blurb:'Your own card. Take turns calling balls. First to 
     const seen=ui.g.bgSeen&&ui.g.bgSeen.id===g.id?ui.g.bgSeen.n:balls.length;ui.g.bgSeen={id:g.id,n:balls.length};
     const head5=BG_L.split('').map((L,i)=>`<b style="background:${BG_COL[i]}">${L}</b>`).join('');
     const sq=card.map((n,i)=>{const isC=n===0||cl.has(n),dab=dd(i)&&(i===12||cl.has(n)),hot=isC&&!dab&&g.status==='active';
-      return `<button class="bgsq${dab?' dab':''}${hot?' hot':''}${winL.includes(i)?' win':''}${nearSet.has(i)?' near':''}${n===0?' free':''}" style="--rot:${(i*47)%360}deg" ${g.status==='active'&&hot?`data-act="bingo-daub" data-i="${i}"`:'disabled'} aria-label="${n===0?'Free space':bgLetter(n)+' '+n}${dab?', marked':''}">${dab?'<i class="dab" aria-hidden="true"></i>':''}<span class="bgn">${n===0?'FREE':n}</span></button>`}).join('');
+      return `<button class="bgsq${dab?' dab':''}${hot?' hot':''}${winL.includes(i)?' win':''}${nearSet.has(i)?' near':''}${n===0?' free':''}" style="--rot:${(i*47)%360}deg" ${g.status==='active'&&!dab&&n!==0?`data-act="bingo-daub" data-i="${i}"`:'disabled'} aria-label="${n===0?'Free space':bgLetter(n)+' '+n}${dab?', marked':''}">${dab?'<i class="dab" aria-hidden="true"></i>':''}<span class="bgn">${n===0?'FREE':n}</span></button>`}).join('');
     const last=balls.slice(-6).reverse().map((n,i)=>`<span class="bgball${i===0?' big':''}${balls.length-1-i>=seen?' new':''}" style="--c:${BG_COL[Math.floor((n-1)/15)]}"><small>${bgLetter(n)}</small>${n}</span>`).join('');
     /* their card as a mini map: how close they are */
     const oc=g.cards[opp],od=bgDaub(g,opp),mini=oc.map((n,i)=>`<i class="${od(i)&&(i===12||cl.has(n))?'on':''}"></i>`).join('');
@@ -10347,7 +10351,7 @@ G.bingo={title:'Bingo',blurb:'Your own card. Take turns calling balls. First to 
         <div class="tav ${opp}${g.status==='active'&&g.turn===opp?' on':''}"><span class="tring"><b>${ava(opp)}</b></span><span class="tnm">${nm(opp)}</span><span class="bgmini" aria-label="${esc(nameOf(opp))}'s card">${mini}</span><span class="bgnear${needOpp<=1?' hot':''}">${near(needOpp)}</span></div></div>
       <div class="bgrail">${last||'<span class="bgempty">No balls yet</span>'}</div>
       <div class="bgcard"><div class="bghd">${head5}</div><div class="bggrid">${sq}</div></div>${ctl}</div>`},
-  after(g){wgRmToast(g);
+  after(g){wgRmToast(g);{const sc=document.querySelector('#view .tsc.bgsc');if(sc){const vv=window.visualViewport,vh=vv?vv.height:innerHeight,top=sc.getBoundingClientRect().top,pb=parseFloat(getComputedStyle(document.documentElement).paddingBottom)||0;sc.style.minHeight=Math.max(300,Math.floor(vh-top-pb))+'px'}}
     /* auto-daub: mark my called numbers as soon as I see them (my own field only, so no clash with theirs) */
     if(g.status==='active'&&bgAuto()){const card=g.cards[me],cl=bgCalled(g),s=(g['d'+me]||'').padEnd(25,'0').split('');let ch=false;card.forEach((n,i)=>{if(n&&cl.has(n)&&s[i]!=='1'){s[i]='1';ch=true}});if(ch&&!ui.g.bgAutoBusy){ui.g.bgAutoBusy=1;store.update(g.id,{['d'+me]:s.join('')}).finally(()=>{ui.g.bgAutoBusy=0})}}
     const nb=document.querySelector('#view .bgball.big.new');if(nb){try{gnSfx('ding')}catch(_){}}},
@@ -10356,7 +10360,7 @@ G.bingo={title:'Bingo',blurb:'Your own card. Take turns calling balls. First to 
     if(!g)return;
     if(a==='bingo-again'){await wgRematch(g,()=>{ui.opt.bingo={pat:g.pat};const deck=shuffle([...Array(75).keys()].map(i=>i+1));return create(base('bingo',{pat:g.pat,cards:{p1:bgCard(),p2:bgCard()},deck,balls:[],turn:other(g.turn===me?me:other(me)),dp1:'',dp2:''}))});return}
     if(g.status!=='active')return;
-    if(a==='bingo-daub'){const i=+t.dataset.i,s=(g['d'+me]||'').padEnd(25,'0').split('');if(s[i]==='1')return;s[i]='1';try{gnFx('thup');navigator.vibrate(12)}catch(_){}await store.update(g.id,{['d'+me]:s.join('')});return}
+    if(a==='bingo-daub'){const i=+t.dataset.i,s=(g['d'+me]||'').padEnd(25,'0').split('');if(s[i]==='1')return;if(!bgCalled(g).has(g.cards[me][i])){t.classList.remove('no');void t.offsetWidth;t.classList.add('no');try{gnFx('tick',{pitch:.6})}catch(_){}toast(`${bgLetter(g.cards[me][i])} ${g.cards[me][i]} hasn't been called yet`);return}s[i]='1';try{gnFx('thup');navigator.vibrate(12)}catch(_){}await store.update(g.id,{['d'+me]:s.join('')});return}
     if(a==='bingo-call'&&g.turn===me){const balls=[...(g.balls||[])],deck=g.deck||[];for(let k=0;k<2&&balls.length<75;k++)balls.push(deck[balls.length]);
       const patch={balls,turn:other(me)};if(balls.length>=75&&bgNeed({...g,balls},me,false)>0&&bgNeed({...g,balls},other(me),false)>0){patch.status='done';patch.winner='tie'}await upd(g,patch);return}
     if(a==='bingo-shout'&&bgNeed(g,me,true)===0){await store.update(g.id,{status:'done',winner:me});return}}
@@ -11594,8 +11598,8 @@ function mtTileG(a,b,x,y,L,vert,cls){const W=L/2,w=vert?W:L,h=vert?L:W,R=W*.16;
   const bar=vert?`<rect x="${(x+W*.1).toFixed(1)}" y="${(y+W-W*.035).toFixed(1)}" width="${(W*.8).toFixed(1)}" height="${(W*.07).toFixed(1)}" rx="${W*.03}" fill="#1b1b1d"/>`:`<rect x="${(x+W-W*.035).toFixed(1)}" y="${(y+W*.1).toFixed(1)}" width="${(W*.07).toFixed(1)}" height="${(W*.8).toFixed(1)}" rx="${W*.03}" fill="#1b1b1d"/>`;
   const spin=`<circle cx="${(x+(vert?W/2:W)).toFixed(1)}" cy="${(y+(vert?W:W/2)).toFixed(1)}" r="${(W*.07).toFixed(2)}" fill="#C9A646" stroke="#8a6d1f" stroke-width="${(W*.015).toFixed(2)}"/>`;
   /* a thin color stripe on each end in that number's color: easier to match at a glance */
-  const stripe=(n,first)=>{if(!n)return '';const t=W*.075,in_=W*.16;if(vert){const yy=first?y+W*.07:y+L-W*.07-t;return `<rect x="${(x+in_).toFixed(1)}" y="${yy.toFixed(1)}" width="${(W-2*in_).toFixed(1)}" height="${t.toFixed(1)}" rx="${(t/2).toFixed(1)}" fill="${MT_COL[n]}" opacity=".9"/>`}
-    const xx=first?x+W*.07:x+L-W*.07-t;return `<rect x="${xx.toFixed(1)}" y="${(y+in_).toFixed(1)}" width="${t.toFixed(1)}" height="${(W-2*in_).toFixed(1)}" rx="${(t/2).toFixed(1)}" fill="${MT_COL[n]}" opacity=".9"/>`};
+  const stripe=(n,first)=>{if(!n)return '';const t=W*.05,in_=W*.24;if(vert){const yy=first?y+W*.035:y+L-W*.035-t;return `<rect x="${(x+in_).toFixed(1)}" y="${yy.toFixed(1)}" width="${(W-2*in_).toFixed(1)}" height="${t.toFixed(1)}" rx="${(t/2).toFixed(1)}" fill="${MT_COL[n]}" opacity=".9"/>`}
+    const xx=first?x+W*.035:x+L-W*.035-t;return `<rect x="${xx.toFixed(1)}" y="${(y+in_).toFixed(1)}" width="${t.toFixed(1)}" height="${(W-2*in_).toFixed(1)}" rx="${(t/2).toFixed(1)}" fill="${MT_COL[n]}" opacity=".9"/>`};
   return `<g class="mtg${cls?' '+cls:''}"><rect x="${(x+W*.04).toFixed(1)}" y="${(y+W*.07).toFixed(1)}" width="${w}" height="${h}" rx="${R}" fill="rgba(0,0,0,.28)"/><rect x="${x}" y="${y}" width="${w}" height="${h}" rx="${R}" fill="url(#mtface)" stroke="#CFC8B8" stroke-width="${(W*.03).toFixed(2)}"/>${bar}${stripe(a,true)}${stripe(b,false)}${half(a,x,y)}${half(b,vert?x:x+W,vert?y+W:y)}${spin}</g>`}
 /* standalone tile (hand, hub card): upright unless o.v===false */
 function mtTile(s,o){o=o||{};const [a0,b0]=mtT(s),[a,b]=o.flip?[b0,a0]:[a0,b0],v=o.v!==false,L=o.w||60,W=L/2,w=v?W:L,h=v?L:W;
@@ -12347,7 +12351,7 @@ function boardZoom(g){const sel=BZ_SEL[g.type];if(!sel)return;const el=document.
   box.addEventListener('dblclick',e=>{if(e.target.closest('.bzbtns'))return;const r=box.getBoundingClientRect();if(z.s>1.05){z.s=1;z.x=0;z.y=0}else{z.s=2;z.x=-(e.clientX-r.left-r.width/2);z.y=-(e.clientY-r.top-r.height/2)}bzClamp(z,r.width,r.height);bzSave(g.id);apply()});
   apply()}
 /* ---------- real-app shell (Nov 1): settings, splash, slide transitions, swipe back, connection banner, profile cards, achievements, holiday looks ---------- */
-const GN_VER='96';
+const GN_VER='97';
 /* --- achievements, worked out from finished games (nothing extra stored) --- */
 const ACH=[
  ['first','🏆','First win','Win any game',(w,all,p)=>w.length>=1],
