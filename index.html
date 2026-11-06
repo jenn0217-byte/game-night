@@ -6365,7 +6365,7 @@ function golfHudLayer(cv,g,st){const W=GD.W,cx=W/2,N=golfN(g),hi=Math.min(st.hol
   const c=lc.getContext('2d');c.setTransform(1,0,0,1,0,0);c.clearRect(0,0,lc.width,lc.height);const ps=cv.dpr*cv.s;c.setTransform(ps,0,0,ps,0,0);
   const av=(x,p,left)=>{const on=act&&g.turn===p,col=PCOL[p];if(on){c.strokeStyle='#FFD60A';c.lineWidth=1.1;c.beginPath();c.arc(x,10.5,7.4,0,6.28);c.stroke()}
     circ(c,x,11.2,6.6,'rgba(0,0,0,.25)');circ(c,x,10.5,6.6,'#fff');circ(c,x,10.5,5.8,col);const gl=c.createRadialGradient(x-2,8,0,x,10.5,6);gl.addColorStop(0,'rgba(255,255,255,.4)');gl.addColorStop(1,'rgba(255,255,255,0)');c.fillStyle=gl;c.beginPath();c.arc(x,10.5,5.8,0,6.28);c.fill();
-    c.fillStyle='#fff';c.font='900 6px Nunito,sans-serif';c.textAlign='center';c.textBaseline='middle';c.fillText(nameOf(p).charAt(0).toUpperCase(),x,10.9);
+    c.textAlign='center';c.textBaseline='middle';if(!CH.drawHead(c,p,x,10.5,5.6)){c.fillStyle='#fff';c.font='900 6px Nunito,sans-serif';c.fillText(nameOf(p).charAt(0).toUpperCase(),x,10.9)}
     c.font='900 2.9px Nunito,sans-serif';c.lineWidth=.6;c.strokeStyle='rgba(0,0,0,.45)';const lb=p===me?'You':nameOf(p).slice(0,10);c.strokeText(lb,x,20.2);c.fillText(lb,x,20.2);
     const px=left?x+9:x-9,n=String(g.strokes[p]||0),pw=12.5;c.fillStyle='rgba(0,0,0,.25)';rrect(c,left?px:px-pw,7.6,pw,6.4,3.2);c.fill();c.fillStyle='#111114';rrect(c,left?px:px-pw,7,pw,6.4,3.2);c.fill();
     const ix=left?px+3.4:px-pw+3.4;c.strokeStyle='#FFD60A';c.lineWidth=.8;c.lineCap='round';c.beginPath();c.moveTo(ix+1.4,8.4);c.lineTo(ix-.4,12);c.stroke();c.fillStyle='#FFD60A';rrect(c,ix-1.8,11.4,2.8,1.2,.5);c.fill();c.lineCap='butt';
@@ -7353,7 +7353,7 @@ G.bowl={title:'Bowling',blurb:'Swipe to bowl. Curve your swipe for spin.',
       c.textAlign='center';c.textBaseline='middle';
       P.forEach((p,ri)=>{const y=y0+ri*rowH,s=bowlScore(g.rolls[p]||[],N),on=g.status==='active'&&g.turn===p;
         circ(c,5.5,y+rowH/2,2.4,PCOL[p]);if(on){c.strokeStyle='#FFD60A';c.lineWidth=.45;c.beginPath();c.arc(5.5,y+rowH/2,2.85,0,7);c.stroke()}
-        c.fillStyle='#fff';c.font=`900 ${p===me?1.7:2.6}px Nunito,"Arial Black",sans-serif`;c.fillText(p===me?'YOU':nameOf(p).charAt(0).toUpperCase(),5.5,y+rowH/2+.1);
+        if(!CH.drawHead(c,p,5.5,y+rowH/2,2.25)){c.fillStyle='#fff';c.font=`900 ${p===me?1.7:2.6}px Nunito,"Arial Black",sans-serif`;c.fillText(p===me?'YOU':nameOf(p).charAt(0).toUpperCase(),5.5,y+rowH/2+.1)}
         for(let f=0;f<N;f++){const x=nameW+f*cw,act=on&&!pos.done&&pos.f===f;c.fillStyle=act?'#3A3216':'#1C1924';c.fillRect(x+.2,y+.25,cw-.4,rowH-.5);if(act){c.strokeStyle='#FFD60A';c.lineWidth=.3;c.strokeRect(x+.35,y+.4,cw-.7,rowH-.8)}
           const mk=s.mk[f]||[],bw2=Math.min(2.6,(cw-.6)/3);c.font=`900 ${N>5?2.1:2.4}px Nunito,"Arial Black",sans-serif`;
           mk.forEach((m,j)=>{const mx=x+cw-.4-(mk.length-j)*bw2+bw2/2;c.fillStyle=m==='X'?'#FF4D5E':m==='/'?'#4CD964':'#fff';c.fillText(m,mx,y+1.7)});
@@ -11909,7 +11909,7 @@ const lpCarSvg=(p,v,L)=>{L=L||lpLookDef(p);const n=Math.min(6,1+v.married+v.kids
   /* front row first: you drive (left), spouse beside you, kids fill the back rows */
   const holes=[[.5,-4.3],[.5,4.3],[-6,-4.3],[-6,4.3],[-12.5,-4.3],[-12.5,4.3]];
   const pegs=holes.map(([x,y],k)=>{const col=k>=n?null:k===0?mine:k===1&&v.married?them:((k+(p==='p1'?0:1))%2?BL:PK);const pale=col==='#FFFFFF'||col==='#FFD43B';
-    return `<circle cx="${x}" cy="${y}" r="2.9" fill="#000" opacity=".38"/>${col?`<g class="lppeg" data-k="${k}" style="transform-origin:${x}px ${y}px"><circle cx="${x}" cy="${y-.4}" r="2.6" fill="${col}"${pale?' stroke="#000" stroke-opacity=".35" stroke-width=".6"':''}/><circle cx="${x-.8}" cy="${y-1.3}" r=".9" fill="#fff" opacity=".75"/></g>`:''}`}).join('');
+    return `<circle cx="${x}" cy="${y}" r="2.9" fill="#000" opacity=".38"/>${col?`<g class="lppeg" data-k="${k}" style="transform-origin:${x}px ${y}px"><circle cx="${x}" cy="${y-.4}" r="2.6" fill="${col}"${pale?' stroke="#000" stroke-opacity=".35" stroke-width=".6"':''}/>${k===0?(()=>{try{return CH.mini(p).replace('<svg ',`<svg x="${(x-2.9).toFixed(2)}" y="${(y-3.4).toFixed(2)}" width="5.8" height="5.8" `)}catch(_){return ''}})():`<circle cx="${x-.8}" cy="${y-1.3}" r=".9" fill="#fff" opacity=".75"/>`}</g>`:''}`}).join('');
   return `<svg viewBox="-22 -15 44 30" class="lpcarsvg" aria-hidden="true"><ellipse cx="2" cy="4" rx="21" ry="12" fill="#1B3A12" opacity=".32"/>`
    +`<rect x="-15" y="-14" width="8" height="4" rx="1.4" fill="#222"/><rect x="6" y="-14" width="8" height="4" rx="1.4" fill="#222"/><rect x="-15" y="10" width="8" height="4" rx="1.4" fill="#222"/><rect x="6" y="10" width="8" height="4" rx="1.4" fill="#222"/>`
    +`<rect x="-19.5" y="-11.5" width="38" height="23" rx="7" fill="${cd}"/><rect x="-19.5" y="-11.5" width="38" height="21" rx="7" fill="${c}"${light?' stroke="#000" stroke-opacity=".22" stroke-width=".8"':''}/>`
@@ -12353,7 +12353,7 @@ function boardZoom(g){const sel=BZ_SEL[g.type];if(!sel)return;const el=document.
   box.addEventListener('dblclick',e=>{if(e.target.closest('.bzbtns'))return;const r=box.getBoundingClientRect();if(z.s>1.05){z.s=1;z.x=0;z.y=0}else{z.s=2;z.x=-(e.clientX-r.left-r.width/2);z.y=-(e.clientY-r.top-r.height/2)}bzClamp(z,r.width,r.height);bzSave(g.id);apply()});
   apply()}
 /* ---------- real-app shell (Nov 1): settings, splash, slide transitions, swipe back, connection banner, profile cards, achievements, holiday looks ---------- */
-const GN_VER='98';
+const GN_VER='99';
 /* --- achievements, worked out from finished games (nothing extra stored) --- */
 const ACH=[
  ['first','🏆','First win','Win any game',(w,all,p)=>w.length>=1],
