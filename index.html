@@ -4458,7 +4458,7 @@ const RULES={
  who:['Find their mystery person','Ask one yes or no question a turn, in chat or out loud.','Tap the faces that don’t match to flip them down.','Tap Guess when you know. A wrong guess loses.']
 };
 const OWNHELP=new Set(['clue','trail','battle']);
-const NOSHEET=new Set(['rps','bubble','xword','uttt','dg','ttt','c4','fish','ice','tower','surgeon','bowl','archery','race','life','trail','who']);
+const NOSHEET=new Set(['stack','snake','hopper','roadhop','piano','flick','skee','tilt','rps','bubble','xword','uttt','dg','ttt','c4','fish','ice','tower','surgeon','bowl','archery','race','life','trail','who']);
 const AUTORULES=new Set(['race','mtrain','who','bb','uttt','pong','dg','hockey','xword']);
 /* head-to-head record for one game type, from every finished game (cleared ones too) */
 function h2h(k){const r={p1:0,p2:0};for(const g of games){if(g.type===k&&g.status==='done'&&(g.winner==='p1'||g.winner==='p2'))r[g.winner]++}return r}
@@ -10749,7 +10749,7 @@ function arcMount(g){const cv=document.getElementById('arccv');if(!cv)return;con
     cv.addEventListener('pointermove',e=>{if(ARS&&ARS.S&&!ARS.S.over&&d.move&&(e.buttons||e.pointerType==='touch'))d.move(ARS.S,pt(e))});
     const up=e=>{if(ARS&&ARS.S&&!ARS.S.over&&d.up)d.up(ARS.S,pt(e))};cv.addEventListener('pointerup',up);cv.addEventListener('pointercancel',up)}
   if(!ARS.loop){ARS.loop=1;let last=performance.now();const tick=t=>{if(!ARS||!document.getElementById('arccv')){if(ARS)ARS.loop=0;return}const dt=Math.min(.033,(t-last)/1000);last=t;const S=ARS.S;
-      if(!S.over){S.t+=dt;d.step(S,dt);if(S.over){const gg=cur();if(gg)setTimeout(()=>arcFinish(gg),900)}}
+      if(!S.over){S.t+=dt;d.step(S,dt)}if(S.over&&!S.finQ){S.finQ=1;const gg=cur();if(gg)setTimeout(()=>arcFinish(gg),900)}
       const c=cv.getContext('2d');c.setTransform(ARS.k*ARS.dpr,0,0,ARS.k*ARS.dpr,0,0);d.draw(c,S,t);
       for(const f of S.fx){const e=(t-f.t)/700;if(e>1)continue;c.globalAlpha=1-e;c.font=mgFont(f.big?6:3.6,900);c.textAlign='center';c.textBaseline='middle';c.lineWidth=.8;c.strokeStyle='rgba(0,0,0,.45)';c.strokeText(f.txt,f.x,f.y-e*8);c.fillStyle=f.col||'#fff';c.fillText(f.txt,f.x,f.y-e*8);c.globalAlpha=1}S.fx=S.fx.filter(f=>t-f.t<700);
       const hud=document.getElementById('archud');if(hud){const s=`${S.score.toLocaleString()}${d.hud?' · '+d.hud(S):''}${ARS.counts?'':' · practice'}`;if(hud.textContent!==s)hud.textContent=s}
@@ -10854,6 +10854,178 @@ G.xword={title:'Crossword Together',blurb:'One crossword, both of you filling it
     if(a==='xword-del'){let i=cs[sel.k];if(!g['x'+i]&&sel.k>0){sel.k--;i=cs[sel.k]}await store.update(g.id,{['x'+i]:''});return}
     if(a==='xword-check'){const bad=new Set(Object.entries(P.sol).filter(([i,l])=>g['x'+i]&&g['x'+i][0]!==l).map(([i])=>+i));ui.g.xwBad={id:g.id,set:bad};toast(bad.size?`${bad.size} letter${bad.size>1?'s':''} to fix (in red)`:'Everything so far is right!');render()}}
 };
+
+/* ---- shared art for arcade games ---- */
+const arcBg=(c,H,a,b)=>{const g=c.createLinearGradient(0,0,0,H);g.addColorStop(0,a);g.addColorStop(1,b);c.fillStyle=g;c.fillRect(0,0,100,H)};
+const arcMe=(c,x,y,w,mood)=>{const im=sfImgBB(me,mood||'happy');if(im){const h=w*im._h/200;c.drawImage(im,x-w/2,y-h,w,h)}else{c.fillStyle=PCOL[me];c.beginPath();c.arc(x,y-w*.6,w*.4,0,7);c.fill()}};
+const arcTxt=(c,t,x,y,f,col,al)=>{c.font=mgFont(f,900);c.textAlign=al||'center';c.textBaseline='middle';c.lineWidth=f*.18;c.strokeStyle='rgba(0,0,0,.4)';c.strokeText(t,x,y);c.fillStyle=col||'#fff';c.fillText(t,x,y)};
+const arcIco=(bg,inner)=>`<svg class="ico" viewBox="0 0 38 38" aria-hidden="true"><rect x="1" y="1" width="36" height="36" rx="9" fill="${bg}"/>${inner}</svg>`;
+
+/* ---- Stack Up ---- */
+arcDefine('stack',{title:'Stack Up',blurb:'Drop the sliding block. Line it up or lose the overhang.',c1:'#FF8A3D',c2:'#C2410C',
+  how:'Tap to drop the sliding block. Whatever hangs over gets sliced off. Land it perfectly for a bonus. How tall can you go?',
+  rules:['Tallest tower wins','Tap to drop the sliding block on the stack.','The part that hangs over is cut off, so the blocks get thinner.','A perfect drop keeps the full width and scores a bonus.'],
+  icon:arcIco('#FF8A3D','<rect x="9" y="26" width="20" height="5" rx="1" fill="#fff"/><rect x="11" y="20" width="17" height="5" rx="1" fill="#FFE1C7"/><rect x="12" y="14" width="15" height="5" rx="1" fill="#fff"/><rect x="17" y="8" width="15" height="5" rx="1" fill="#FFD60A"/>'),
+  init(S){S.blocks=[{x:20,w:60}];S.mv={x:0,w:60,dir:1,sp:42};S.cam=0;S.hue=S.rnd()*360;S.chop=[]},
+  hud:S=>`${S.blocks.length-1} high`,
+  down(S){const m=S.mv,t=S.blocks[S.blocks.length-1],l=Math.max(m.x,t.x),r=Math.min(m.x+m.w,t.x+t.w);if(r-l<=0){S.over=true;S.chop.push({x:m.x,w:m.w,y:S.blocks.length,vy:0});try{gnFx('thunk')}catch(_){}return}
+    if(Math.abs(m.x-t.x)<1.4){m.x=t.x;S.score+=20;arcPop(S,'PERFECT +20',50,S.H*.3,'#FFD60A');try{gnFx('note',{pitch:1+S.blocks.length*.03});navigator.vibrate(18)}catch(_){}}
+    else{const cutL=m.x<t.x,cw=m.w-(r-l);S.chop.push({x:cutL?m.x:r,w:cw,y:S.blocks.length,vy:0});m.x=l;m.w=r-l;try{gnFx('tok')}catch(_){}}
+    S.blocks.push({x:m.x,w:m.w});S.score+=10;S.mv={x:S.blocks.length%2?-m.w:100,w:m.w,dir:S.blocks.length%2?1:-1,sp:Math.min(95,42+S.blocks.length*1.8)}},
+  step(S,dt){const m=S.mv;m.x+=m.dir*m.sp*dt;if(m.x>100-m.w*.2){m.dir=-1}if(m.x<-m.w*.8){m.dir=1}for(const q of S.chop){q.vy+=60*dt;q.y-=q.vy*dt*.15}S.chop=S.chop.filter(q=>q.y>-20);
+    const want=Math.max(0,S.blocks.length-8);S.cam+=(want-S.cam)*Math.min(1,dt*4)},
+  draw(c,S){const H=S.H,BH=7;arcBg(c,H,`hsl(${S.hue},70%,78%)`,`hsl(${(S.hue+60)%360},60%,45%)`);const yOf=i=>H-14-(i-S.cam)*BH;
+    const blk=(x,w,i,a)=>{const y=yOf(i);c.globalAlpha=a||1;c.fillStyle=`hsl(${(S.hue+i*9)%360},75%,60%)`;c.fillRect(x,y-BH,w,BH-.4);c.fillStyle='rgba(255,255,255,.35)';c.fillRect(x,y-BH,w,1.2);c.fillStyle='rgba(0,0,0,.15)';c.fillRect(x,y-1.6,w,1.2);c.globalAlpha=1};
+    S.blocks.forEach((b,i)=>blk(b.x,b.w,i));for(const q of S.chop)blk(q.x,q.w,q.y,.8);if(!S.over)blk(S.mv.x,S.mv.w,S.blocks.length);
+    arcTxt(c,String(S.blocks.length-1),50,24,12,'#fff');if(S.blocks.length<3)arcTxt(c,'TAP TO DROP',50,40,3.6,'#fff')}
+});
+
+/* ---- Snake ---- */
+arcDefine('snake',{title:'Snake',blurb:'Eat the apples, don’t bite your tail.',c1:'#22A653',c2:'#14532D',
+  how:'Swipe to turn. Each apple makes you longer and a little faster. Hit a wall or yourself and it’s over.',
+  rules:['Most apples wins','Swipe up, down, left or right to turn.','Each apple is 10 points and makes the snake longer and faster.','Walls and your own tail end the run.'],
+  icon:arcIco('#22A653','<path d="M9 28h12v-8h8" stroke="#B8F5C8" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/><circle cx="29" cy="20" r="2.8" fill="#14532D"/><circle cx="12" cy="11" r="3.6" fill="#FF3B30"/>'),
+  init(S){S.N=16;S.rows=()=>Math.floor((S.H-20)/(100/S.N));S.sn=[[8,12],[8,13],[8,14]];S.dir=[0,-1];S.nd=[0,-1];S.acc=0;S.sp=.17;this.apple(S)},
+  apple(S){let p;do{p=[Math.floor(S.rnd()*S.N),Math.floor(S.rnd()*S.rows())]}while(S.sn.some(q=>q[0]===p[0]&&q[1]===p[1]));S.ap=p},
+  hud:S=>`${S.sn.length} long`,
+  down(S,p){S.t0p=p},up(S,p){const a=S.t0p;if(!a)return;const dx=p.x-a.x,dy=p.y-a.y;if(Math.hypot(dx,dy)<3)return;const d=Math.abs(dx)>Math.abs(dy)?[Math.sign(dx),0]:[0,Math.sign(dy)];if(d[0]!==-S.dir[0]||d[1]!==-S.dir[1])S.nd=d;S.t0p=null},
+  move(S,p){const a=S.t0p;if(!a)return;const dx=p.x-a.x,dy=p.y-a.y;if(Math.hypot(dx,dy)<6)return;const d=Math.abs(dx)>Math.abs(dy)?[Math.sign(dx),0]:[0,Math.sign(dy)];if(d[0]!==-S.dir[0]||d[1]!==-S.dir[1])S.nd=d;S.t0p=p},
+  step(S,dt){if(!S.rows)S.rows=()=>Math.floor((S.H-20)/(100/S.N));S.acc+=dt;while(S.acc>=S.sp&&!S.over){S.acc-=S.sp;S.dir=S.nd;const h=S.sn[0],n=[h[0]+S.dir[0],h[1]+S.dir[1]];
+      if(n[0]<0||n[1]<0||n[0]>=S.N||n[1]>=S.rows()||S.sn.some((q,i)=>i<S.sn.length-1&&q[0]===n[0]&&q[1]===n[1])){S.over=true;try{gnFx('thunk');gnImpact('light')}catch(_){}return}
+      S.sn.unshift(n);if(n[0]===S.ap[0]&&n[1]===S.ap[1]){S.score+=10;S.sp=Math.max(.075,S.sp*.965);try{gnFx('pop')}catch(_){}this.apple(S)}else S.sn.pop()}},
+  init2(){},
+  draw(c,S){if(!S.rows)S.rows=()=>Math.floor((S.H-20)/(100/S.N));const cs=100/S.N,R=S.rows(),oy=14;c.fillStyle='#14532D';c.fillRect(0,0,100,S.H);
+    for(let y=0;y<R;y++)for(let x=0;x<S.N;x++){c.fillStyle=(x+y)%2?'#3BB86A':'#34A85F';c.fillRect(x*cs,oy+y*cs,cs,cs)}
+    c.fillStyle='#FF3B30';c.beginPath();c.arc(S.ap[0]*cs+cs/2,oy+S.ap[1]*cs+cs/2,cs*.38,0,7);c.fill();c.fillStyle='#2D7A2D';c.fillRect(S.ap[0]*cs+cs/2-.3,oy+S.ap[1]*cs+cs*.08,.8,cs*.2);
+    S.sn.forEach((q,i)=>{c.fillStyle=i===0?'#1F3BFF':`hsl(${225+i*2},85%,${62-Math.min(20,i)}%)`;const r=cs*(i===0?.48:.42);c.beginPath();c.arc(q[0]*cs+cs/2,oy+q[1]*cs+cs/2,r,0,7);c.fill()});
+    const h=S.sn[0];c.fillStyle='#fff';c.beginPath();c.arc(h[0]*cs+cs/2+S.dir[1]*cs*.15+S.dir[0]*cs*.15,oy+h[1]*cs+cs/2,cs*.12,0,7);c.fill()}
+});
+
+/* ---- Sky Hopper ---- */
+arcDefine('hopper',{title:'Sky Hopper',blurb:'Bounce up through the clouds. Don’t fall.',c1:'#7FB8FF',c2:'#3D62D8',
+  how:'Your character bounces on its own. Slide your finger left and right to steer onto clouds. Go as high as you can.',
+  rules:['Highest climb wins','You bounce automatically.','Keep your finger down and slide left or right to steer.','Gold clouds launch you extra high. Fall off the bottom and it’s over.'],
+  icon:arcIco('#5B8DFF','<ellipse cx="13" cy="28" rx="7" ry="3" fill="#fff"/><ellipse cx="26" cy="17" rx="7" ry="3" fill="#fff"/><ellipse cx="17" cy="9" rx="6" ry="2.6" fill="#FFD60A"/><circle cx="26" cy="10" r="3.4" fill="#FF7DB8"/>'),
+  init(S){S.p={x:50,y:0,vy:-70};S.top=0;S.cl=[];let y=0;for(let i=0;i<14;i++){S.cl.push({x:10+S.rnd()*80,y:-i*14,gold:false});}S.cl[0]={x:50,y:6,gold:false};S.hi=0;S.tx=50},
+  down(S,p){S.tx=p.x},move(S,p){S.tx=p.x},
+  step(S,dt){const P=S.p;P.x+=(S.tx-P.x)*Math.min(1,dt*7);if(P.x<0)P.x+=100;if(P.x>100)P.x-=100;P.vy+=150*dt;const py=P.y;P.y+=P.vy*dt;
+    if(P.vy>0)for(const q of S.cl){if(py<=q.y&&P.y>=q.y&&Math.abs(P.x-q.x)<10){P.y=q.y;P.vy=q.gold?-125:-82;try{gnFx(q.gold?'boing':'note',{pitch:1.2})}catch(_){}if(q.gold)arcPop(S,'BOOST!',P.x,P.y-S.top-10,'#FFD60A')}}
+    const want=P.y-S.H*.45;if(want<S.top)S.top=want;const h=Math.round(-S.top);if(h>S.hi){S.hi=h;S.score=h}
+    let minY=Math.min(...S.cl.map(q=>q.y));S.cl=S.cl.filter(q=>q.y<S.top+S.H+10);while(minY>S.top-20){minY-=10+S.rnd()*Math.min(16,6+(-minY)/120);S.cl.push({x:8+S.rnd()*84,y:minY,gold:S.rnd()<.07})}
+    if(P.y>S.top+S.H+8){S.over=true;try{gnFx('whoosh')}catch(_){}}},
+  hud:S=>'',
+  draw(c,S){const H=S.H,t=-S.top;arcBg(c,H,`hsl(${210-Math.min(60,t/40)},80%,${70-Math.min(40,t/60)}%)`,'#CFE6FF');
+    for(const q of S.cl){const y=q.y-S.top;c.fillStyle=q.gold?'#FFD60A':'#fff';c.beginPath();c.ellipse(q.x,y+1,10,3,0,0,7);c.fill();c.beginPath();c.arc(q.x-4,y-.5,3,0,7);c.arc(q.x+3,y-1,3.6,0,7);c.fill()}
+    arcMe(c,S.p.x,S.p.y-S.top+1,11,S.p.vy<0?'cheer':'happy')}
+});
+
+/* ---- Road Hop ---- */
+arcDefine('roadhop',{title:'Road Hop',blurb:'Hop across busy roads. How far can you get?',c1:'#4CAF50',c2:'#2E7D32',
+  how:'Tap to hop forward. Swipe left or right to sidestep. Don’t get hit, and don’t wait too long.',
+  rules:['Farthest hop wins','Tap to hop forward, swipe left or right to step sideways.','Cars get faster the farther you go.','Stand still too long and the eagle gets you.'],
+  icon:arcIco('#4CAF50','<rect x="1" y="13" width="36" height="12" fill="#4A4F5C"/><path d="M4 19h6M14 19h6M24 19h6" stroke="#fff" stroke-width="1.2"/><rect x="22" y="15" width="9" height="6" rx="1.5" fill="#FF3B30"/><circle cx="12" cy="30" r="3.4" fill="#FFD60A"/>'),
+  init(S){S.row=0;S.col=4;S.best=0;S.lanes={};S.idle=0;S.hop=0;S.cam=0},
+  lane(S,r){if(S.lanes[r])return S.lanes[r];const rnd=arcRng((ARS?ARS.seed:1)*31+r*7919);const road=r>2&&rnd()<.62,sp=(14+rnd()*16+Math.min(30,r*.35))*(rnd()<.5?-1:1),n=road?1+Math.floor(rnd()*3):0,cars=[];for(let i=0;i<n;i++)cars.push({x:rnd()*120-10,w:rnd()<.25?16:10,col:['#FF3B30','#1F8BFF','#FFC400','#9B5CFF','#fff'][Math.floor(rnd()*5)]});return S.lanes[r]={road,sp,cars,trees:road?[]:[0,1,2,3,4,5,6,7,8].filter(()=>rnd()<.12&&r>0)}},
+  down(S,p){S.p0=p},up(S,p){const a=S.p0;S.p0=null;if(!a)return;const dx=p.x-a.x;let nc=S.col,nr=S.row;if(Math.abs(dx)>6)nc+=Math.sign(dx);else nr++;nc=Math.max(0,Math.min(8,nc));if(this.lane(S,nr).trees.includes(nc))return;S.col=nc;S.row=nr;S.hop=1;S.idle=0;try{gnFx('tick',{pitch:1.3})}catch(_){}if(S.row>S.best){S.best=S.row;S.score=S.best}},
+  step(S,dt){S.idle+=dt;S.hop=Math.max(0,S.hop-dt*6);const cw=100/9;for(let r=S.row-2;r<S.row+14;r++){const L=this.lane(S,r);for(const car of L.cars){car.x+=L.sp*dt;if(car.x>110)car.x-=130;if(car.x<-20-car.w)car.x+=130}}
+    const L=this.lane(S,S.row),px=S.col*cw+cw/2;if(L.road)for(const car of L.cars){if(px>car.x-1&&px<car.x+car.w+1){S.over=true;try{gnFx('thunk');gnImpact('heavy')}catch(_){}arcPop(S,'SPLAT!',px,S.H*.6,'#FF5A5A',true)}}
+    if(S.idle>6){S.over=true;arcPop(S,'TOO SLOW!',50,S.H*.4,'#FFD60A',true)}S.cam+=(S.row-S.cam)*Math.min(1,dt*6)},
+  draw(c,S){const H=S.H,cw=100/9,LH=11,base=H*.72;for(let r=Math.floor(S.cam)-4;r<S.cam+H/LH;r++){const L=this.lane(S,r),y=base-(r-S.cam)*LH;if(y<-LH||y>H+LH)continue;
+      c.fillStyle=L.road?'#4A4F5C':(r%2?'#7BD36B':'#6CC75C');c.fillRect(0,y-LH,100,LH);if(L.road){c.fillStyle='rgba(255,255,255,.35)';for(let x=2;x<100;x+=12)c.fillRect(x,y-LH/2-.3,6,.6)}
+      for(const tcol of L.trees){c.fillStyle='#2E7D32';c.beginPath();c.arc(tcol*cw+cw/2,y-LH/2,cw*.4,0,7);c.fill()}
+      for(const car of L.cars){c.fillStyle=car.col;c.fillRect(car.x,y-LH+2,car.w,LH-4);c.fillStyle='rgba(0,0,0,.3)';c.fillRect(car.x+(L.sp>0?car.w-3:1),y-LH+3,2,LH-6)}}
+    const y=base-(S.row-S.cam)*LH;arcMe(c,S.col*cw+cw/2,y-2-Math.sin(S.hop*Math.PI)*3,8,S.over?'shocked':'happy');
+    if(S.row<2)arcTxt(c,'TAP TO HOP',50,H*.2,4,'#fff')}
+});
+
+/* ---- Piano Tiles ---- */
+const PT_SONG=[0,0,4,4,5,5,4,3,3,2,2,1,1,0,4,4,3,3,2,2,1,4,4,3,3,2,2,1,0,0,4,4,5,5,4,3,3,2,2,1,1,0];/* an original-ish nursery tune, as scale steps */
+arcDefine('piano',{title:'Piano Tiles',blurb:'Tap the black tiles in order. Don’t touch the white.',c1:'#2A2F42',c2:'#0D0F18',
+  how:'Black tiles slide down four lanes. Tap each one before it reaches the bottom. Each tap plays the next note. It speeds up.',
+  rules:['Most tiles wins','Tap the black tiles from the bottom up.','Miss one or tap a white space and the song ends.','It keeps getting faster.'],
+  icon:arcIco('#1E2233','<rect x="6" y="6" width="6" height="26" fill="#fff"/><rect x="13" y="6" width="6" height="26" fill="#fff"/><rect x="20" y="6" width="6" height="26" fill="#fff"/><rect x="27" y="6" width="5" height="26" fill="#fff"/><rect x="13" y="8" width="6" height="11" fill="#1E2233"/><rect x="27" y="18" width="5" height="11" fill="#1E2233"/>'),
+  init(S){S.TH=S.H/4.2;S.rows=[];for(let i=0;i<40;i++)S.rows.push(Math.floor(S.rnd()*4));S.y=0;S.sp=S.H*.6;S.next=0;S.started=false;S.hit={}},
+  hud:S=>'tiles',
+  down(S,p){const lane=Math.floor(p.x/25),i=S.next,ty=S.H-S.TH*(i+1)+S.y-S.TH*1.2;if(p.y>=ty&&p.y<=ty+S.TH&&lane===S.rows[i%S.rows.length]){S.hit[i]=1;S.next++;S.score++;S.started=true;const n=PT_SONG[(i)%PT_SONG.length];try{gnFx('note',{pitch:Math.pow(2,[0,2,4,5,7,9,11][n]/12)})}catch(_){}
+      if(S.next>=S.rows.length-6)for(let k=0;k<20;k++)S.rows.push(Math.floor(S.rnd()*4))}
+    else{S.over=true;S.miss={lane,y:p.y};try{gnFx('clank');gnImpact('light')}catch(_){}}},
+  step(S,dt){if(!S.started)return;S.sp=Math.min(S.H*2.4,S.sp+dt*S.H*.04);S.y+=S.sp*dt;const ty=S.H-S.TH*(S.next+1)+S.y-S.TH*1.2;if(ty>S.H){S.over=true;try{gnFx('clank')}catch(_){}}},
+  draw(c,S){const H=S.H,TH=S.TH;c.fillStyle='#fff';c.fillRect(0,0,100,H);c.strokeStyle='#E3E5EC';c.lineWidth=.3;for(let x=25;x<100;x+=25){c.beginPath();c.moveTo(x,0);c.lineTo(x,H);c.stroke()}
+    for(let i=Math.max(0,S.next-2);i<S.next+8;i++){const y=H-TH*(i+1)+S.y-TH*1.2;if(y>H||y+TH<0)continue;const l=S.rows[i%S.rows.length];c.fillStyle=S.hit[i]?'rgba(30,34,51,.15)':'#1E2233';c.fillRect(l*25+.3,y+.3,24.4,TH-.6);if(i===S.next&&!S.started)arcTxt(c,'START',l*25+12.5,y+TH/2,3.4,'#fff')}
+    if(S.miss){c.fillStyle='rgba(255,59,48,.6)';c.fillRect(S.miss.lane*25,0,25,H)}arcTxt(c,String(S.score),50,18,10,'#FF2D87')}
+});
+
+/* ---- Flick Kick ---- */
+arcDefine('flick',{title:'Flick Kick',blurb:'Flick the ball past a moving goalie. 10 kicks.',c1:'#2BB673',c2:'#166534',
+  how:'Swipe up from the ball to shoot. Curve your swipe to bend it. Corners score more. 10 kicks.',
+  rules:['Most points in 10 kicks wins','Swipe up from the ball toward the goal.','Swipe harder for a faster shot; curve the swipe to bend it.','Goals are 10, top corners 30. The goalie gets quicker.'],
+  icon:arcIco('#2BB673','<rect x="6" y="7" width="26" height="13" fill="none" stroke="#fff" stroke-width="1.6"/><path d="M6 7l26 13M32 7L6 20" stroke="rgba(255,255,255,.3)" stroke-width=".6"/><circle cx="19" cy="29" r="4.2" fill="#fff"/><path d="M19 25l2 2.4-2 2.4-2-2.4z" fill="#1E2233"/>'),
+  init(S){S.kick=0;S.ball=null;S.gk={x:50,dir:1};S.res=[]},
+  hud:S=>`kick ${Math.min(10,S.kick+1)} of 10`,
+  down(S,p){if(!S.ball)S.sw=[p]},move(S,p){if(S.sw)S.sw.push(p)},
+  up(S,p){const w=S.sw;S.sw=null;if(!w||S.ball||w.length<2)return;const a=w[0],b=w[w.length-1];if(a.y-b.y<6)return;const mid=w[Math.floor(w.length/2)],curve=((mid.x-(a.x+b.x)/2))*.9;
+    S.ball={x:50,y:S.H-20,tx:50+(b.x-a.x)*1.6,ty:S.H*.2-(Math.min(1,(a.y-b.y)/50)-.5)*10,t:0,curve,dur:Math.max(.45,.9-(a.y-b.y)/120)};try{gnFx('thunk')}catch(_){}},
+  step(S,dt){const g=S.gk,spd=18+S.kick*4;g.x+=g.dir*spd*dt;if(g.x>70)g.dir=-1;if(g.x<30)g.dir=1;const B=S.ball;if(!B)return;B.t+=dt/B.dur;
+    if(B.t>=1&&!B.done){B.done=1;const gx=B.tx,gy=B.ty,top=S.H*.12,goalL=22,goalR=78,inGoal=gx>goalL&&gx<goalR&&gy>top&&gy<S.H*.32,saved=inGoal&&Math.abs(gx-g.x)<9;
+      let pts=0,txt='MISS';if(saved){txt='SAVED!';try{gnFx('clack')}catch(_){}}else if(inGoal){const corner=(gx<goalL+10||gx>goalR-10)&&gy<top+6;pts=corner?30:10;txt=corner?'TOP BINS! +30':'GOAL! +10';try{gnFx('swish');gnImpact(corner?'win':'light')}catch(_){}}
+      S.score+=pts;S.res.push(pts>0);arcPop(S,txt,50,S.H*.45,pts?'#FFD60A':'#fff',true);setTimeout(()=>{S.ball=null;S.kick++;if(S.kick>=10)S.over=true},700)}},
+  draw(c,S){const H=S.H;arcBg(c,H,'#7FD6FF','#3BAE5C');c.fillStyle='#3BAE5C';c.fillRect(0,H*.34,100,H);for(let i=0;i<8;i++){c.fillStyle=i%2?'#36A355':'#3BAE5C';c.fillRect(0,H*.34+i*(H*.66/8),100,H*.66/8)}
+    const top=H*.12,bot=H*.34;c.strokeStyle='#fff';c.lineWidth=1.2;c.strokeRect(22,top,56,bot-top);c.strokeStyle='rgba(255,255,255,.35)';c.lineWidth=.3;for(let x=24;x<78;x+=3){c.beginPath();c.moveTo(x,top);c.lineTo(x,bot);c.stroke()}for(let y=top+2;y<bot;y+=3){c.beginPath();c.moveTo(22,y);c.lineTo(78,y);c.stroke()}
+    /* goalie */c.fillStyle='#FF9F1C';c.fillRect(S.gk.x-5,bot-12,10,12);c.fillStyle='#FFE0B8';c.beginPath();c.arc(S.gk.x,bot-14,3,0,7);c.fill();c.fillStyle='#FF9F1C';c.fillRect(S.gk.x-9,bot-11,4,2);c.fillRect(S.gk.x+5,bot-11,4,2);
+    /* ball */const B=S.ball;let x=50,y=H-20,r=4.2;if(B){const t=Math.min(1,B.t),e=1-Math.pow(1-t,2);x=50+(B.tx-50)*e+Math.sin(t*Math.PI)*B.curve;y=(H-20)+(B.ty-(H-20))*e;r=4.2-2.2*e}
+    c.fillStyle='rgba(0,0,0,.2)';c.beginPath();c.ellipse(x,y+r,r,r*.35,0,0,7);c.fill();c.fillStyle='#fff';c.beginPath();c.arc(x,y,r,0,7);c.fill();c.fillStyle='#1E2233';c.beginPath();c.arc(x,y,r*.35,0,7);c.fill();
+    if(S.sw&&S.sw.length>1){c.strokeStyle='rgba(255,255,255,.6)';c.lineWidth=1;c.beginPath();S.sw.forEach((q,i)=>i?c.lineTo(q.x,q.y):c.moveTo(q.x,q.y));c.stroke()}
+    S.res.forEach((ok,i)=>{c.fillStyle=ok?'#FFD60A':'rgba(255,255,255,.35)';c.beginPath();c.arc(14+i*8,H-6,2.2,0,7);c.fill()});if(!S.kick&&!S.ball)arcTxt(c,'SWIPE UP TO SHOOT',50,H*.6,3.6,'#fff')}
+});
+
+/* ---- Skee Ball ---- */
+arcDefine('skee',{title:'Skee Ball',blurb:'Roll up the ramp into the rings. 9 balls.',c1:'#B5179E',c2:'#560BAD',
+  how:'Swipe up to roll. A gentle swipe lands low, a strong one goes high. The small top corners are worth 100.',
+  rules:['Highest total in 9 balls wins','Swipe up to roll the ball up the ramp.','Swipe strength decides how far it goes; angle aims it.','Rings: 10, 20, 30, 40, 50 and the 100 cups in the top corners.'],
+  icon:arcIco('#7B2CBF','<circle cx="19" cy="15" r="9" fill="none" stroke="#FFD60A" stroke-width="1.6"/><circle cx="19" cy="15" r="5" fill="none" stroke="#FF7DB8" stroke-width="1.6"/><circle cx="19" cy="15" r="1.8" fill="#fff"/><circle cx="8" cy="7" r="2" fill="#FF3B30"/><circle cx="30" cy="7" r="2" fill="#FF3B30"/><circle cx="19" cy="31" r="3.4" fill="#C9A35A"/>'),
+  init(S){S.n=0;S.ball=null;S.marks=[]},
+  hud:S=>`ball ${Math.min(9,S.n+1)} of 9`,
+  down(S,p){if(!S.ball)S.sw=[{...p,t:performance.now()}]},move(S,p){if(S.sw)S.sw.push({...p,t:performance.now()})},
+  up(S,p){const w=S.sw;S.sw=null;if(!w||S.ball||w.length<2)return;const a=w[Math.max(0,w.length-6)],b=w[w.length-1],dt=Math.max(16,b.t-a.t),v=(a.y-b.y)/dt*16;if(v<1)return;
+    const pw=Math.max(.15,Math.min(1.05,v/9)),ang=(b.x-a.x)/Math.max(4,a.y-b.y);S.ball={x:50,y:S.H-14,t:0,pw,ang};try{gnFx('whoosh',{vol:.5})}catch(_){}},
+  rings(S){const cx=50,cy=S.H*.3;return {cx,cy,rs:[[5,50],[10,40],[15,30],[20,20],[26,10]],cups:[[16,S.H*.12],[84,S.H*.12]]}},
+  step(S,dt){const B=S.ball;if(!B||B.done)return;B.t+=dt/.9;if(B.t>=1){B.done=1;const R=this.rings(S),tx=50+B.ang*60,ty=S.H-14-(S.H*.78)*Math.min(1,B.pw);let pts=0;
+      for(const [x,y] of R.cups)if(Math.hypot(tx-x,ty-y)<5)pts=100;if(!pts){const d=Math.hypot(tx-R.cx,ty-R.cy);for(const [r,v] of R.rs)if(d<r){pts=v;break}if(!pts&&ty<S.H*.62&&tx>14&&tx<86)pts=10}
+      S.score+=pts;S.marks.push([tx,ty,pts]);arcPop(S,pts?'+'+pts:'GUTTER',tx,ty-6,pts>=50?'#FFD60A':'#fff',pts>=50);try{pts?gnFx('clunk'):gnFx('thunk');if(pts>=50)gnImpact(pts>=100?'win':'light')}catch(_){}
+      setTimeout(()=>{S.ball=null;S.n++;if(S.n>=9)S.over=true},600)}},
+  draw(c,S){const H=S.H,R=this.rings(S);arcBg(c,H,'#3A0CA3','#7209B7');c.fillStyle='#C9A35A';c.beginPath();c.moveTo(30,H);c.lineTo(70,H);c.lineTo(62,H*.62);c.lineTo(38,H*.62);c.fill();c.fillStyle='rgba(0,0,0,.15)';for(let y=H*.65;y<H;y+=4)c.fillRect(34,y,32,.5);
+    c.fillStyle='#240046';c.fillRect(8,H*.04,84,H*.56);for(const [r,v] of R.rs.slice().reverse()){c.strokeStyle=['#FFD60A','#FF7DB8','#7FE3FF','#B8F5C8','#fff'][R.rs.length-1-R.rs.findIndex(q=>q[1]===v)]||'#fff';c.lineWidth=1.3;c.beginPath();c.arc(R.cx,R.cy,r,0,7);c.stroke();c.font=mgFont(2.4,900);c.fillStyle='#fff';c.textAlign='center';c.fillText(String(v),R.cx,R.cy-r+3)}
+    for(const [x,y] of R.cups){c.fillStyle='#FF3B30';c.beginPath();c.arc(x,y,5,0,7);c.fill();c.fillStyle='#fff';c.font=mgFont(2.6,900);c.fillText('100',x,y+1)}
+    for(const [x,y] of S.marks){c.fillStyle='rgba(255,255,255,.25)';c.beginPath();c.arc(x,y,1.5,0,7);c.fill()}
+    const B=S.ball;let x=50,y=H-14,r=4;if(B){const t=Math.min(1,B.t),e=1-Math.pow(1-t,2);x=50+B.ang*60*e;y=H-14-(H*.78)*Math.min(1,B.pw)*e-Math.sin(t*Math.PI)*6;r=4-1.6*e}
+    const gr=c.createRadialGradient(x-r*.3,y-r*.4,r*.2,x,y,r);gr.addColorStop(0,'#F5E1B8');gr.addColorStop(1,'#9C7A3C');c.fillStyle=gr;c.beginPath();c.arc(x,y,r,0,7);c.fill();if(!S.n&&!B)arcTxt(c,'SWIPE UP TO ROLL',50,H*.8,3.4,'#fff')}
+});
+
+/* ---- Tilt Maze ---- */
+arcDefine('tilt',{title:'Tilt Maze',blurb:'Roll the ball to the hole. Grab stars on the way.',c1:'#C68B59',c2:'#7F4F24',
+  how:'Tilt your phone (or drag your finger toward where you want the ball to go). Grab stars, then drop into the hole. Faster is better.',
+  rules:['Higher score wins','Tilt the phone, or drag toward where the ball should roll.','Stars are 50 each. Reaching the hole scores 500 minus time.','Three mazes, each a little harder.'],
+  icon:arcIco('#9C6644','<rect x="5" y="5" width="28" height="28" rx="2" fill="#E6CCB2"/><path d="M5 14h18M15 23h18M23 5v9" stroke="#7F4F24" stroke-width="2.4"/><circle cx="10" cy="28" r="3" fill="#C0C0C8"/><circle cx="28" cy="10" r="3" fill="#1E2233"/>'),
+  init(S){S.lv=0;this.maze(S);if(window.DeviceOrientationEvent&&!window.__tiltOn){window.__tiltOn=1;window.addEventListener('deviceorientation',e=>{const T=ARS&&ARS.S;if(!T||!T.mz||T.drag||e.beta==null)return;if(T.b0==null)T.b0=e.beta;T.tilted=1;T.gx=Math.max(-1,Math.min(1,(e.gamma||0)/22));T.gy=Math.max(-1,Math.min(1,(e.beta-T.b0)/22))})}},
+  maze(S){const C=7,R=Math.max(9,Math.floor(C*(S.H-24)/100)),cs=100/C,cells=[],rnd=S.rnd;for(let r=0;r<R;r++)for(let c=0;c<C;c++)cells.push({w:[1,1,1,1],v:0});
+    const st=[[0,R-1]];cells[(R-1)*C].v=1;while(st.length){const [c,r]=st[st.length-1],nb=[[0,-1,0,2],[1,0,1,3],[0,1,2,0],[-1,0,3,1]].filter(([dc,dr])=>{const nc=c+dc,nr=r+dr;return nc>=0&&nr>=0&&nc<C&&nr<R&&!cells[nr*C+nc].v});
+      if(!nb.length){st.pop();continue}const [dc,dr,a,b]=nb[Math.floor(rnd()*nb.length)];cells[r*C+c].w[a]=0;cells[(r+dr)*C+c+dc].w[b]=0;cells[(r+dr)*C+c+dc].v=1;st.push([c+dc,r+dr])}
+    /* knock out a few extra walls on later levels so there are loops */for(let k=0;k<6-S.lv*2;k++){const i=Math.floor(rnd()*cells.length),d=Math.floor(rnd()*4);const c=i%C,r=Math.floor(i/C),nc=c+[0,1,0,-1][d],nr=r+[-1,0,1,0][d];if(nc>=0&&nr>=0&&nc<C&&nr<R){cells[i].w[d]=0;cells[nr*C+nc].w[(d+2)%4]=0}}
+    S.mz={C,R,cs,cells,oy:16};S.b={x:cs/2,y:16+(R-1)*cs+cs/2,vx:0,vy:0};S.hole=[C-1,0];S.stars=[];for(let k=0;k<4;k++)S.stars.push([Math.floor(rnd()*C),Math.floor(rnd()*R)]);S.lt=0;S.gx=0;S.gy=0},
+  hud:S=>`maze ${S.lv+1} of 3`,
+  down(S,p){S.drag=p;try{if(!window.__tiltAsk&&window.DeviceOrientationEvent&&DeviceOrientationEvent.requestPermission){window.__tiltAsk=1;DeviceOrientationEvent.requestPermission().catch(()=>{})}}catch(_){}},move(S,p){S.drag=p},up(S){S.drag=null;if(!S.tilted){S.gx=0;S.gy=0}},
+  step(S,dt){const M=S.mz,b=S.b,cs=M.cs,r=cs*.28;S.lt+=dt;if(S.drag){S.gx=Math.max(-1,Math.min(1,(S.drag.x-b.x)/20));S.gy=Math.max(-1,Math.min(1,(S.drag.y-b.y)/20))}
+    b.vx+=S.gx*110*dt;b.vy+=S.gy*110*dt;b.vx*=.985;b.vy*=.985;const n=4;for(let k=0;k<n;k++){b.x+=b.vx*dt/n;b.y+=b.vy*dt/n;
+      const c=Math.max(0,Math.min(M.C-1,Math.floor(b.x/cs))),rr=Math.max(0,Math.min(M.R-1,Math.floor((b.y-M.oy)/cs))),w=M.cells[rr*M.C+c].w,x0=c*cs,y0=M.oy+rr*cs;
+      if(w[0]&&b.y-r<y0){b.y=y0+r;b.vy=Math.abs(b.vy)*.4}if(w[2]&&b.y+r>y0+cs){b.y=y0+cs-r;b.vy=-Math.abs(b.vy)*.4}if(w[3]&&b.x-r<x0){b.x=x0+r;b.vx=Math.abs(b.vx)*.4}if(w[1]&&b.x+r>x0+cs){b.x=x0+cs-r;b.vx=-Math.abs(b.vx)*.4}}
+    S.stars=S.stars.filter(([sc,sr])=>{const hit=Math.hypot(b.x-(sc*cs+cs/2),b.y-(M.oy+sr*cs+cs/2))<cs*.4;if(hit){S.score+=50;arcPop(S,'+50',b.x,b.y-6,'#FFD60A');try{gnFx('pop')}catch(_){}}return !hit});
+    const [hc,hr]=S.hole;if(Math.hypot(b.x-(hc*cs+cs/2),b.y-(M.oy+hr*cs+cs/2))<cs*.3){const pts=Math.max(50,500-Math.round(S.lt*10));S.score+=pts;arcPop(S,'+'+pts,50,S.H*.4,'#FFD60A',true);try{gnFx('clunk');gnImpact('light')}catch(_){}S.lv++;if(S.lv>=3)S.over=true;else this.maze(S)}
+    if(S.lt>60){S.over=true;arcPop(S,'TIME!',50,S.H*.4,'#fff',true)}},
+  draw(c,S){const M=S.mz,cs=M.cs;c.fillStyle='#7F4F24';c.fillRect(0,0,100,S.H);c.fillStyle='#E6CCB2';c.fillRect(0,M.oy,100,M.R*cs);c.strokeStyle='#7F4F24';c.lineWidth=1.6;c.lineCap='round';
+    M.cells.forEach((q,i)=>{const x=(i%M.C)*cs,y=M.oy+Math.floor(i/M.C)*cs;c.beginPath();if(q.w[0]){c.moveTo(x,y);c.lineTo(x+cs,y)}if(q.w[1]){c.moveTo(x+cs,y);c.lineTo(x+cs,y+cs)}if(q.w[2]){c.moveTo(x,y+cs);c.lineTo(x+cs,y+cs)}if(q.w[3]){c.moveTo(x,y);c.lineTo(x,y+cs)}c.stroke()});
+    const [hc,hr]=S.hole;c.fillStyle='#1E2233';c.beginPath();c.arc(hc*cs+cs/2,M.oy+hr*cs+cs/2,cs*.32,0,7);c.fill();for(const [sc,sr] of S.stars)arcTxt(c,'★',sc*cs+cs/2,M.oy+sr*cs+cs/2,cs*.55,'#FFD60A');
+    const b=S.b,r=cs*.28,g=c.createRadialGradient(b.x-r*.3,b.y-r*.4,r*.1,b.x,b.y,r);g.addColorStop(0,'#fff');g.addColorStop(1,'#8A8FA3');c.fillStyle=g;c.beginPath();c.arc(b.x,b.y,r,0,7);c.fill();arcTxt(c,`${Math.max(0,60-Math.floor(S.lt))}s`,92,8,3.4,'#fff')}
+});
 
 /* ============ SLIDES & LADDERS ============ */
 const SL_JUMP={1:38,4:14,9:31,21:42,28:84,36:44,51:67,71:91,80:100,16:6,47:26,49:11,56:53,62:19,64:60,87:24,93:73,95:75,98:78};
@@ -12549,14 +12721,14 @@ Object.assign(ICON,{
   hockey:`<svg class="ico" viewBox="0 0 38 38" aria-hidden="true"><rect x="1" y="1" width="36" height="36" rx="9" fill="#1F6BFF"/><rect x="5" y="5" width="28" height="28" rx="4" fill="#EAF4FF"/><path d="M5 19h28" stroke="#E5322B" stroke-width="1"/><rect x="14" y="4" width="10" height="2.4" fill="#0B1B33"/><rect x="14" y="31.6" width="10" height="2.4" fill="#0B1B33"/><circle cx="19" cy="25" r="4.4" fill="#FF2D87"/><circle cx="19" cy="25" r="2.4" fill="#FF7DB8"/><circle cx="22" cy="14" r="2.6" fill="#1E2233"/></svg>`,
   xword:`<svg class="ico" viewBox="0 0 38 38" aria-hidden="true"><rect x="1" y="1" width="36" height="36" rx="9" fill="#3D4BD8"/><g fill="#fff"><rect x="7" y="7" width="7" height="7" rx="1.2"/><rect x="15.5" y="7" width="7" height="7" rx="1.2"/><rect x="24" y="7" width="7" height="7" rx="1.2"/><rect x="15.5" y="15.5" width="7" height="7" rx="1.2"/><rect x="15.5" y="24" width="7" height="7" rx="1.2"/></g><text x="10.5" y="12.6" font-size="5.5" font-weight="900" fill="#E0156F" text-anchor="middle" font-family="sans-serif">L</text><text x="19" y="12.6" font-size="5.5" font-weight="900" fill="#1550D8" text-anchor="middle" font-family="sans-serif">O</text></svg>`
 });
-const CATS=[['Classic board games',['clue','race','life','trail','slides','battle','who','mtrain']],['Party & skill',['dg','bb','pong','hockey','rps','bubble','tower','ice','surgeon','bingo']],['Cards',['fish']],['Sports',['pool','golf','bowl','hoops','cup','archery']],['Words',['ws','xword','hang','wordle']],['Quick strategy',['ttt','uttt','dots','c4']]];
+const CATS=[['Classic board games',['clue','race','life','trail','slides','battle','who','mtrain']],['Party & skill',['dg','bb','pong','hockey','rps','bubble','tower','ice','surgeon','bingo']],['Arcade',['stack','snake','hopper','roadhop','piano','flick','skee','tilt']],['Cards',['fish']],['Sports',['pool','golf','bowl','hoops','cup','archery']],['Words',['ws','xword','hang','wordle']],['Quick strategy',['ttt','uttt','dots','c4']]];
 const ORDER=CATS.flatMap(c=>c[1]);
 const titleOf=k=>esc(G[k].title);
 
 /* ---------- home ---------- */
 const CAT_TABS=[['all','All'],['board','Board'],['party','Party'],['sports','Sports'],['words','Words'],['quick','Quick']];
 const catOf=n=>(CATS.find(c=>c[0]===n)||[0,[]])[1];
-const CAT_KEYS={holiday:catOf('Holiday'),board:catOf('Classic board games'),party:[...catOf('Party & skill'),...catOf('Cards')],sports:catOf('Sports'),words:catOf('Words'),quick:catOf('Quick strategy')};
+const CAT_KEYS={holiday:catOf('Holiday'),board:catOf('Classic board games'),party:[...catOf('Party & skill'),...catOf('Arcade'),...catOf('Cards')],sports:catOf('Sports'),words:catOf('Words'),quick:catOf('Quick strategy')};
 let catSel='all';try{catSel=localStorage.getItem('gn2-cat')||'all'}catch(e){}
 if(!CAT_TABS.some(c=>c[0]===catSel))catSel='all';
 /* per-phone "seen" map: game id -> updatedAt last seen here; anything newer (from the other phone) is New */
@@ -12671,7 +12843,7 @@ function boardZoom(g){const sel=BZ_SEL[g.type];if(!sel)return;const el=document.
   box.addEventListener('dblclick',e=>{if(e.target.closest('.bzbtns'))return;const r=box.getBoundingClientRect();if(z.s>1.05){z.s=1;z.x=0;z.y=0}else{z.s=2;z.x=-(e.clientX-r.left-r.width/2);z.y=-(e.clientY-r.top-r.height/2)}bzClamp(z,r.width,r.height);bzSave(g.id);apply()});
   apply()}
 /* ---------- real-app shell (Nov 1): settings, splash, slide transitions, swipe back, connection banner, profile cards, achievements, holiday looks ---------- */
-const GN_VER='100';
+const GN_VER='101';
 /* --- achievements, worked out from finished games (nothing extra stored) --- */
 const ACH=[
  ['first','🏆','First win','Win any game',(w,all,p)=>w.length>=1],
