@@ -25,6 +25,49 @@ document.addEventListener('touchmove',e=>{if(!document.body.classList.contains('
 <style>
 
 /* ---- characters ---- */
+.tsc.rpssc{background:linear-gradient(180deg,#14B8A6,#0E7C70)}
+.rpsst{font:800 .64rem var(--body);color:#fff;opacity:.85;margin-top:2px}
+.rpsstage{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;gap:4px;position:relative;z-index:1;padding:10px 0}
+.rpsfig{position:relative;width:min(40vw,170px);display:flex;flex-direction:column;align-items:center;gap:4px}
+.rpsfig svg{width:100%;height:auto;display:block}
+.rpsfig b{color:#fff;font:900 .9rem var(--display)}
+.rpsfig.op svg{transform:scaleX(-1)}
+.rpshand{position:absolute;top:-4%;left:50%;margin-left:-.6em;font-size:3.4rem;filter:drop-shadow(0 4px 6px rgba(0,0,0,.3))}
+.rpsfig{padding-top:3.6rem}.rpsfig.op .rpshand{transform:scaleX(-1)}
+.rpshand.shoot{animation:rpsshoot .9s cubic-bezier(.3,.7,.3,1) both}
+@keyframes rpsshoot{0%,40%{transform:translateY(0) rotate(-20deg)}12%,32%{transform:translateY(-18px) rotate(-20deg)}55%{transform:scale(1.4)}100%{transform:scale(1)}}
+.rpsfig.op .rpshand.shoot{animation-name:rpsshoot2}@keyframes rpsshoot2{0%,40%{transform:scaleX(-1) translateY(0)}12%,32%{transform:scaleX(-1) translateY(-18px)}55%{transform:scaleX(-1) scale(1.4)}100%{transform:scaleX(-1)}}
+.rpsvs{font:900 1.4rem var(--display);color:#FFD60A;text-shadow:0 2px 0 rgba(0,0,0,.25)}
+.rpsbtns{flex:none;display:grid;grid-template-columns:repeat(3,1fr);gap:10px;position:relative;z-index:1}
+.rpsb{border:0;border-radius:20px;background:#fff;padding:12px 4px 10px;display:flex;flex-direction:column;align-items:center;gap:2px;box-shadow:0 5px 0 rgba(0,0,0,.18)}
+.rpsb span{font-size:2.6rem;line-height:1.1}.rpsb b{font:900 .85rem var(--body);color:#1E2233}
+.rpsb:active{transform:translateY(3px);box-shadow:0 2px 0 rgba(0,0,0,.18)}
+.rpslock{flex:none;background:rgba(255,255,255,.95);border-radius:18px;padding:12px;text-align:center;color:#1E2233;font-weight:800;display:flex;flex-direction:column;gap:2px;position:relative;z-index:1}
+.rpslock b{font-family:var(--display);font-size:1.1rem}.rpslock span{font-size:.8rem;color:#6B7189}
+.ahstage{position:relative}.ahwrap{border-radius:0;box-shadow:none;background:#0E2A4A;overflow:hidden}.ahwrap canvas{display:block;touch-action:none}.ahstage .cpdone{z-index:6}
+.tsc.arcsc{background:linear-gradient(180deg,var(--ac1,#3D7BFF),var(--ac2,#1E3FA8))}
+.arccard{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;background:#fff;border-radius:22px;margin:14px 4px 6px;padding:18px 16px;text-align:center;position:relative;z-index:1;box-shadow:0 8px 20px rgba(0,0,0,.25)}
+.arccard h3{margin:0;font:900 1.5rem var(--display);color:#1E2233}.arccard p{margin:0;color:#4A5068;font-weight:700;font-size:.92rem;max-width:300px}
+.arcico .ico{width:64px;height:64px}
+.arcsc2{display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%;max-width:300px}
+.arcsc2>div{background:#F2F4F8;border-radius:14px;padding:8px;display:flex;flex-direction:column;gap:2px}.arcsc2>div.w{background:#FFF3B0;box-shadow:inset 0 0 0 2px #FFD60A}
+.arcsc2 span{font:800 .72rem var(--body);color:#6B7189;text-transform:uppercase;letter-spacing:.06em}.arcsc2 b{font:900 1.4rem var(--display);color:#1E2233}.arcsc2 i{font:700 .9rem var(--body);color:#9AA0B4}
+.arcplay{min-width:200px;font-size:1.1rem}
+.arcstage{position:relative}.arcwrap{border-radius:0;box-shadow:none;overflow:hidden;background:#111}.arcwrap canvas{display:block;touch-action:none}
+.archud{position:absolute;top:22px;left:50%;transform:translateX(-50%);background:rgba(16,24,40,.75);color:#fff;font:900 1rem var(--display);padding:6px 14px;border-radius:99px;z-index:3;pointer-events:none;white-space:nowrap}
+html.dark .arccard{background:#1E2233}html.dark .arccard h3{color:#fff}html.dark .arcsc2>div{background:#2A2F42}html.dark .arcsc2 b{color:#fff}
+.tsc.xwsc{background:linear-gradient(180deg,#5B6CFF,#2F3BB0)}
+.xwgrid{display:grid;grid-template-columns:repeat(var(--c),1fr);gap:2px;width:min(100%,calc(var(--c) * 38px),calc(42vh * var(--c) / var(--r)));align-self:center;margin:10px 0 6px;position:relative;z-index:1}
+.xwb{aspect-ratio:1}
+.xwc{position:relative;aspect-ratio:1;border:0;border-radius:5px;background:#fff;color:#1E2233;font:900 clamp(.8rem,4.6vw,1.25rem) var(--display);padding:0;display:grid;place-items:center;box-shadow:0 2px 0 rgba(0,0,0,.15)}
+.xwc small{position:absolute;left:2px;top:0;font:800 .5rem var(--body);color:#6B7189}
+.xwc.on{background:#DCE5FF}.xwc.at{background:#FFD60A}
+.xwc.p1{color:#E0156F}.xwc.p2{color:#1550D8}.xwc.bad{background:#FFD3D3;color:#C00!important}.xwc.ok{background:#E2F8EA}
+.xwclue{position:relative;z-index:1;background:rgba(255,255,255,.95);border-radius:14px;padding:8px 12px;font-weight:700;color:#1E2233;display:flex;gap:8px;align-items:baseline}.xwclue b{color:#3D4BD8;flex:none}.xwclue.dim{color:#6B7189;justify-content:center}
+.xwall{position:relative;z-index:1;margin:6px 0;color:#fff}.xwall summary{font-weight:800;cursor:pointer;padding:4px 2px}.xwall>div{background:rgba(255,255,255,.95);border-radius:14px;padding:8px;max-height:200px;overflow:auto}.xwall h4{margin:4px 0;color:#3D4BD8}
+.xwli{display:block;width:100%;text-align:left;border:0;background:none;padding:5px 4px;color:#1E2233;font:600 .85rem var(--body);border-radius:8px}.xwli.on{background:#DCE5FF}.xwli.fill{color:#9AA0B4;text-decoration:line-through}
+.xwkb{margin-top:auto;position:relative;z-index:1}.wgw.xwkb{background:none;box-shadow:none;padding:0;margin-inline:0}.xwkb .key.wide{font-size:.72rem;padding:0 4px}
+
 .gnflash{position:fixed;z-index:9990;pointer-events:none;background:rgba(255,255,255,.55);animation:gnfl .24s ease-out forwards;border-radius:0}
 .gnflash.gold{background:rgba(255,214,10,.4)}
 @keyframes gnfl{to{opacity:0}}
@@ -4383,6 +4426,9 @@ const doneRow=(g,label='Play again')=>`<div class="row"><button class="btn" data
 const optChips=(k,f,list,val,num)=>`<div class="opts">${list.map(([v,l])=>`<button class="opt" data-act="opt" data-k="${k}" data-f="${f}" data-v="${v}" ${num?'data-num="1"':''} aria-pressed="${String(val)===String(v)}">${l}</button>`).join('')}</div>`;
 /* ---- How to play: one short card per game, opened from the ? in the game bar (or the game menu) ---- */
 const RULES={
+ rps:['First to 3 wins','Pick rock, paper or scissors. They can’t see your pick.','When you’ve both picked, your characters throw.','Rock beats scissors, scissors beats paper, paper beats rock.'],
+ hockey:['First to 7 goals','A live game: open it together.','Drag to move your mallet on your half.','Smash the puck into their goal. Hit it moving for a harder shot.'],
+ xword:['Solve it together','Tap a square to pick a word, tap again to switch across or down.','Type letters with the keyboard. Your letters show in your color.','Tap CHECK to see any wrong letters in red.','It finishes itself when every square is right.'],
  uttt:['Win three little boards in a row','Each little board is its own tic tac toe.','The square you pick sends them to that same board (top right square, top right board).','Play in the glowing board. If it is finished, play anywhere.','Win three little boards in a line to win the game.'],
  bingo:['Shout BINGO first','You each get your own card.','On your turn, call two balls. Called numbers on your card glow.','Tap your called numbers to mark them. Auto-daub can do it for you.','When you finish the pattern, tap BINGO! The mini card shows how close they are.'],
  pong:['First to 7 points','A live game: open it together.','Drag anywhere to slide your paddle.','Hit near the edge of the paddle to angle the ball. It speeds up every hit.','Miss it and they score. The player who lost the point serves.'],
@@ -4412,8 +4458,8 @@ const RULES={
  who:['Find their mystery person','Ask one yes or no question a turn, in chat or out loud.','Tap the faces that don’t match to flip them down.','Tap Guess when you know. A wrong guess loses.']
 };
 const OWNHELP=new Set(['clue','trail','battle']);
-const NOSHEET=new Set(['uttt','dg','ttt','c4','fish','ice','tower','surgeon','bowl','archery','race','life','trail','who']);
-const AUTORULES=new Set(['race','mtrain','who','bb','uttt','pong','dg']);
+const NOSHEET=new Set(['rps','bubble','xword','uttt','dg','ttt','c4','fish','ice','tower','surgeon','bowl','archery','race','life','trail','who']);
+const AUTORULES=new Set(['race','mtrain','who','bb','uttt','pong','dg','hockey','xword']);
 /* head-to-head record for one game type, from every finished game (cleared ones too) */
 function h2h(k){const r={p1:0,p2:0};for(const g of games){if(g.type===k&&g.status==='done'&&(g.winner==='p1'||g.winner==='p2'))r[g.winner]++}return r}
 const NORESIGN=new Set(['bb','pong']);
@@ -4444,7 +4490,7 @@ function pushSend(p,title,msg,test){const tp=PUSH.t[p];if(!tp||!pushOn())return 
 function pushTitle(g){return (G[g.type]&&G[g.type].title)||'a game'}
 /* after each render: did a game just stop being my move? then tell the other phone it's their turn (after the 3-second undo window) */
 function pushWatch(){if(!pushOn()||!me)return;const op=other(me);
-  for(const g of games){if(!g||g.archived||!G[g.type]||g.type==='bb'||g.type==='pong')continue;let mm=false;try{mm=g.status==='active'&&!!G[g.type].myMove(g)}catch(_){}
+  for(const g of games){if(!g||g.archived||!G[g.type]||g.type==='bb'||g.type==='pong'||g.type==='hockey'||g.type==='xword')continue;let mm=false;try{mm=g.status==='active'&&!!G[g.type].myMove(g)}catch(_){}
     const was=PUSH.mm[g.id];PUSH.mm[g.id]=mm;if(was===undefined)continue;
     const ended=was&&g.status==='done'&&PUSH.mm[g.id+':s']==='active';PUSH.mm[g.id+':s']=g.status;
     if((was&&!mm&&g.status==='active')||ended){clearTimeout(PUSH.q[g.id]);PUSH.q[g.id]=setTimeout(()=>{const gg=games.find(x=>x.id===g.id);if(!gg)return;let still=false;try{still=gg.status==='active'&&!!G[gg.type].myMove(gg)}catch(_){}if(still)return;
@@ -10543,6 +10589,272 @@ function dgBind(cv,g){if(cv._dg)return;cv._dg=1;let cur=null;const pt=e=>{const 
   cv.addEventListener('pointermove',e=>{if(!cur)return;const [x,y]=pt(e),n=cur.length;if(Math.abs(x-cur[n-2])+Math.abs(y-cur[n-1])<5)return;cur.push(x,y);const c=cv.getContext('2d'),k=cv.width/1000;c.lineCap='round';c.lineJoin='round';c.strokeStyle=DG_COL[cur[0]];c.lineWidth=DG_SZ[cur[1]]*k*1.6;c.beginPath();c.moveTo(cur[n-2]*k,cur[n-1]*k);c.lineTo(x*k,y*k);c.stroke()});
   const end=()=>{if(!cur)return;if(cur.length===4)cur.push(cur[2]+1,cur[3]+1);cur=null;dgSave(g);dgPaint(cv,DG.strokes,1)};cv.addEventListener('pointerup',end);cv.addEventListener('pointercancel',end)}
 
+/* ============ ROCK PAPER SCISSORS (best of 5: first to 3; both pick in secret, then the characters throw) ============ */
+const RPS_E={r:'✊',p:'✋',s:'✌️'},RPS_N={r:'Rock',p:'Paper',s:'Scissors'},RPS_BEAT={r:'s',p:'r',s:'p'};
+function rpsResolve(g){const a=g.pkp1,b=g.pkp2;if(!a||!b||g.status!=='active')return null;const w=a===b?'tie':RPS_BEAT[a]===b?'p1':'p2';
+  const sc={p1:(g.sc||{}).p1||0,p2:(g.sc||{}).p2||0};if(w!=='tie')sc[w]++;const hist=[...(g.hist||[]),{a,b,w}];const patch={hist,sc,pkp1:'',pkp2:'',rn:(g.rn||1)+1};
+  if(sc.p1>=3||sc.p2>=3){patch.status='done';patch.winner=sc.p1>=3?'p1':'p2'}return patch}
+G.rps={title:'Rock Paper Scissors',blurb:'Pick in secret, then shoot! First to 3 wins.',
+  async start(){await create(base('rps',{pkp1:'',pkp2:'',sc:{p1:0,p2:0},hist:[],rn:1}))},
+  myMove:g=>g.status==='active'&&!g['pk'+me],
+  sub:g=>`${nameOf('p1')} ${(g.sc||{}).p1||0} · ${nameOf('p2')} ${(g.sc||{}).p2||0}`,
+  view(g){const opp=other(me),sc=g.sc||{p1:0,p2:0},mine=g['pk'+me],theirs=g['pk'+opp],hist=g.hist||[],last=hist[hist.length-1];
+    const seen=ui.g.rpsSeen&&ui.g.rpsSeen.id===g.id?ui.g.rpsSeen.n:hist.length;const fresh=hist.length>seen;ui.g.rpsSeen={id:g.id,n:hist.length};if(fresh)ui.g.rpsAnim=Date.now();
+    const show=last&&(fresh||Date.now()-(ui.g.rpsAnim||0)<3600||g.status==='done'||(!mine&&!theirs));
+    const pickOf=p=>last?(p==='p1'?last.a:last.b):null;
+    const mood=p=>!show||!last?'happy':last.w==='tie'?'shocked':last.w===p?(CH.get(p).win||'cheer'):(CH.get(p).lose||'pout');
+    const fig=p=>`<div class="rpsfig ${p===me?'me':'op'}">${CH.full(p,mood(p)).replace('<svg ',`<svg class="chm-${mood(p)}" `)}${show&&last?`<span class="rpshand${fresh?' shoot':''}">${RPS_E[pickOf(p)]}</span>`:''}<b>${p===me?'You':esc(nameOf(p))}</b></div>`;
+    let cap;if(g.status==='done')cap=g.winner===me?'<span class="tcap win">YOU WON!</span>':`<span class="tcap lose">${esc(nameOf(g.winner).toUpperCase())} WON</span>`;
+    else if(!mine)cap='<span class="tcap go">PICK YOUR THROW</span>';else cap=`<span class="tcap">${theirs?'BOTH LOCKED IN':'WAITING FOR '+esc(nameOf(opp).toUpperCase())+'...'}</span>`;
+    const res=show&&last?(last.w==='tie'?`Tie! Both threw ${RPS_N[last.a]}`:`${RPS_N[last.w==='p1'?last.a:last.b]} beats ${RPS_N[last.w==='p1'?last.b:last.a]}. ${last.w===me?'Point to you!':esc(nameOf(last.w))+' gets the point'}`):`Round ${g.rn||1} · first to 3`;
+    const pips=p=>`<span class="tpips ${p}">${[0,1,2].map(i=>`<i class="${i<(sc[p]||0)?'on':''}"></i>`).join('')}</span>`;
+    const btns=g.status==='active'?(mine?`<div class="rpslock">Locked in: <b>${RPS_E[mine]} ${RPS_N[mine]}</b><span>${theirs?'Revealing…':esc(nameOf(opp))+' hasn’t picked yet'}</span></div>`
+      :`<div class="rpsbtns">${['r','p','s'].map(k=>`<button class="rpsb" data-act="rps-pick" data-k="${k}"><span>${RPS_E[k]}</span><b>${RPS_N[k]}</b></button>`).join('')}</div>`)
+      :`<div class="tfoot">${wgAgain(g,'<button class="btn" data-act="rps-again">Rematch</button>')}<button class="btn ghost" data-act="archive" data-id="${g.id}">Clear</button></div>`;
+    const theirState=g.status==='active'?`<span class="rpsst">${theirs?'✓ picked':'thinking…'}</span>`:'';
+    return `${head('Rock Paper Scissors')}<div class="tsc rpssc">
+      <div class="thud">${tttAv(me,'You','',g.status==='active'&&!mine,pips(me))}<div class="tmid">${cap}<small class="tnote">${res}</small></div>${tttAv(opp,nm(opp),'',g.status==='active'&&!theirs,pips(opp)+theirState)}</div>
+      <div class="rpsstage">${fig(me)}<span class="rpsvs">VS</span>${fig(opp)}</div>${btns}</div>`},
+  after(g){wgRmToast(g);{const sc=document.querySelector('#view .tsc.rpssc');if(sc){const vv=window.visualViewport,vh=vv?vv.height:innerHeight,top=sc.getBoundingClientRect().top,pb=parseFloat(getComputedStyle(document.documentElement).paddingBottom)||0;sc.style.minHeight=Math.max(300,Math.floor(vh-top-pb))+'px'}}
+    /* both picks are in: either phone writes the same result (identical patch, so no clash) */
+    const p=rpsResolve(g);if(p&&!ui.g.rpsBusy){ui.g.rpsBusy=1;store.update(g.id,p).finally(()=>{ui.g.rpsBusy=0})}
+    if(document.querySelector('.rpshand.shoot')){try{gnFx('whoosh',{vol:.5});setTimeout(()=>{gnFx('clack');const h=(g.hist||[]).slice(-1)[0];if(h&&h.w===me)gnImpact('light')},420)}catch(_){}}},
+  async act(a,t,g){if(a==='rps-start'||a==='rps-again'){if(g&&a==='rps-again'){await wgRematch(g,()=>this.start());return}return this.start()}
+    if(!g||g.status!=='active')return;
+    if(a==='rps-pick'&&!g['pk'+me]){try{gnFx('pop')}catch(_){}await store.update(g.id,{['pk'+me]:t.dataset.k})}}
+};
+
+/* ============ AIR HOCKEY (live). Table 100 x 160 in p1's frame (p1 at the bottom). The phone whose half the puck is in moves it and sends it. ============ */
+const AH={W:100,H:160,MR:7.2,PR:4.4,GW:34,WIN:7,FR:.9935,VMAX:190};
+let AHS=null;
+const ahFlip=()=>me==='p2';
+const ahMine=y=>me==='p1'?y>=AH.H/2:y<AH.H/2;
+function ahMount(g){const cv=document.getElementById('ahcv');if(!cv)return;const host=cv.parentElement,wrap=document.querySelector('.wrap'),stage=host.closest('.cpstage');
+  const vh=Math.min(window.innerHeight,window.visualViewport?window.visualViewport.height:1e9);if(stage&&wrap){const pad=(parseFloat(getComputedStyle(wrap).paddingBottom)||0)+(parseFloat(getComputedStyle(document.documentElement).paddingBottom)||0);stage.style.marginBottom=(-pad)+'px'}
+  const w=host.clientWidth||360,h=Math.max(Math.round(w*1.45),Math.round(vh-host.getBoundingClientRect().top)),dpr=Math.min(2,devicePixelRatio||1);
+  cv.width=Math.round(w*dpr);cv.height=Math.round(h*dpr);cv.style.width=w+'px';cv.style.height=h+'px';
+  const live=!practice&&!!store.db,myY=me==='p1'?140:20;
+  if(!AHS||AHS.id!==g.id){if(AHS&&AHS.unsub)try{AHS.unsub()}catch(_){}
+    AHS={id:g.id,live,m:{x:50,y:myY,vx:0,vy:0,tx:50,ty:myY},o:{x:50,y:AH.H-myY,tx:50,ty:AH.H-myY,vx:0,vy:0},puck:{x:50,y:AH.H/2,vx:0,vy:0},pseq:0,oseq:0,taken:0,otaken:0,phase:'lobby',goAt:0,ohere:false,ot:0,fx:[],last:0,ended:false,hold:0};
+    if(live){AHS.myDoc=store.db.doc('live/'+g.id+'_'+me);try{AHS.unsub=store.db.doc('live/'+g.id+'_'+other(me)).onSnapshot(s=>{const d=s.exists?s.data():null;if(d)ahOnOpp(d)},()=>{})}catch(_){}ahSend(true)}
+    if(g.status==='active'&&!(g.ah&&g.ah.in&&g.ah.in[me]))upd(g,{ah:{in:{[me]:1}}})}
+  window.__AHS=AHS;AHS.cv=cv;AHS.k=w/AH.W;AHS.dpr=dpr;AHS.VH=h/AHS.k;
+  if(!cv._ah){cv._ah=1;const mv=e=>{const S=AHS,r=cv.getBoundingClientRect(),sc=S.sc||1,ox=S.ox||0,oy=S.oy||0;let x=((e.clientX-r.left)/r.width*AH.W-ox)/sc,y=((e.clientY-r.top)/r.height*S.VH-oy)/sc;
+      /* the mallet sits a little above the finger so the thumb doesn't hide it */y-=9;if(ahFlip()){x=AH.W-x;y=AH.H-y}
+      const lo=me==='p1'?AH.H/2+AH.MR:AH.MR,hi=me==='p1'?AH.H-AH.MR:AH.H/2-AH.MR;S.m.tx=Math.max(AH.MR,Math.min(AH.W-AH.MR,x));S.m.ty=Math.max(lo,Math.min(hi,y))};
+    cv.addEventListener('pointerdown',e=>{e.preventDefault();try{cv.setPointerCapture(e.pointerId)}catch(_){}mv(e)});cv.addEventListener('pointermove',e=>{if(e.buttons||e.pointerType==='touch')mv(e)})}
+  if(!AHS.loop){AHS.loop=1;let last=performance.now();const tick=t=>{if(!document.getElementById('ahcv')){AHS.loop=0;if(AHS.unsub){try{AHS.unsub()}catch(_){}AHS.unsub=null}return}const dt=Math.min(.033,(t-last)/1000);last=t;ahStep(dt,t);ahDraw(t);requestAnimationFrame(tick)};requestAnimationFrame(tick)}}
+function ahSend(force,hit){const S=AHS;if(!S||!S.myDoc)return;const n=performance.now(),own0=ahMine(S.puck.y),handoff=S.lastOwn&&!own0;if(!force&&!handoff&&n-S.last<60)return;S.last=n;
+  /* the moment the puck leaves my half I send its exact state once more, so their phone can take over from it */const own=own0||handoff||hit;S.lastOwn=own0;
+  S.myDoc.set({mx:+S.m.x.toFixed(1),my:+S.m.y.toFixed(1),pk:own?{h:hit?1:0,s:++S.pseq,x:+S.puck.x.toFixed(2),y:+S.puck.y.toFixed(2),vx:+S.puck.vx.toFixed(1),vy:+S.puck.vy.toFixed(1)}:null,taken:S.taken,at:Date.now()}).catch(()=>{})}
+function ahOnOpp(d){const S=AHS;S.o.tx=d.mx;S.o.ty=d.my;if(!S.ohere){S.o.x=d.mx;S.o.y=d.my}S.ohere=true;S.ot=performance.now();
+  if((d.taken||0)>S.otaken){S.otaken=d.taken;S.fx.push({k:'goal',t:performance.now(),who:me});ahSnd('goal');try{gnImpact('light')}catch(_){}}
+  /* they own the puck (it is on their side): take their copy */
+  if(d.pk&&d.pk.s!==S.oseq&&(!ahMine(S.puck.y)||d.pk.h)){S.oseq=d.pk.s;Object.assign(S.puck,{x:d.pk.x,y:d.pk.y,vx:d.pk.vx,vy:d.pk.vy})}
+  else if(d.pk&&ahMine(d.pk.y)===false&&ahMine(S.puck.y)){/* my copy thinks it's mine but theirs says it's on their side: trust theirs */S.oseq=d.pk.s;Object.assign(S.puck,{x:d.pk.x,y:d.pk.y,vx:d.pk.vx,vy:d.pk.vy})}}
+function ahSnd(k){if(GN_SND.muted)return;try{const A=window.__sfAC||(window.__sfAC=new (window.AudioContext||window.webkitAudioContext)()),t=A.currentTime,o=A.createOscillator(),g=A.createGain();
+  const f={hit:[520,180,.06,'triangle',.16],wall:[300,200,.05,'sine',.12],goal:[880,440,.4,'square',.07]}[k]||[400,300,.05,'sine',.1];o.type=f[3];o.frequency.setValueAtTime(f[0],t);o.frequency.exponentialRampToValueAtTime(f[1],t+f[2]);g.gain.setValueAtTime(f[4],t);g.gain.exponentialRampToValueAtTime(.001,t+f[2]+.05);o.connect(g).connect(A.destination);o.start(t);o.stop(t+f[2]+.06)}catch(_){}}
+function ahHit(P,M,mine){const dx=P.x-M.x,dy=P.y-M.y,d=Math.hypot(dx,dy),R=AH.MR+AH.PR;if(d>=R||d<1e-6)return false;const nx=dx/d,ny=dy/d;P.x=M.x+nx*R;P.y=M.y+ny*R;
+  const rvx=P.vx-M.vx,rvy=P.vy-M.vy,vn=rvx*nx+rvy*ny;if(vn<0){P.vx-=1.9*vn*nx;P.vy-=1.9*vn*ny}P.vx+=M.vx*.35;P.vy+=M.vy*.35;const sp=Math.hypot(P.vx,P.vy);if(sp>AH.VMAX){P.vx*=AH.VMAX/sp;P.vy*=AH.VMAX/sp}
+  if(performance.now()-(AHS.lastHit||0)>90){AHS.lastHit=performance.now();ahSnd('hit');try{navigator.vibrate(mine?14:0)}catch(_){}}return true}
+function ahStep(dt,T){const S=AHS,g=cur();if(!S||!g||g.type!=='hockey')return;
+  if(g.status==='done')S.phase='over';
+  else if(S.phase==='lobby'){if(S.live?(S.ohere&&T-S.ot<6000):true){S.phase='count';S.goAt=T+3000}}
+  else if(S.phase==='count'&&T>=S.goAt)S.phase='play';
+  /* my mallet chases the finger (fast spring), velocity remembered for hits */
+  const M=S.m,px=M.x,py=M.y,k=Math.min(1,dt*30);M.x+=(M.tx-M.x)*k;M.y+=(M.ty-M.y)*k;M.vx=(M.x-px)/Math.max(dt,1e-3);M.vy=(M.y-py)/Math.max(dt,1e-3);
+  const O=S.o,ox=O.x,oy=O.y;O.x+=(O.tx-O.x)*Math.min(1,dt*14);O.y+=(O.ty-O.y)*Math.min(1,dt*14);O.vx=(O.x-ox)/Math.max(dt,1e-3);O.vy=(O.y-oy)/Math.max(dt,1e-3);
+  if(!S.live&&S.phase==='play')ahBot(dt);
+  if(S.phase!=='play'){ahSend(false);return}
+  const P=S.puck,n=Math.ceil(dt/.004),h=dt/n;
+  for(let i=0;i<n;i++){P.x+=P.vx*h;P.y+=P.vy*h;
+    if(P.x<AH.PR){P.x=AH.PR;P.vx=Math.abs(P.vx)*.92;ahSnd('wall')}if(P.x>AH.W-AH.PR){P.x=AH.W-AH.PR;P.vx=-Math.abs(P.vx)*.92;ahSnd('wall')}
+    const inMouth=Math.abs(P.x-50)<AH.GW/2-AH.PR*.3;
+    if(!inMouth){if(P.y<AH.PR){P.y=AH.PR;P.vy=Math.abs(P.vy)*.92;ahSnd('wall')}if(P.y>AH.H-AH.PR){P.y=AH.H-AH.PR;P.vy=-Math.abs(P.vy)*.92;ahSnd('wall')}}
+    /* only the side that owns the puck runs the hits; practice runs both */
+    if(ahMine(P.y)){if(ahHit(P,M,true))S.hitNow=1}else if(!S.live)ahHit(P,O,false)}
+  if(S.hitNow){S.hitNow=0;ahSend(true,true)}
+  P.vx*=Math.pow(AH.FR,dt*60);P.vy*=Math.pow(AH.FR,dt*60);
+  /* goal: the puck left the table through a goal mouth. The phone on that end counts it against itself. */
+  const intoMine=me==='p1'?P.y>AH.H+AH.PR:P.y<-AH.PR,intoTheirs=me==='p1'?P.y<-AH.PR:P.y>AH.H+AH.PR;
+  if(intoMine){S.taken++;S.fx.push({k:'goal',t:T,who:other(me)});ahSnd('goal');try{gnImpact('heavy')}catch(_){}
+    /* I conceded: the puck comes back to my side, standing still */Object.assign(P,{x:50,y:me==='p1'?112:48,vx:0,vy:0});ahSend(true);
+    if(S.taken>=AH.WIN&&!S.ended){S.ended=true;upd(g,{status:'done',winner:other(me),ah:{score:{[me]:S.otaken,[other(me)]:S.taken}}})}}
+  else if(intoTheirs){if(!S.live){S.otaken++;S.fx.push({k:'goal',t:T,who:me});ahSnd('goal');try{gnImpact('win')}catch(_){}Object.assign(P,{x:50,y:me==='p1'?48:112,vx:0,vy:0});if(S.otaken>=AH.WIN&&!S.ended){S.ended=true;upd(g,{status:'done',winner:me,ah:{score:{[me]:S.otaken,[other(me)]:S.taken}}})}}
+    else Object.assign(P,{vx:0,vy:0,y:me==='p1'?-AH.PR*3:AH.H+AH.PR*3})}
+  ahSend(false)}
+function ahBot(dt){const S=AHS,P=S.puck,O=S.o,home=me==='p1'?22:AH.H-22,mine=!ahMine(P.y);const tx=mine?P.x:50+(P.x-50)*.4,ty=mine?(me==='p1'?Math.min(P.y-AH.PR-2,AH.H/2-AH.MR):Math.max(P.y+AH.PR+2,AH.H/2+AH.MR)):home;
+  O.tx+=(tx-O.tx)*Math.min(1,dt*3.2);O.ty+=(ty-O.ty)*Math.min(1,dt*3.2);const lo=me==='p1'?AH.MR:AH.H/2+AH.MR,hi=me==='p1'?AH.H/2-AH.MR:AH.H-AH.MR;O.ty=Math.max(lo,Math.min(hi,O.ty));O.tx=Math.max(AH.MR,Math.min(AH.W-AH.MR,O.tx))}
+function ahDraw(T){const S=AHS,g=cur(),cv=S.cv;if(!cv||!g)return;const c=cv.getContext('2d'),k=S.k*S.dpr,VH=S.VH;c.setTransform(1,0,0,1,0,0);
+  c.fillStyle='#0E2A4A';c.fillRect(0,0,cv.width,cv.height);
+  const sc=Math.min(1,(VH-30)/AH.H),ox=(AH.W-AH.W*sc)/2,oy=Math.max(14,(VH-AH.H*sc)/2);S.sc=sc;S.ox=ox;S.oy=oy;c.setTransform(k*sc,0,0,k*sc,ox*k,oy*k);
+  const F=y=>ahFlip()?AH.H-y:y,FX=x=>ahFlip()?AH.W-x:x;
+  /* table: white ice, blue rails, red center line, goal slots */
+  rrect(c,-2,-2,AH.W+4,AH.H+4,7);c.fillStyle='#1F6BFF';c.fill();rrect(c,0,0,AH.W,AH.H,5);const tg=c.createLinearGradient(0,0,0,AH.H);tg.addColorStop(0,'#F4FAFF');tg.addColorStop(.5,'#E3F1FF');tg.addColorStop(1,'#F4FAFF');c.fillStyle=tg;c.fill();
+  c.fillStyle='rgba(31,107,255,.07)';for(let x=6;x<AH.W;x+=8)for(let y=6;y<AH.H;y+=8){c.beginPath();c.arc(x,y,.35,0,7);c.fill()}
+  c.strokeStyle='rgba(229,50,43,.55)';c.lineWidth=.8;c.beginPath();c.moveTo(0,AH.H/2);c.lineTo(AH.W,AH.H/2);c.stroke();c.beginPath();c.arc(50,AH.H/2,12,0,7);c.stroke();
+  c.strokeStyle='rgba(31,107,255,.4)';c.beginPath();c.arc(50,0,AH.GW/2+4,0,Math.PI);c.stroke();c.beginPath();c.arc(50,AH.H,AH.GW/2+4,Math.PI,2*Math.PI);c.stroke();
+  c.fillStyle='#0B1B33';c.fillRect(50-AH.GW/2,-2.4,AH.GW,3);c.fillRect(50-AH.GW/2,AH.H-.6,AH.GW,3);
+  /* scores on the ice, faint */c.font=mgFont(18,900);c.textAlign='center';c.textBaseline='middle';c.fillStyle='rgba(31,107,255,.12)';c.fillText(String(S.taken),50,AH.H*.3);c.fillText(String(S.otaken),50,AH.H*.7);
+  /* puck */const P=S.puck;if(P.y>-AH.PR&&P.y<AH.H+AH.PR){c.fillStyle='rgba(0,0,0,.18)';c.beginPath();c.ellipse(FX(P.x)+.6,F(P.y)+1,AH.PR,AH.PR*.9,0,0,7);c.fill();c.fillStyle='#1E2233';c.beginPath();c.arc(FX(P.x),F(P.y),AH.PR,0,7);c.fill();c.strokeStyle='#3A3F55';c.lineWidth=.6;c.beginPath();c.arc(FX(P.x),F(P.y),AH.PR*.6,0,7);c.stroke()}
+  /* mallets with the character on top */
+  const mal=(M,p)=>{const x=FX(M.x),y=F(M.y);c.fillStyle='rgba(0,0,0,.2)';c.beginPath();c.ellipse(x+.8,y+1.4,AH.MR,AH.MR*.9,0,0,7);c.fill();c.fillStyle=PCOL[p];c.beginPath();c.arc(x,y,AH.MR,0,7);c.fill();c.fillStyle='rgba(255,255,255,.35)';c.beginPath();c.arc(x,y,AH.MR*.78,0,7);c.fill();c.fillStyle=PCOL[p];c.beginPath();c.arc(x,y,AH.MR*.64,0,7);c.fill();try{CH.drawHead(c,p,x,y,AH.MR*.6)}catch(_){}};
+  mal(S.o,other(me));mal(S.m,me);
+  for(const f of S.fx){const e=(T-f.t)/900;if(e>1)continue;c.globalAlpha=1-e;c.font=mgFont(9,900);c.fillStyle=PCOL[f.who];c.fillText('GOAL!',50,AH.H/2-10-e*10);c.globalAlpha=1}S.fx=S.fx.filter(f=>T-f.t<900);
+  c.setTransform(k,0,0,k,0,0);const mid=VH/2,cap=(txt,y,f,col)=>{c.font=mgFont(f||4,900);c.textAlign='center';c.textBaseline='middle';c.lineWidth=1;c.strokeStyle='rgba(255,255,255,.9)';c.strokeText(txt,50,y);c.fillStyle=col||'#1E2233';c.fillText(txt,50,y)};
+  if(S.phase==='lobby')cap(`WAITING FOR ${esc(nameOf(other(me))).toUpperCase()}…`,mid-16,3.6,'#1F6BFF');
+  else if(S.phase==='count'){cap(String(Math.ceil((S.goAt-T)/1000)),mid-20,18,'#FF2D87');cap('DRAG TO MOVE YOUR MALLET',mid+14,3,'#1E2233')}
+  if(S.live&&S.phase==='play'&&S.ot&&T-S.ot>5000)cap(`${esc(nameOf(other(me))).toUpperCase()} LOST CONNECTION…`,mid+12,3,'#E5322B');
+  if(g.status==='done'){if(!S.res0)S.res0=T;bwOverlay(c,VH-40,{k:'res',t:(T-S.res0)/1000,w:g.winner===me?'win':'lose'})}}
+G.hockey={title:'Air Hockey',blurb:'Live! Slam the puck into their goal. First to 7.',
+  modal(){return `<h2>Air Hockey</h2><p class="sub">A live game: open it together. Drag to move your mallet and hit the puck into their goal. First to ${AH.WIN} wins.</p>${startRow('hockey')}`},
+  async start(){await create(base('hockey',{ah:{in:{[me]:1}}}))},
+  myMove:g=>g.status==='active'&&!(g.ah&&g.ah.in&&g.ah.in[me]),
+  sub:g=>g.status!=='active'?'Air Hockey':(g.ah&&g.ah.in&&g.ah.in[other(me)]&&!g.ah.in[me])?`${nameOf(other(me))} is waiting for you · live`:'Live game · open it together',
+  view(g){return `<div class="cpstage ahstage"><div class="cvwrap ahwrap" id="ahhost"><canvas id="ahcv"></canvas></div><button class="cpmenu" data-act="home" aria-label="Back to games"><i></i></button><button class="cpq" data-act="rules" aria-label="How to play">?</button>${g.status==='done'?`<div class="cpdone">${doneRow(g)}</div>`:''}</div>`},
+  after(g){ahMount(g)},
+  async act(a,t,g){if(a==='hockey-start'||a==='hockey-again')return this.start()}};
+
+/* ============ ARCADE ENGINE: score-attack games. Same seed for both, each plays on their own time, higher score wins. ============ */
+const ARC={};let ARS=null;
+function arcRng(seed){let s=(seed>>>0)||1;return ()=>{s^=s<<13;s>>>=0;s^=s>>17;s^=s<<5;s>>>=0;return s/4294967296}}
+function arcDefine(key,d){ARC[key]=d;
+  G[key]={title:d.title,blurb:d.blurb,
+    async start(){await create(base(key,{seed:Math.floor(Math.random()*2147483646)+1,res:{},turn:me}))},
+    myMove:g=>g.status==='active'&&!(g.res&&g.res[me]),
+    sub:g=>{const r=g.res||{},o=other(me);return r[me]&&r[o]?`${r[me].score} to ${r[o].score}`:r[o]?`${nameOf(o)} scored ${r[o].score}. Your go!`:r[me]?`You scored ${r[me].score}. Waiting for ${nameOf(o)}`:'Same level for both. Higher score wins'},
+    view(g){const r=g.res||{},o=other(me),playing=ARS&&ARS.gid===g.id&&ARS.on;
+      if(playing)return `<div class="cpstage arcstage"><div class="cvwrap arcwrap" id="archost"><canvas id="arccv"></canvas></div><button class="cpmenu" data-act="${key}-quit" aria-label="Stop"><i></i></button><div class="archud" id="archud"></div></div>`;
+      const best=p=>r[p]?`<b>${r[p].score.toLocaleString()}</b>`:'<i>not yet</i>';
+      let msg;if(g.status==='done')msg=g.winner==='tie'?'A tie!':g.winner===me?'You win!':`${esc(nameOf(g.winner))} wins`;else if(r[me])msg=`Waiting for ${esc(nameOf(o))} to play`;else if(r[o])msg=`${esc(nameOf(o))} scored ${r[o].score.toLocaleString()}. Beat it!`;else msg='You both get the same level. Higher score wins.';
+      return `${head(d.title)}<div class="tsc arcsc" style="--ac1:${d.c1};--ac2:${d.c2}"><div class="thud">${tttAv(me,'You','',!r[me]&&g.status==='active','')}<div class="tmid"><span class="tcap${!r[me]&&g.status==='active'?' go':''}">${g.status==='done'?'FINAL':r[me]?'DONE':'YOUR GO'}</span><small class="tnote">${msg}</small></div>${tttAv(o,nm(o),'',!r[o]&&g.status==='active','')}</div>
+        <div class="arccard"><div class="arcico">${ICON[key]||''}</div><h3>${esc(d.title)}</h3><p>${esc(d.how)}</p>
+        <div class="arcsc2"><div class="${g.winner===me?'w':''}"><span>You</span>${best(me)}</div><div class="${g.winner===o?'w':''}"><span>${esc(nameOf(o))}</span>${best(o)}</div></div>
+        ${g.status==='active'&&!r[me]?`<button class="btn arcplay" data-act="${key}-play">▶ Play</button>`:g.status==='done'?`<div class="tfoot">${wgAgain(g,`<button class="btn" data-act="${key}-again">Rematch</button>`)}<button class="btn ghost" data-act="archive" data-id="${g.id}">Clear</button></div>`:''}
+        ${!r[me]?'':`<button class="link" data-act="${key}-practice">Practice run (doesn't count)</button>`}</div></div>`},
+    after(g){wgRmToast(g);const sc=document.querySelector('#view .tsc.arcsc');if(sc){const vv=window.visualViewport,vh=vv?vv.height:innerHeight,top=sc.getBoundingClientRect().top,pb=parseFloat(getComputedStyle(document.documentElement).paddingBottom)||0;sc.style.minHeight=Math.max(300,Math.floor(vh-top-pb))+'px'}
+      if(ARS&&ARS.gid===g.id&&ARS.on)arcMount(g)},
+    async act(a,t,g){if(a===key+'-start')return this.start();if(!g)return;
+      if(a===key+'-again'){await wgRematch(g,()=>this.start());return}
+      if(a===key+'-play'||a===key+'-practice'){if(g.status!=='active'&&a===key+'-play')return;ARS={gid:g.id,key,on:true,counts:a===key+'-play'&&!(g.res&&g.res[me]),seed:a===key+'-play'?g.seed:Math.floor(Math.random()*1e9)+1};render();return}
+      if(a===key+'-quit'){if(ARS&&ARS.counts&&ARS.S&&!ARS.S.over){if(!ARS.quitAsk){ARS.quitAsk=1;toast('Tap again to end your run (your score counts)');setTimeout(()=>{if(ARS)ARS.quitAsk=0},2500);return}ARS.S.over=true;arcFinish(g);return}ARS=null;render()}}};
+  if(d.rules)RULES[key]=d.rules}
+function arcMount(g){const cv=document.getElementById('arccv');if(!cv)return;const host=cv.parentElement,stage=host.closest('.cpstage'),wrap=document.querySelector('.wrap');
+  const vh=Math.min(innerHeight,window.visualViewport?visualViewport.height:1e9);if(stage&&wrap){const pad=(parseFloat(getComputedStyle(wrap).paddingBottom)||0)+(parseFloat(getComputedStyle(document.documentElement).paddingBottom)||0);stage.style.marginBottom=(-pad)+'px'}
+  const w=host.clientWidth||360,h=Math.max(Math.round(w*1.4),Math.round(vh-host.getBoundingClientRect().top)),dpr=Math.min(2,devicePixelRatio||1);cv.width=Math.round(w*dpr);cv.height=Math.round(h*dpr);cv.style.width=w+'px';cv.style.height=h+'px';
+  const d=ARC[ARS.key];ARS.k=w/100;ARS.dpr=dpr;ARS.H=h/ARS.k;
+  if(!ARS.S){ARS.S={W:100,H:ARS.H,rnd:arcRng(ARS.seed),score:0,t:0,over:false,fx:[]};d.init(ARS.S,ARS.seed);ARS.S.t0=performance.now()}else ARS.S.H=ARS.H;
+  const pt=e=>{const r=cv.getBoundingClientRect();return {x:(e.clientX-r.left)/r.width*100,y:(e.clientY-r.top)/r.height*ARS.H}};
+  if(!cv._arc){cv._arc=1;cv.addEventListener('pointerdown',e=>{e.preventDefault();try{cv.setPointerCapture(e.pointerId)}catch(_){}if(ARS&&ARS.S&&!ARS.S.over&&d.down)d.down(ARS.S,pt(e))});
+    cv.addEventListener('pointermove',e=>{if(ARS&&ARS.S&&!ARS.S.over&&d.move&&(e.buttons||e.pointerType==='touch'))d.move(ARS.S,pt(e))});
+    const up=e=>{if(ARS&&ARS.S&&!ARS.S.over&&d.up)d.up(ARS.S,pt(e))};cv.addEventListener('pointerup',up);cv.addEventListener('pointercancel',up)}
+  if(!ARS.loop){ARS.loop=1;let last=performance.now();const tick=t=>{if(!ARS||!document.getElementById('arccv')){if(ARS)ARS.loop=0;return}const dt=Math.min(.033,(t-last)/1000);last=t;const S=ARS.S;
+      if(!S.over){S.t+=dt;d.step(S,dt);if(S.over){const gg=cur();if(gg)setTimeout(()=>arcFinish(gg),900)}}
+      const c=cv.getContext('2d');c.setTransform(ARS.k*ARS.dpr,0,0,ARS.k*ARS.dpr,0,0);d.draw(c,S,t);
+      for(const f of S.fx){const e=(t-f.t)/700;if(e>1)continue;c.globalAlpha=1-e;c.font=mgFont(f.big?6:3.6,900);c.textAlign='center';c.textBaseline='middle';c.lineWidth=.8;c.strokeStyle='rgba(0,0,0,.45)';c.strokeText(f.txt,f.x,f.y-e*8);c.fillStyle=f.col||'#fff';c.fillText(f.txt,f.x,f.y-e*8);c.globalAlpha=1}S.fx=S.fx.filter(f=>t-f.t<700);
+      const hud=document.getElementById('archud');if(hud){const s=`${S.score.toLocaleString()}${d.hud?' · '+d.hud(S):''}${ARS.counts?'':' · practice'}`;if(hud.textContent!==s)hud.textContent=s}
+      requestAnimationFrame(tick)};requestAnimationFrame(tick)}}
+function arcPop(S,txt,x,y,col,big){S.fx.push({txt,x,y,col,big,t:performance.now()})}
+async function arcFinish(g){if(!ARS||ARS.done)return;ARS.done=1;const S=ARS.S,sc=Math.round(S.score),counts=ARS.counts;ARS=null;
+  if(!counts){toast(`Practice score: ${sc.toLocaleString()}`);render();return}
+  const gg=games.find(x=>x.id===g.id)||g,r={...(gg.res||{}),[me]:{score:sc,at:now()}},o=other(me),patch={res:{[me]:{score:sc,at:now()}}};
+  if(r[o]){patch.status='done';patch.winner=sc>r[o].score?me:sc<r[o].score?o:'tie'}else patch.turn=o;
+  try{gnSfx(r[o]?(patch.winner===me?'win':'lose'):'ding')}catch(_){}await store.update(g.id,patch);render()}
+
+/* ---- Bubble Shooter (arcade) ---- */
+const BUB={C:9,COLS:['#FF3B5C','#FFC400','#2BB673','#1F8BFF','#9B5CFF'],SPD:190,SHOTS:45};
+function bubR(){return 100/(BUB.C*2+1)}
+function bubXY(S,r,c){const R=bubR(),odd=(r+S.shift)%2;return [R+c*2*R+(odd?R:0)+ (odd?0:0),S.top+R+r*R*1.74]}
+function bubCols(S,r){return (r+S.shift)%2?BUB.C-1:BUB.C}
+function bubNeighbors(S,r,c){const odd=(r+S.shift)%2,d=odd?[[0,-1],[0,1],[-1,0],[-1,1],[1,0],[1,1]]:[[0,-1],[0,1],[-1,-1],[-1,0],[1,-1],[1,0]];return d.map(([dr,dc])=>[r+dr,c+dc]).filter(([a,b])=>a>=0&&b>=0&&a<S.g.length&&b<bubCols(S,a))}
+function bubColors(S){const s=new Set();S.g.forEach(row=>row.forEach(v=>{if(v!=null)s.add(v)}));return [...s]}
+function bubNext(S){const cs=bubColors(S);return cs.length?cs[Math.floor(S.rnd()*cs.length)]:0}
+arcDefine('bubble',{title:'Bubble Shooter',blurb:'Aim, bounce, pop three or more. Same level for both.',c1:'#3D7BFF',c2:'#1B2E7A',
+  how:'Drag to aim, let go to shoot. Match 3 or more of a color to pop them; anything left hanging drops for bonus points. 45 shots.',
+  rules:['Higher score wins','You both get the same level.','Drag to aim, let go to shoot. Bounce off the walls.','Match 3 or more of a color to pop. Bubbles left hanging drop for double points.','The ceiling drops every 6 shots. Clear the board for a big bonus.'],
+  icon:`<svg class="ico" viewBox="0 0 38 38" aria-hidden="true"><rect x="1" y="1" width="36" height="36" rx="9" fill="#1F3A9A"/><circle cx="11" cy="10" r="4.2" fill="#FF3B5C"/><circle cx="19.5" cy="10" r="4.2" fill="#FFC400"/><circle cx="28" cy="10" r="4.2" fill="#2BB673"/><circle cx="15" cy="17.5" r="4.2" fill="#1F8BFF"/><circle cx="23.5" cy="17.5" r="4.2" fill="#FF3B5C"/><circle cx="19" cy="30" r="4.2" fill="#9B5CFF"/><path d="M19 30l-5-6" stroke="#fff" stroke-width="1.2" stroke-dasharray="1.5 1.5"/></svg>`,
+  init(S){S.top=6;S.shift=0;S.g=[];for(let r=0;r<16;r++){S.g.push(Array(BUB.C).fill(null))}for(let r=0;r<7;r++)for(let c=0;c<bubCols(S,r);c++)S.g[r][c]=Math.floor(S.rnd()*BUB.COLS.length);
+    S.cur=bubNext(S);S.nxt=bubNext(S);S.shots=BUB.SHOTS;S.aim=null;S.ball=null;S.miss=0;S.pops=[];S.drops=[]},
+  hud:S=>`${S.shots} shots`,
+  down(S,p){S.aim=p},move(S,p){S.aim=p},
+  up(S,p){if(S.ball||S.shots<=0||!S.aim){S.aim=null;return}const sx=50,sy=S.H-12,a=Math.atan2(p.y-sy,p.x-sx);S.aim=null;if(p.y>sy-4)return;
+    const ang=Math.max(-Math.PI+.17,Math.min(-.17,a));S.ball={x:sx,y:sy,vx:Math.cos(ang)*BUB.SPD,vy:Math.sin(ang)*BUB.SPD,c:S.cur};S.cur=S.nxt;S.nxt=bubNext(S);S.shots--;try{gnFx('pop',{vol:.5})}catch(_){}},
+  step(S,dt){const R=bubR();for(const q of S.pops)q.t+=dt;S.pops=S.pops.filter(q=>q.t<.3);for(const q of S.drops){q.vy+=400*dt;q.y+=q.vy*dt}S.drops=S.drops.filter(q=>q.y<S.H+10);
+    const b=S.ball;if(!b)return;const n=Math.ceil(dt*BUB.SPD/1.2);for(let i=0;i<n;i++){b.x+=b.vx*dt/n;b.y+=b.vy*dt/n;
+      if(b.x<R){b.x=R;b.vx=Math.abs(b.vx);try{gnFx('tick',{vol:.4})}catch(_){}}if(b.x>100-R){b.x=100-R;b.vx=-Math.abs(b.vx);try{gnFx('tick',{vol:.4})}catch(_){}}
+      let hit=b.y<=S.top+R;if(!hit){for(let r=0;r<S.g.length&&!hit;r++)for(let c=0;c<bubCols(S,r);c++){if(S.g[r][c]==null)continue;const [x,y]=bubXY(S,r,c);if((x-b.x)**2+(y-b.y)**2<(R*1.75)**2){hit=true;break}}}
+      if(hit){this.land(S,b);S.ball=null;return}}},
+  land(S,b){const R=bubR();let best=null,bd=1e9;for(let r=0;r<S.g.length;r++)for(let c=0;c<bubCols(S,r);c++){if(S.g[r][c]!=null)continue;const [x,y]=bubXY(S,r,c);const d=(x-b.x)**2+(y-b.y)**2;if(d<bd){bd=d;best=[r,c]}}
+    if(!best){S.over=true;return}const [r0,c0]=best;S.g[r0][c0]=b.c;
+    /* match */const seen=new Set([r0+','+c0]),q=[[r0,c0]],grp=[];while(q.length){const [r,c]=q.pop();grp.push([r,c]);for(const [a,d] of bubNeighbors(S,r,c)){const k=a+','+d;if(!seen.has(k)&&S.g[a][d]===b.c){seen.add(k);q.push([a,d])}}}
+    if(grp.length>=3){for(const [r,c] of grp){const [x,y]=bubXY(S,r,c);S.pops.push({x,y,c:S.g[r][c],t:0});S.g[r][c]=null}S.score+=grp.length*10;arcPop(S,'+'+grp.length*10,b.x,b.y,'#FFD60A');S.miss=0;try{gnFx('pop');navigator.vibrate(14)}catch(_){}
+      /* anything not hanging from the ceiling falls */const keep=new Set(),st=[];for(let c=0;c<bubCols(S,0);c++)if(S.g[0][c]!=null){keep.add('0,'+c);st.push([0,c])}while(st.length){const [r,c]=st.pop();for(const [a,d] of bubNeighbors(S,r,c)){const k=a+','+d;if(!keep.has(k)&&S.g[a][d]!=null){keep.add(k);st.push([a,d])}}}
+      let fell=0;for(let r=0;r<S.g.length;r++)for(let c=0;c<bubCols(S,r);c++){if(S.g[r][c]!=null&&!keep.has(r+','+c)){const [x,y]=bubXY(S,r,c);S.drops.push({x,y,c:S.g[r][c],vy:-20});S.g[r][c]=null;fell++}}
+      if(fell){S.score+=fell*20;arcPop(S,`DROP +${fell*20}`,50,S.H*.45,'#7FE3FF',true);try{gnFx('whoosh',{vol:.5});gnImpact('light')}catch(_){}}}
+    else{S.miss++;try{gnFx('tick')}catch(_){}}
+    if(!bubColors(S).length){S.score+=500+S.shots*20;arcPop(S,'CLEARED! +'+(500+S.shots*20),50,S.H*.4,'#FFD60A',true);try{gnConfetti(60)}catch(_){}S.over=true;return}
+    if((BUB.SHOTS-S.shots)%6===0){S.top+=R*1.74}
+    for(let r=0;r<S.g.length;r++)for(let c=0;c<bubCols(S,r);c++)if(S.g[r][c]!=null&&bubXY(S,r,c)[1]>S.H-26){S.over=true;arcPop(S,'TOO LOW!',50,S.H*.5,'#FF5A5A',true)}
+    if(S.shots<=0)S.over=true;
+    if(!bubColors(S).includes(S.cur))S.cur=bubNext(S);if(!bubColors(S).includes(S.nxt))S.nxt=bubNext(S)},
+  draw(c,S){const R=bubR(),H=S.H;const bg=c.createLinearGradient(0,0,0,H);bg.addColorStop(0,'#1B2E7A');bg.addColorStop(1,'#0D1640');c.fillStyle=bg;c.fillRect(0,0,100,H);
+    c.fillStyle='rgba(255,255,255,.08)';c.fillRect(0,0,100,S.top);c.fillStyle='rgba(255,90,90,.25)';c.fillRect(0,H-26,100,.4);
+    const ball=(x,y,ci,r)=>{const col=BUB.COLS[ci];const gr=c.createRadialGradient(x-r*.35,y-r*.4,r*.1,x,y,r);gr.addColorStop(0,'#fff');gr.addColorStop(.25,col);gr.addColorStop(1,col);c.fillStyle=gr;c.beginPath();c.arc(x,y,r*.95,0,7);c.fill();c.strokeStyle='rgba(0,0,0,.25)';c.lineWidth=.3;c.stroke()};
+    for(let r=0;r<S.g.length;r++)for(let cc=0;cc<bubCols(S,r);cc++){const v=S.g[r][cc];if(v==null)continue;const [x,y]=bubXY(S,r,cc);ball(x,y,v,R)}
+    for(const q of S.pops){c.globalAlpha=1-q.t/.3;ball(q.x,q.y,q.c,R*(1+q.t*2));c.globalAlpha=1}for(const q of S.drops)ball(q.x,q.y,q.c,R*.9);
+    const sx=50,sy=H-12;
+    if(S.aim&&!S.ball&&S.aim.y<sy-4){/* dotted aim with one bounce */let a=Math.atan2(S.aim.y-sy,S.aim.x-sx);a=Math.max(-Math.PI+.17,Math.min(-.17,a));let x=sx,y=sy,vx=Math.cos(a),vy=Math.sin(a);c.fillStyle='rgba(255,255,255,.75)';
+      for(let i=0;i<70&&y>S.top;i++){x+=vx*2.4;y+=vy*2.4;if(x<R||x>100-R)vx=-vx;if(i%2===0){c.beginPath();c.arc(x,y,.55,0,7);c.fill()}}}
+    if(S.ball)ball(S.ball.x,S.ball.y,S.ball.c,R);else ball(sx,sy,S.cur,R);
+    ball(sx+14,sy+3,S.nxt,R*.7);c.font=mgFont(2.4,800);c.fillStyle='rgba(255,255,255,.6)';c.textAlign='center';c.fillText('NEXT',sx+14,sy+8.5)}
+});
+
+/* ============ CO-OP CROSSWORD (themed criss-cross, filled in together; your letters in your color) ============ */
+const XW_PACKS=[["Date Night",[["MOVIE","Popcorn's favorite place to be watched"],["DINNER","Evening meal for two"],["CANDLE","Gives a romantic glow"],["DESSERT","Sweet end to a meal"],["WINE","Red or white, poured in a glass"],["DANCE","Move to the music together"],["ROSES","Red flowers with thorns"],["PASTA","Spaghetti or penne"],["BLANKET","Cozy thing for the couch"],["KISS","Goodnight smooch"]]],["Breakfast",[["PANCAKE","Stack it and add syrup"],["BACON","Crispy strips from a pig"],["COFFEE","Morning cup of joe"],["TOAST","Bread that's been browned"],["WAFFLE","Has little squares for syrup"],["EGGS","Scrambled or sunny side up"],["JUICE","Orange drink in a glass"],["CEREAL","Poured into a bowl with milk"],["BAGEL","Round bread with a hole"],["MUFFIN","Blueberry ___"]]],["Beach Day",[["SAND","What a castle is built from"],["WAVES","They crash on the shore"],["TOWEL","Dry off after a swim"],["SUNSCREEN","Lotion that stops a burn"],["SHELL","Hold it to your ear to hear the sea"],["OCEAN","The big blue water"],["SEAGULL","Bird that steals your fries"],["BIKINI","Two-piece swimsuit"],["COOLER","Keeps the drinks cold"],["TAN","Sun-kissed skin color"]]],["Christmas",[["SANTA","Man in the red suit"],["REINDEER","Rudolph is one"],["TINSEL","Shiny strands on the tree"],["COOKIES","Left out with milk"],["STOCKING","Hung by the chimney"],["SLEIGH","Santa's ride"],["ELF","Santa's little helper"],["WREATH","Ring of greens on the door"],["GIFTS","What's under the tree"],["SNOWMAN","Frosty is one"]]],["Pets",[["PUPPY","Baby dog"],["KITTEN","Baby cat"],["LEASH","Clip it on for a walk"],["TREAT","Reward for a good boy"],["BARK","Woof sound"],["PURR","Happy cat rumble"],["FETCH","Throw the ball and bring it back"],["COLLAR","Goes around a pet's neck"],["HAMSTER","Runs on a little wheel"],["TAIL","It wags when happy"]]],["Movie Night",[["POPCORN","Buttery snack for a film"],["COUCH","Where you sit to watch"],["REMOTE","Always lost in the cushions"],["SEQUEL","Part two"],["TRAILER","Preview before the film"],["HORROR","Scary kind of movie"],["COMEDY","Funny kind of movie"],["SNACKS","Candy and chips"],["CREDITS","Names at the end"],["TICKET","Buy one at the theater"]]],["Home",[["KITCHEN","Room with the stove"],["PILLOW","Rest your head on it"],["CARPET","Soft floor covering"],["LAMP","Turn it on to read"],["SOFA","Another word for couch"],["MIRROR","See yourself in it"],["GARDEN","Grows flowers and veggies"],["DOOR","Knock on it"],["SHOWER","Rinse off in it"],["ATTIC","Room under the roof"]]],["Travel",[["PASSPORT","Needed for a trip abroad"],["LUGGAGE","Bags for a trip"],["HOTEL","Place to sleep on vacation"],["PLANE","It takes off from a runway"],["MAP","Shows the way"],["BEACH","Sandy spot by the sea"],["CAMERA","Takes vacation photos"],["ROADTRIP","Long drive with snacks"],["TICKET","Boarding pass, kind of"],["ISLAND","Land with water all around"]]],["Games",[["DICE","Roll them"],["CARDS","Shuffle the deck"],["BOARD","Monopoly comes on one"],["WINNER","Who gets the crown"],["PUZZLE","Fit the pieces"],["CHESS","Game with a king and queen"],["TURN","Your ___!"],["SCORE","Keep track of points"],["RIVAL","Your favorite opponent"],["TEAM","Players on the same side"]]],["Halloween",[["PUMPKIN","Carve a face in it"],["GHOST","Says boo"],["CANDY","Trick or treat prize"],["WITCH","Rides a broom"],["COSTUME","What you dress up in"],["SPIDER","Has eight legs"],["BAT","Flies at night"],["SKELETON","All bones"],["MOON","Full one on a spooky night"],["CAT","Black one is bad luck"]]],["Kitchen",[["SPOON","Stir with it"],["OVEN","Bake in it"],["FORK","Has prongs"],["PLATE","Food goes on it"],["KNIFE","Cuts things"],["BLENDER","Makes smoothies"],["TOASTER","Pops up bread"],["FRIDGE","Keeps food cold"],["SPATULA","Flips pancakes"],["KETTLE","Whistles when the water boils"]]],["Weather",[["RAIN","Water from the clouds"],["SNOW","Cold white flakes"],["THUNDER","Boom after lightning"],["CLOUD","Fluffy thing in the sky"],["RAINBOW","Colors after a storm"],["WIND","It blows"],["SUNNY","Bright day"],["STORM","Wild weather"],["FOG","Hard to see through"],["HURRICANE","Florida's big storm"]]]];
+function xwBuild(seed){const rnd=arcRng(seed),pk=XW_PACKS[Math.floor(rnd()*XW_PACKS.length)],ws=pk[1].slice().sort(()=>rnd()-.5).slice(0,9).sort((a,b)=>b[0].length-a[0].length);
+  const N=13,grid={},placed=[],at=(r,c)=>grid[r+','+c];
+  const fits=(w,r,c,d)=>{let cross=0;for(let i=0;i<w.length;i++){const rr=r+(d?i:0),cc=c+(d?0:i);if(rr<0||cc<0||rr>=N||cc>=N)return -1;const g=at(rr,cc);if(g&&g!==w[i])return -1;if(g)cross++;else{/* no side-by-side neighbors */const n1=d?at(rr,cc-1):at(rr-1,cc),n2=d?at(rr,cc+1):at(rr+1,cc);if(n1||n2)return -1}}
+    const b=d?at(r-1,c):at(r,c-1),e=d?at(r+w.length,c):at(r,c+w.length);if(b||e)return -1;return cross};
+  const put=(w,cl,r,c,d)=>{for(let i=0;i<w.length;i++)grid[(r+(d?i:0))+','+(c+(d?0:i))]=w[i];placed.push({w,cl,r,c,d})};
+  put(ws[0][0],ws[0][1],6,Math.floor((N-ws[0][0].length)/2),0);
+  for(const [w,cl] of ws.slice(1)){let best=null;for(const p of placed)for(let i=0;i<p.w.length;i++)for(let j=0;j<w.length;j++){if(p.w[i]!==w[j])continue;const d=p.d?0:1,r=p.d?p.r+i:p.r-j,c=p.d?p.c-j:p.c+i;const f=fits(w,r,c,d);if(f>0&&(!best||f>best.f||(f===best.f&&rnd()<.3)))best={r,c,d,f}}if(best)put(w,cl,best.r,best.c,best.d)}
+  /* crop to the used area */let r0=N,c0=N,r1=0,c1=0;Object.keys(grid).forEach(k=>{const [r,c]=k.split(',').map(Number);r0=Math.min(r0,r);c0=Math.min(c0,c);r1=Math.max(r1,r);c1=Math.max(c1,c)});
+  const rows=r1-r0+1,cols=c1-c0+1,sol={};Object.entries(grid).forEach(([k,v])=>{const [r,c]=k.split(',').map(Number);sol[(r-r0)*cols+(c-c0)]=v});
+  const words=placed.map(p=>({...p,r:p.r-r0,c:p.c-c0}));
+  /* numbering like a real crossword */const starts={};words.forEach(w=>{const i=w.r*cols+w.c;starts[i]=1});let n=0;const num={};Object.keys(sol).map(Number).sort((a,b)=>a-b).forEach(i=>{if(starts[i])num[i]=++n});words.forEach(w=>w.n=num[w.r*cols+w.c]);
+  return {theme:pk[0],rows,cols,sol,words}}
+function xwCells(w,cols){return Array.from({length:w.w.length},(_,i)=>(w.r+(w.d?i:0))*cols+w.c+(w.d?0:i))}
+G.xword={title:'Crossword Together',blurb:'One crossword, both of you filling it in. Your letters in your color.',
+  async start(){await create(base('xword',{seed:Math.floor(Math.random()*2147483646)+1,t0:now()}))},
+  myMove:g=>false,
+  sub:g=>{const P=xwBuild(g.seed),filled=Object.keys(P.sol).filter(i=>g['x'+i]).length;return `${P.theme} · ${filled} of ${Object.keys(P.sol).length} letters`},
+  view(g){const P=xwBuild(g.seed),{rows,cols,sol,words}=P,opp=other(me);let sel=ui.g.xwSel&&ui.g.xwSel.id===g.id?ui.g.xwSel:null;
+    const cur=sel?words[sel.w]:null,cells=cur?xwCells(cur,cols):[],done=g.status==='done',bad=ui.g.xwBad&&ui.g.xwBad.id===g.id?ui.g.xwBad.set:new Set();
+    let grid='';const num={};words.forEach(w=>{num[w.r*cols+w.c]=w.n});
+    for(let i=0;i<rows*cols;i++){if(sol[i]==null){grid+='<i class="xwb"></i>';continue}const v=g['x'+i],own=v?v.slice(1):'';
+      grid+=`<button class="xwc${cells.includes(i)?' on':''}${sel&&cells[sel.k]===i?' at':''}${own?' '+own:''}${bad.has(i)?' bad':''}${done?' ok':''}" data-act="xword-cell" data-i="${i}" ${done?'disabled':''}>${num[i]?`<small>${num[i]}</small>`:''}${v?v[0]:''}</button>`}
+    const clue=cur?`<div class="xwclue"><b>${cur.n} ${cur.d?'Down':'Across'}</b>${esc(cur.cl)}</div>`:`<div class="xwclue dim">Tap a square to start. Tap again to switch across/down.</div>`;
+    const list=d=>words.map((w,k)=>w.d===d?`<button class="xwli${sel&&sel.w===k?' on':''}${xwCells(w,cols).every(i=>g['x'+i])?' fill':''}" data-act="xword-clue" data-w="${k}"><b>${w.n}</b> ${esc(w.cl)}</button>`:'').join('');
+    const filled=Object.keys(sol).filter(i=>g['x'+i]).length,tot=Object.keys(sol).length;
+    const kb=done?`<div class="tfoot">${wgAgain(g,'<button class="btn" data-act="xword-again">New crossword</button>')}<button class="btn ghost" data-act="archive" data-id="${g.id}">Clear</button></div>`
+      :kbd('xword-k',()=>({}),{enter:'xword-check',del:'xword-del'}).replace('>ENTER<','>CHECK<');
+    const mine=Object.keys(sol).filter(i=>(g['x'+i]||'').slice(1)===me).length,theirs=Object.keys(sol).filter(i=>(g['x'+i]||'').slice(1)===opp).length;
+    return `${head('Crossword')}<div class="tsc xwsc"><div class="thud">${tttAv(me,'You','',false,`<span class="bgnear">${mine} letters</span>`)}<div class="tmid"><span class="tcap ${done?'win':''}">${done?'SOLVED TOGETHER!':esc(P.theme.toUpperCase())}</span><small class="tnote">${filled} of ${tot} letters${done&&g.t1?` · ${Math.round((g.t1-g.t0)/60000)} min`:''}</small></div>${tttAv(opp,nm(opp),'',false,`<span class="bgnear">${theirs} letters</span>`)}</div>
+      <div class="xwgrid" style="--c:${cols};--r:${rows}">${grid}</div>${done?'':clue}${done?'':`<details class="xwall"><summary>All clues</summary><div><h4>Across</h4>${list(0)}<h4>Down</h4>${list(1)}</div></details>`}<div class="wgw xwkb">${kb}</div></div>`},
+  after(g){wgRmToast(g);const sc=document.querySelector('#view .tsc.xwsc');if(sc){const vv=window.visualViewport,vh=vv?vv.height:innerHeight,top=sc.getBoundingClientRect().top,pb=parseFloat(getComputedStyle(document.documentElement).paddingBottom)||0;sc.style.minHeight=Math.max(300,Math.floor(vh-top-pb))+'px'}
+    const P=xwBuild(g.seed);if(g.status==='active'&&Object.entries(P.sol).every(([i,l])=>(g['x'+i]||'')[0]===l)&&!ui.g.xwFin){ui.g.xwFin=1;try{gnConfetti(80);gnSfx('win')}catch(_){}store.update(g.id,{status:'done',winner:'tie',t1:now()}).finally(()=>{ui.g.xwFin=0})}},
+  async act(a,t,g){if(a==='xword-start')return this.start();if(!g)return;if(a==='xword-again'){await wgRematch(g,()=>this.start());return}if(g.status!=='active')return;
+    const P=xwBuild(g.seed),{cols,words}=P;let sel=ui.g.xwSel&&ui.g.xwSel.id===g.id?ui.g.xwSel:null;
+    if(a==='xword-cell'){const i=+t.dataset.i;const ws=words.map((w,k)=>({k,cs:xwCells(w,cols)})).filter(o=>o.cs.includes(i));if(!ws.length)return;
+      let pick=ws[0];if(sel&&ws.length>1&&ws.some(o=>o.k===sel.w)&&xwCells(words[sel.w],cols)[sel.k]===i)pick=ws.find(o=>o.k!==sel.w)||ws[0];else if(sel&&ws.some(o=>o.k===sel.w))pick=ws.find(o=>o.k===sel.w);
+      ui.g.xwSel={id:g.id,w:pick.k,k:pick.cs.indexOf(i)};render();return}
+    if(a==='xword-clue'){const k=+t.dataset.w,cs=xwCells(words[k],cols);const e=cs.findIndex(i=>!g['x'+i]);ui.g.xwSel={id:g.id,w:k,k:e<0?0:e};const d=t.closest('details');if(d)d.open=false;render();return}
+    if(!sel)return;const cs=xwCells(words[sel.w],cols);
+    if(a==='xword-k'){const i=cs[sel.k];ui.g.xwBad=null;sel.k=Math.min(cs.length-1,sel.k+1);try{gnFx('tick',{pitch:1.2,vol:.5})}catch(_){}await store.update(g.id,{['x'+i]:t.dataset.l+me});return}
+    if(a==='xword-del'){let i=cs[sel.k];if(!g['x'+i]&&sel.k>0){sel.k--;i=cs[sel.k]}await store.update(g.id,{['x'+i]:''});return}
+    if(a==='xword-check'){const bad=new Set(Object.entries(P.sol).filter(([i,l])=>g['x'+i]&&g['x'+i][0]!==l).map(([i])=>+i));ui.g.xwBad={id:g.id,set:bad};toast(bad.size?`${bad.size} letter${bad.size>1?'s':''} to fix (in red)`:'Everything so far is right!');render()}}
+};
+
 /* ============ SLIDES & LADDERS ============ */
 const SL_JUMP={1:38,4:14,9:31,21:42,28:84,36:44,51:67,71:91,80:100,16:6,47:26,49:11,56:53,62:19,64:60,87:24,93:73,95:75,98:78};
 /* layouts: 1 = classic (all saved games), 2 = tidy board with no crossing pieces (new games default). g.quick: spins count double and reaching 100 wins */
@@ -12231,7 +12543,13 @@ Object.assign(ICON,{
   pong:`<svg class="ico" viewBox="0 0 38 38" aria-hidden="true"><rect x="1" y="1" width="36" height="36" rx="9" fill="#0B0D17"/><path d="M5 19h28" stroke="rgba(255,255,255,.45)" stroke-width="1.2" stroke-dasharray="2 2"/><rect x="11" y="6" width="12" height="2.6" rx="1" fill="#1F6BFF"/><rect x="15" y="29.4" width="12" height="2.6" rx="1" fill="#FF2D87"/><rect x="20" y="20" width="3.4" height="3.4" fill="#fff"/></svg>`,
   dg:`<svg class="ico" viewBox="0 0 38 38" aria-hidden="true"><rect x="1" y="1" width="36" height="36" rx="9" fill="#FF7A59"/><rect x="6" y="7" width="26" height="24" rx="4" fill="#fff"/><path d="M10 24c3-7 6-9 8-5s4 2 7-6" fill="none" stroke="#1F8BFF" stroke-width="2.4" stroke-linecap="round"/><circle cx="26" cy="12" r="2.5" fill="#FFD60A"/><path d="M27 31l5-9 3 2-5 9z" fill="#1E2233"/></svg>`
 });
-const CATS=[['Classic board games',['clue','race','life','trail','slides','battle','who','mtrain']],['Party & skill',['dg','bb','pong','tower','ice','surgeon','bingo']],['Cards',['fish']],['Sports',['pool','golf','bowl','hoops','cup','archery']],['Words',['ws','hang','wordle']],['Quick strategy',['ttt','uttt','dots','c4']]];
+Object.keys(ARC).forEach(k=>{if(ARC[k].icon)ICON[k]=ARC[k].icon});
+Object.assign(ICON,{
+  rps:`<svg class="ico" viewBox="0 0 38 38" aria-hidden="true"><rect x="1" y="1" width="36" height="36" rx="9" fill="#14B8A6"/><text x="12" y="17" font-size="11" text-anchor="middle">✊</text><text x="26" y="17" font-size="11" text-anchor="middle">✋</text><text x="19" y="31" font-size="11" text-anchor="middle">✌️</text></svg>`,
+  hockey:`<svg class="ico" viewBox="0 0 38 38" aria-hidden="true"><rect x="1" y="1" width="36" height="36" rx="9" fill="#1F6BFF"/><rect x="5" y="5" width="28" height="28" rx="4" fill="#EAF4FF"/><path d="M5 19h28" stroke="#E5322B" stroke-width="1"/><rect x="14" y="4" width="10" height="2.4" fill="#0B1B33"/><rect x="14" y="31.6" width="10" height="2.4" fill="#0B1B33"/><circle cx="19" cy="25" r="4.4" fill="#FF2D87"/><circle cx="19" cy="25" r="2.4" fill="#FF7DB8"/><circle cx="22" cy="14" r="2.6" fill="#1E2233"/></svg>`,
+  xword:`<svg class="ico" viewBox="0 0 38 38" aria-hidden="true"><rect x="1" y="1" width="36" height="36" rx="9" fill="#3D4BD8"/><g fill="#fff"><rect x="7" y="7" width="7" height="7" rx="1.2"/><rect x="15.5" y="7" width="7" height="7" rx="1.2"/><rect x="24" y="7" width="7" height="7" rx="1.2"/><rect x="15.5" y="15.5" width="7" height="7" rx="1.2"/><rect x="15.5" y="24" width="7" height="7" rx="1.2"/></g><text x="10.5" y="12.6" font-size="5.5" font-weight="900" fill="#E0156F" text-anchor="middle" font-family="sans-serif">L</text><text x="19" y="12.6" font-size="5.5" font-weight="900" fill="#1550D8" text-anchor="middle" font-family="sans-serif">O</text></svg>`
+});
+const CATS=[['Classic board games',['clue','race','life','trail','slides','battle','who','mtrain']],['Party & skill',['dg','bb','pong','hockey','rps','bubble','tower','ice','surgeon','bingo']],['Cards',['fish']],['Sports',['pool','golf','bowl','hoops','cup','archery']],['Words',['ws','xword','hang','wordle']],['Quick strategy',['ttt','uttt','dots','c4']]];
 const ORDER=CATS.flatMap(c=>c[1]);
 const titleOf=k=>esc(G[k].title);
 
@@ -12353,7 +12671,7 @@ function boardZoom(g){const sel=BZ_SEL[g.type];if(!sel)return;const el=document.
   box.addEventListener('dblclick',e=>{if(e.target.closest('.bzbtns'))return;const r=box.getBoundingClientRect();if(z.s>1.05){z.s=1;z.x=0;z.y=0}else{z.s=2;z.x=-(e.clientX-r.left-r.width/2);z.y=-(e.clientY-r.top-r.height/2)}bzClamp(z,r.width,r.height);bzSave(g.id);apply()});
   apply()}
 /* ---------- real-app shell (Nov 1): settings, splash, slide transitions, swipe back, connection banner, profile cards, achievements, holiday looks ---------- */
-const GN_VER='99';
+const GN_VER='100';
 /* --- achievements, worked out from finished games (nothing extra stored) --- */
 const ACH=[
  ['first','🏆','First win','Win any game',(w,all,p)=>w.length>=1],
