@@ -4117,6 +4117,57 @@ body.ingame .tabbar{display:none}
 #ptr i{width:16px;height:16px;border-radius:50%;border:3px solid var(--hair,#D9DAE1);border-top-color:var(--ink,#111114)}
 #ptr.ready i{border-top-color:#34C759}#ptr.spin i{animation:ptrs .6s linear infinite}@keyframes ptrs{to{transform:rotate(360deg)}}
 html.dark .hboard{background:#1E2030;color:#E7E8EE}
+
+/* ---- Nov 10 phase 4: people ---- */
+.pfaces{display:flex;gap:10px;overflow-x:auto;margin-inline:-16px;padding:2px 16px 4px;scrollbar-width:none}.pfaces::-webkit-scrollbar{display:none}
+.pface{flex:0 0 auto;width:58px;border:0;background:none;display:flex;flex-direction:column;align-items:center;gap:4px;position:relative;cursor:pointer;padding:0}
+.pface .pc{width:50px;height:50px;border-radius:50%;overflow:hidden;background:var(--chip,#F1F2F6);display:grid;place-items:center;font:900 .8rem var(--display);color:var(--muted,#6B6E7C);transition:box-shadow var(--t-ui) var(--e-move)}
+.pface .pc>*{width:100%;height:100%}
+.pface b{font:800 .7rem var(--body);color:var(--ink,#111114);max-width:58px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pface.on .pc{box-shadow:0 0 0 3px var(--ink,#111114)}
+.pface.all .pc{background:var(--ink,#111114);color:var(--pop,#FFD60A)}
+.pface.add .pc{background:transparent;border:2px dashed var(--hair,#C9CBD3);font-size:1.4rem;color:var(--muted,#7A7D8A)}
+.pface em{position:absolute;top:-2px;right:2px;min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:#FF3B30;color:#fff;font:900 .68rem/18px var(--body);font-style:normal;box-shadow:0 0 0 2px var(--bg,#fff)}
+.pphead{display:flex;align-items:center;gap:12px;background:var(--surface,#fff);border:1px solid var(--hair,#E7E8EE);border-radius:18px;padding:12px}
+.pphead .ppme{width:52px;height:52px;border-radius:50%;overflow:hidden;flex:none}.pphead .ppme>*{width:100%;height:100%}
+.pphead b{font:800 1.1rem var(--display);display:block}.pphead small{color:var(--muted,#6B6E7C);font-weight:700}.pphead .btn{margin-left:auto}
+.pinv{display:flex;align-items:center;gap:12px;border:0;border-radius:18px;padding:14px;background:var(--pop,#FFD60A);color:#2B2300;text-align:left;cursor:pointer;transition:transform var(--t-tap) var(--e-move)}
+.pinv:active{transform:scale(.98)}
+.pinv>span{width:44px;height:44px;border-radius:50%;background:#111114;color:#FFD60A;display:grid;place-items:center;font:800 1.5rem var(--display);flex:none}
+.pinv b{font:800 1.05rem var(--display);display:block}.pinv small{font-weight:700;color:#5A4B00}
+.pinv.tst{background:var(--surface,#fff);border:1px solid var(--hair,#E7E8EE);color:var(--ink,#111114)}.pinv.tst>span{background:var(--chip,#F1F2F6);font-size:1.2rem}.pinv.tst small{color:var(--muted,#6B6E7C)}
+.plist,.withl{display:flex;flex-direction:column;gap:8px}
+.prow{display:flex;align-items:center;gap:12px;background:var(--surface,#fff);border:1px solid var(--hair,#E7E8EE);border-radius:16px;padding:10px 12px;text-align:left;width:100%}
+.prow .pc{width:44px;height:44px;border-radius:50%;overflow:hidden;flex:none}.prow .pc>*{width:100%;height:100%}
+.prow .ptx{flex:1;min-width:0;display:flex;flex-direction:column}.prow b{font:800 1rem var(--display)}.prow small{color:var(--muted,#6B6E7C);font-weight:700;font-size:.8rem}
+.prow.wp{cursor:pointer}.prow.wp i{font-style:normal;font-size:1.3rem;color:var(--muted,#9A9DAA)}
+.btn.sm{padding:8px 12px;font-size:.8rem;min-height:36px}
+.pfine{font-size:.78rem;color:var(--muted,#7A7D8A);font-weight:700;display:flex;flex-wrap:wrap;gap:4px 10px;align-items:center}.pfine .link{font-size:.78rem}
+.pcode{display:flex;align-items:center;gap:12px;justify-content:space-between;background:var(--surface,#fff);border:1px solid var(--hair,#E7E8EE);border-radius:16px;padding:12px;flex-wrap:wrap}
+.pcode b{font:800 1rem var(--display);display:block}.pcode small{color:var(--muted,#6B6E7C);font-weight:700}
+.pcode .cdig{font:800 2.2rem var(--display);letter-spacing:.12em;font-variant-numeric:tabular-nums}
+.pshow{display:flex;flex-direction:column;gap:6px}.pshow input{font:700 .85rem var(--body);padding:10px;border-radius:10px;border:1px solid var(--hair,#E7E8EE);-webkit-user-select:text;user-select:text}
+.invcard{display:flex;gap:12px;align-items:center;background:var(--chip,#F1F2F6);border-radius:16px;padding:10px}
+.invcard b{font:800 .95rem var(--display);display:block}.invcard small{color:var(--muted,#6B6E7C);font-weight:700}
+.biglogo{width:64px;height:64px;border-radius:18px;background:#FFD60A;display:grid;grid-template-columns:1fr 1fr;padding:13px;gap:7px;box-shadow:0 6px 0 #C9A600;flex:none}
+.biglogo i{background:#111114;border-radius:50%}.biglogo.sm{width:44px;height:44px;padding:9px;gap:5px;border-radius:12px;box-shadow:none}
+.land{display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center;margin-top:40px}
+.land h2{font:800 1.8rem var(--display);margin:0}
+.landc{display:flex;flex-direction:column;gap:8px;align-items:stretch;width:100%;max-width:300px;margin-top:10px;background:var(--surface,#fff);border:1px solid var(--hair,#E7E8EE);border-radius:18px;padding:14px}
+.landc input{font:800 1.6rem var(--display);text-align:center;letter-spacing:.18em;padding:10px;border-radius:12px;border:2px solid var(--ink,#111114)}
+#tourwrap #tour{position:fixed;inset:0;z-index:60;background:var(--bg,#fff);display:flex;align-items:center;justify-content:center;padding:calc(20px + env(safe-area-inset-top,0px)) 20px calc(20px + env(safe-area-inset-bottom,0px));animation:fade var(--t-ui) both}
+.tin{display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center;max-width:340px;width:100%;animation:rise var(--t-screen) var(--e-move) both}
+.tin h2{font:800 1.6rem/1.1 var(--display);margin:0}.tin p{margin:0;color:var(--muted,#6B6E7C);font-weight:700}
+.tin .btn{width:100%}
+.tskip{position:absolute;top:calc(14px + env(safe-area-inset-top,0px));right:16px;border:0;background:none;font:900 .85rem var(--body);color:var(--muted,#7A7D8A);padding:8px}
+.tbub{background:var(--surface,#fff);border-radius:16px;padding:10px 14px;font-weight:800;box-shadow:0 4px 0 var(--hair,#E7E8EE)}
+.tch{height:180px;display:flex;justify-content:center}.tch svg{height:100%;width:auto}
+@media (prefers-reduced-motion:no-preference){.tch svg{animation:wave 1.6s ease-in-out infinite;transform-origin:50% 100%}@keyframes wave{50%{transform:rotate(-3deg) translateY(-3px)}}}
+.tsteps{display:flex;flex-direction:column;gap:8px;width:100%;text-align:left}.tsteps div{display:flex;gap:10px;align-items:center;background:var(--chip,#F1F2F6);border-radius:12px;padding:10px;font-weight:700}
+.tsteps b{width:28px;height:28px;border-radius:50%;background:#FFD60A;color:#2B2300;display:grid;place-items:center;font:800 .9rem var(--display);flex:none}
+.tsteps.hs2 div{background:#FFF3B0}.tsteps.hs2 b{background:#111114;color:#FFD60A}
+.tdots{display:flex;gap:6px}.tdots i{width:7px;height:7px;border-radius:4px;background:var(--hair,#D9DAE1)}.tdots i.on{width:20px;background:var(--ink,#111114)}
+.tgames{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;width:100%}
 </style>
 
 <div id="splash"><div class="splin"><p class="splbrand"><span class="d" aria-hidden="true"><i></i><i></i><i></i><i></i></span>Game Night</p></div></div><script>setTimeout(()=>{const s=document.getElementById('splash');if(s)s.remove()},6000)</script>
@@ -4221,8 +4272,9 @@ let toastT;function toast(m){const t=$('#toast');t.textContent=m;t.hidden=false;
 /* ---------- storage: shared db when available, this device otherwise ---------- */
 /* outside Claude: the shared list lives in Firebase (window.GN_FB = the web app config). Same calls as the Claude db; update = deep merge. */
 function fbLoad(src){return new Promise((ok,no)=>{const e=document.createElement('script');e.src=src;e.onload=ok;e.onerror=no;document.head.appendChild(e)})}
-async function fbDb(){try{const v='https://www.gstatic.com/firebasejs/10.12.2/';await fbLoad(v+'firebase-app-compat.js');await fbLoad(v+'firebase-firestore-compat.js');
-  const app=firebase.apps.length?firebase.app():firebase.initializeApp(window.GN_FB),fs=firebase.firestore(app),root=fs.collection('gn').doc(window.GN_ROOM||'main');
+const FBC={};let FBL=null;
+async function fbDb(rk){rk=rk||window.GN_ROOM||'main';if(FBC[rk])return FBC[rk];try{const v='https://www.gstatic.com/firebasejs/10.12.2/';if(!FBL)FBL=(async()=>{await fbLoad(v+'firebase-app-compat.js');await fbLoad(v+'firebase-firestore-compat.js')})();await FBL;
+  const app=firebase.apps.length?firebase.app():firebase.initializeApp(window.GN_FB),fs=firebase.firestore(app),root=fs.collection('gn').doc(rk);
   const ref=p=>{const k=p.split('/');return k.length%2?root.collection(k[0]):root.collection(k[0]).doc(k[1])};
   /* Firestore has no arrays inside arrays and no undefined: wrap inner arrays as {_a:[...]} on the way in, unwrap on the way out */
   const enc=(v,inA)=>v===undefined?null:Array.isArray(v)?(inA?{_a:v.map(x=>enc(x,true))}:v.map(x=>enc(x,true))):v&&typeof v==='object'?Object.fromEntries(Object.entries(v).map(([k,x])=>[k,enc(x,false)])):v;
@@ -4230,7 +4282,7 @@ async function fbDb(){try{const v='https://www.gstatic.com/firebasejs/10.12.2/';
   const wrapSnap=s=>({id:s.id,exists:s.exists,data:()=>{const x=s.data();return x===undefined?x:dec(x)}});
   const wrapDoc=d=>({set:x=>d.set(enc(x,false)),update:x=>d.set(enc(x,false),{merge:true}),onSnapshot:(f,e)=>d.onSnapshot(s=>f(wrapSnap(s)),e)});
   window.__gnEnc=enc;window.__gnDec=dec;
-  return {collection:n=>{const c=ref(n);return {doc:id=>wrapDoc(c.doc(id)),onSnapshot:(f,e)=>c.onSnapshot(s=>f({docs:s.docs.map(wrapSnap)}),e)}},doc:p=>wrapDoc(ref(p))}}catch(e){return null}}
+  return FBC[rk]={collection:n=>{const c=ref(n);return {doc:id=>wrapDoc(c.doc(id)),onSnapshot:(f,e)=>c.onSnapshot(s=>f({docs:s.docs.map(wrapSnap)}),e)}},doc:p=>wrapDoc(ref(p))}}catch(e){return null}}
 /* ---------- characters (Mii-style, per player) ---------- */
 const CH=(()=>{
 const SKIN=['#FFEFE4','#FDE2CF','#F7D2B3','#F0C29C','#EDB98A','#DFA676','#D09060','#BC7B4F','#A06640','#8E5A39','#6A3E26','#472A19'];
@@ -4548,14 +4600,21 @@ const store={db:null,local:{games:{},meta:null},remote:[],key(){return practice?
   async start(){
     try{CH.preload();if(!practice)splashOn();else splashOff()}catch(_){}
     this.loadLocal();this.pushLocal();
+    const landing=msg=>{const v=$('#view');if(v)v.innerHTML=`<div class="land"><span class="biglogo"><i></i><i></i><i></i><i></i></span><h2>Game Night</h2><p class="sub">${msg||'Open Game Night with the link someone sent you. It signs you in.'}</p><div class="landc"><b>Have a code from your other phone?</b><input id="codein" inputmode="numeric" maxlength="7" placeholder="123 456" autocomplete="one-time-code"><button class="btn" data-act="code-go">Sign in</button></div></div>`};
     let db=null;if(window.GN_FB){/* hosted copy: the room key arrives once in the link (#k=...), then lives on this phone */
-      let k=null;try{const m=/[#&]k=([A-Za-z0-9_-]{8,})/.exec(location.hash||'');if(m){k=m[1];localStorage.setItem('gn-room',k)/* the key stays in the address so Add to Home Screen keeps it (iOS home-screen apps get their own storage) */}else k=localStorage.getItem('gn-room')}catch(e){}
-      if(!k){const v=$('#view');if(v)v.innerHTML='<div class="panel" style="margin-top:40px;text-align:center"><h3>Game Night</h3><p class="sub">Open the game with the link Jen sent you. It has your key in it.</p></div>';return}
+      let k=null,hp=null,hk=null;pplLoad();try{const m1=/[#&]p=([A-Za-z0-9_-]{24,})/.exec(location.hash||'');if(m1)hp=m1[1];const m=/[#&]k=([A-Za-z0-9_-]{8,})/.exec(location.hash||'');if(m)hk=m[1]}catch(e){}
+      if(hp){const pdb=await fbDb(hp),P=pdb&&await docOnce(pdb,'meta/me');if(P&&P.rooms&&P.rooms.length){PPL.pkey=hp;PPL.person=P;PPL.reg=P.reg||null;P.rooms.forEach(r=>pplAddRoom(r.k,r.seat,r.with?{with:r.with,pl:1}:{pl:1}));pplSave();try{if(P.by&&!localStorage.getItem('gn-tour-'+hp))ui.tourPending={by:P.by,pk:hp}}catch(_){}}else if(P&&P.gone&&!PPL.rooms.length){splashOff();landing('This link was replaced with a new one. Ask for the new link, or use a code.');return}}
+      if(hk)pplAddRoom(hk,null);let legacy=null;try{legacy=localStorage.getItem('gn-room')}catch(_){}if(legacy&&!PPL.rooms.length)pplAddRoom(legacy,null);
+      let act=null;try{act=sessionStorage.getItem('gn-active')}catch(_){}const has=x=>x&&PPL.rooms.some(r=>r.k===x);if(!has(act))act=has(hk)?hk:has(legacy)?legacy:(PPL.rooms[0]&&PPL.rooms[0].k);
+      k=act||null;if(k){try{localStorage.setItem('gn-room',k)}catch(_){}const rr=PPL.rooms.find(r=>r.k===k);if(rr&&rr.seat&&(rr.pl||!me)){me=rr.seat;try{localStorage.setItem('gn2-me',me)}catch(_){}}else if(rr&&me){rr.seat=me;pplSave()}}
+      if(!k){splashOff();landing();return}
+      if(!me)setTimeout(()=>{if(!me)openModal('who')},250);else if(ui.modal==='who')closeModal();
       window.GN_ROOM=k;db=await fbDb();if(!db){toast('Couldn’t reach the game server. Check your connection and reload.')}}else{try{db=window.claude&&window.claude.use?await window.claude.use('db'):null}catch(e){db=null}}
     NET.tried=1;if(!db){shared=false;splashOff();renderChips();netBar();return}
     this.db=db;shared=true;if(!practice){games=[];render()}
     db.collection('games').onSnapshot(s=>{splashOff();const pc=cur(),pt=pc&&pc.turn;this.remote=s.docs.filter(d=>d.exists).map(d=>({id:d.id,...d.data()}));Object.entries(this.pend).forEach(([id,P])=>{const d=this.remote.find(x=>x.id===id);if(d)deepMerge(d,clone(P.patch))});if(!practice){games=this.remote;render();try{const nc=cur();if(pc&&nc&&nc.id===pc.id&&pt!==me&&nc.turn===me&&nc.status==='active')gnSfx('ding')}catch(_){}}},()=>toast('Lost the connection. Reload to reconnect.'));
-    db.doc('meta/players').onSnapshot(s=>{const d=s.exists?s.data():null;if(d&&d.names){names={...names,...d.names};render()}},()=>{});
+    db.doc('meta/players').onSnapshot(s=>{const d=s.exists?s.data():null;if(d&&d.names){names={...names,...d.names};if(d.reg&&!PPL.reg)PPL.reg=d.reg;render()}},()=>{});
+    if(window.GN_FB){setTimeout(()=>{try{pplWatch();pplThen();if(ui.tourPending&&me){ui.tour={by:ui.tourPending.by,pk:ui.tourPending.pk,step:0};ui.tourPending=null;tourPaint()}}catch(_){}},300)}
     db.doc('meta/push').onSnapshot(s=>{const d=s.exists?s.data():null;if(d){PUSH.t=d;if(route&&route.screen==='settings')render()}},()=>{});
     db.doc('meta/chars').onSnapshot(s=>{const d=s.exists?s.data():null;if(d){window.chars=d;CH.preload();render()}},()=>{});
     hereStart();
@@ -4580,7 +4639,7 @@ const store={db:null,local:{games:{},meta:null},remote:[],key(){return practice?
   flushAll(){Object.keys(this.pend).forEach(id=>this.flush(id))},
   undo(id){const P=this.pend[id];if(!P)return;clearTimeout(P.t);delete this.pend[id];const i=games.findIndex(x=>x.id===id);if(i>=0)games[i]=P.prev;const j=this.remote.findIndex(x=>x.id===id);if(j>=0)this.remote[j]=clone(P.prev);ui.g={};undoBar();render();toast('Move taken back')},
   setNames(n){if(practice&&this.db){return this.db.doc('meta/players').set({names:n}).catch(()=>{})}return this.run(db=>db.doc('meta/players').set({names:n}),()=>{this.local.meta={...(this.local.meta||{}),names:n}})},
-  setChar(p,d){const all={...(window.chars||{}),[p]:d};window.chars=all;if(practice&&this.db){return this.db.doc('meta/chars').set(all).catch(()=>{})}if(practice){try{const k='gn2-local',x=JSON.parse(localStorage.getItem(k)||'{}');x.meta={...(x.meta||{}),chars:all};localStorage.setItem(k,JSON.stringify(x))}catch(_){}render();return}return this.run(db=>db.doc('meta/chars').set(all),()=>{this.local.meta={...(this.local.meta||{}),chars:all}})}
+  setChar(p,d){const all={...(window.chars||{}),[p]:d};window.chars=all;if(practice&&this.db){return this.db.doc('meta/chars').set(all).catch(()=>{})}if(practice){try{const k='gn2-local',x=JSON.parse(localStorage.getItem(k)||'{}');x.meta={...(x.meta||{}),chars:all};localStorage.setItem(k,JSON.stringify(x))}catch(_){}render();return}if(window.GN_FB&&p===me){try{PPL.rooms.forEach(async r=>{if(r.k===window.GN_ROOM||!r.seat)return;const d2=await fbDb(r.k);if(d2)d2.doc('meta/chars').update({[r.seat]:d})})}catch(_){}}return this.run(db=>db.doc('meta/chars').set(all),()=>{this.local.meta={...(this.local.meta||{}),chars:all}})}
 };
 /* ---------- presence (Nov 1): "Krystal is here". Each phone beats here/<me> every 20 s while open; the other phone listens. ---------- */
 const HERE={opp:null,t:null,last:''};
@@ -13688,6 +13747,96 @@ function shellNotify(){if(practice||!me)return;let ns=[];try{ns=notices()}catch(
   if(route.screen==='game'&&nw.length){const n=nw[0],c=cur();toast(c&&n.g.rematchOf===c.id?`${nameOf(n.g.by)} wants a rematch. Tap Join.`:n.t)}}
 function shellGame(g){markSeen(g);if(g.status!=='done'||!g.rematchId)return;const r=games.find(x=>x.id===g.rematchId&&x.status!=='done'&&!x.archived);if(!r)return;
   document.querySelectorAll(`#view [data-act="${g.type}-again"]`).forEach(b=>{b.textContent=r.by===me?'Open rematch':'Join rematch';b.classList.add('rejoin')})}
+/* ============ Nov 10 phase 4: play with anyone (one private room per pair, personal links, invites) ============ */
+const PPL={pkey:null,person:null,rooms:[],sum:{},reg:null,ready:false};
+const rkey=()=>{const a=new Uint8Array(18);crypto.getRandomValues(a);return btoa(String.fromCharCode(...a)).replace(/\+/g,'-').replace(/\//g,'_').replace(/=/g,'')};
+function pplLoad(){try{PPL.rooms=JSON.parse(localStorage.getItem('gn-rooms')||'[]')||[]}catch(_){PPL.rooms=[]}try{PPL.pkey=localStorage.getItem('gn-person')||null}catch(_){}}
+function pplSave(){try{localStorage.setItem('gn-rooms',JSON.stringify(PPL.rooms));if(PPL.pkey)localStorage.setItem('gn-person',PPL.pkey)}catch(_){}}
+function pplAddRoom(k,seat,extra){let r=PPL.rooms.find(x=>x.k===k);if(!r){r={k,seat:seat||null};PPL.rooms.push(r)}else if(seat)r.seat=seat;Object.assign(r,extra||{});pplSave();return r}
+const multi=()=>!!window.GN_FB&&!practice&&!!window.GN_ROOM;
+const appLink=h=>location.origin+location.pathname+'#'+h;
+function docOnce(db,path){return new Promise(ok=>{let done=false,un=null;const fin=v=>{if(done)return;done=true;ok(v);try{typeof un==='function'&&un()}catch(_){}};try{un=db.doc(path).onSnapshot(s=>fin(s.exists?s.data():null),()=>fin(null))}catch(_){fin(null)}setTimeout(()=>fin(null),9000)})}
+/* other rooms: a light listener each, so home can show every game with everyone */
+async function pplWatch(){for(const r of PPL.rooms){if(r.k===window.GN_ROOM||PPL.sum[r.k])continue;const S=PPL.sum[r.k]={games:[],names:{},chars:null,seat:r.seat};
+  const db=await fbDb(r.k);if(!db)continue;
+  db.collection('games').onSnapshot(s=>{S.games=s.docs.filter(d=>d.exists).map(d=>({id:d.id,...d.data(),_room:r.k}));pplRender()},()=>{});
+  db.doc('meta/players').onSnapshot(s=>{const d=s.exists?s.data():null;if(d&&d.names){S.names=d.names;if(d.invite)S.invite=d.invite;pplRender()}},()=>{});
+  db.doc('meta/chars').onSnapshot(s=>{const d=s.exists?s.data():null;if(d){S.chars=d;pplRender()}},()=>{})}}
+let pplRT=0;function pplRender(){clearTimeout(pplRT);pplRT=setTimeout(()=>{if(route.screen==='home')render()},120)}
+/* run fn as if this phone were in another room (names, seat and characters swap for a moment) */
+function withRoom(k,fn){if(!k||k===window.GN_ROOM)return fn();const S=PPL.sum[k];if(!S)return '';const keep={names,me,chars:window.chars};try{names={p1:'Jen',p2:'Krystal',...S.names};me=S.seat||me;window.chars=S.chars||window.chars;return fn()}finally{names=keep.names;me=keep.me;window.chars=keep.chars}}
+function pplPeople(){/* one entry per room: who you play with there */const out=[];for(const r of PPL.rooms){const act=r.k===window.GN_ROOM,S=act?{games,names,chars:window.chars,seat:me}:PPL.sum[r.k];if(!S)continue;const seat=act?me:(S.seat||r.seat);if(!seat)continue;const o=seat==='p1'?'p2':'p1';
+    const gs=(act?games:S.games).filter(g=>G[g.type]&&!g.archived);let turns=0;withRoom(act?null:r.k,()=>{turns=gs.filter(g=>g.status!=='done'&&(mmv(g)||livev(g))).length});
+    out.push({k:r.k,act,seat,o,name:(S.names&&S.names[o])||r.with||({p1:'Jen',p2:'Krystal'})[o],turns,games:gs})}return out}
+function roomSwitch(k,then){const r=PPL.rooms.find(x=>x.k===k);if(!r)return;try{sessionStorage.setItem('gn-active',k);if(r.seat)localStorage.setItem('gn2-me',r.seat);localStorage.setItem('gn-room',k);if(then)sessionStorage.setItem('gn-then',JSON.stringify(then))}catch(_){}
+  const sp=document.createElement('div');sp.id='splash';sp.innerHTML='<div class="splin"><p class="splbrand"><span class="d" aria-hidden="true"><i></i><i></i><i></i><i></i></span>Game Night</p></div>';document.body.appendChild(sp);setTimeout(()=>location.reload(),60)}
+function pplThen(){let t=null;try{t=JSON.parse(sessionStorage.getItem('gn-then')||'null');sessionStorage.removeItem('gn-then')}catch(_){}if(!t)return;
+  if(t.open){const go2=()=>{if(games.some(x=>x.id===t.open))go(t.open);else setTimeout(go2,250)};setTimeout(go2,200)}
+  if(t.newk){setTimeout(async()=>{const k=t.newk;if(NOSHEET.has(k)&&G[k])await G[k].start();else openModal('new-'+k)},400)}
+  if(t.tab){setTab(t.tab);render()}}
+/* registry so the Testers page can see every room started from Jen's Game Night */
+function pplReg(){return PPL.reg||(window.GN_ROOM?'reg-'+window.GN_ROOM:null)}
+async function pplRegAdd(k,a,b){try{const reg=pplReg();if(!reg)return;const db=await fbDb(reg);await db.doc('meta/rooms').update({rooms:{[k]:{a,b,at:now()}}})}catch(_){}}
+/* my own person record, made the first time it's needed */
+async function pplMine(){if(PPL.pkey&&PPL.person)return PPL.pkey;const pk=PPL.pkey||rkey();const rooms=PPL.rooms.filter(r=>r.seat).map(r=>({k:r.k,seat:r.seat}));
+  const db=await fbDb(pk);await db.doc('meta/me').set({name:nameOf(me),rooms,reg:pplReg(),at:now()});PPL.pkey=pk;PPL.person={name:nameOf(me),rooms};pplSave();return pk}
+async function pplPersonAddRoom(k,seat){if(!PPL.pkey)return;try{const db=await fbDb(PPL.pkey);const P=await docOnce(db,'meta/me');const rooms=(P&&P.rooms||[]).filter(x=>x.k!==k);rooms.push({k,seat});await db.doc('meta/me').update({rooms})}catch(_){}}
+/* invite: a fresh room where I'm pink (p1) and they're blue (p2), plus their own sign-in link */
+async function pplInvite(theirName){theirName=(theirName||'').trim().slice(0,16);if(!theirName){toast('Type their name first');return null}
+  const k=rkey(),pk=rkey(),myName=nameOf(me),db=await fbDb(k),pdb=await fbDb(pk);if(!db||!pdb){toast('Couldn’t reach the game server. Try again.');return null}
+  await db.doc('meta/players').set({names:{p1:myName,p2:theirName},invite:{p2:pk},reg:pplReg(),by:myName,at:now()});
+  try{const mine=window.chars&&window.chars[me],base=CH.get('zz'),R=x=>x[Math.floor(Math.random()*x.length)],theirs={...base,skin:R([1,3,4,6,8]),hc:R([0,1,2,3,6]),hb:R([1,2,3,4,5]),top:R([0,1,5,6]),tc:R([4,6,8,9,10]),gl:0};await db.doc('meta/chars').set(mine?{p1:mine,p2:theirs}:{p2:theirs})}catch(_){}
+  await pdb.doc('meta/me').set({name:theirName,rooms:[{k,seat:'p2',with:myName}],by:myName,reg:pplReg(),at:now()});
+  pplAddRoom(k,'p1',{with:theirName,pl:1});pplPersonAddRoom(k,'p1');pplRegAdd(k,myName,theirName);pplWatch();
+  return {k,link:appLink('p='+pk),name:theirName}}
+async function pplLinkFor(k){/* their personal link for a room; made on demand for older rooms */const act=k===window.GN_ROOM,S=act?null:PPL.sum[k],seat=act?me:(S&&S.seat),o=seat==='p1'?'p2':'p1';
+  const db=await fbDb(k);const P=await docOnce(db,'meta/players')||{};let pk=P.invite&&P.invite[o];const theirName=(P.names&&P.names[o])||(act?nameOf(o):'Friend');
+  if(!pk){pk=rkey();const pdb=await fbDb(pk);await pdb.doc('meta/me').set({name:theirName,rooms:[{k,seat:o,with:nameOf(seat)}],by:nameOf(seat),reg:pplReg(),at:now()});await db.doc('meta/players').update({invite:{[o]:pk}})}
+  return {link:appLink('p='+pk),name:theirName,pk,o}}
+async function pplResetLink(k){const db=await fbDb(k);const P=await docOnce(db,'meta/players')||{};const act=k===window.GN_ROOM,seat=act?me:PPL.sum[k]&&PPL.sum[k].seat,o=seat==='p1'?'p2':'p1';const old=P.invite&&P.invite[o];
+  if(old){try{const od=await fbDb(old);await od.doc('meta/me').set({name:'',rooms:[],gone:1,at:now()})}catch(_){}}await db.doc('meta/players').update({invite:{[o]:null}});return pplLinkFor(k)}
+async function pplShare(link,name){const text=`${nameOf(me)} invited you to Game Night. Tap to play, no sign-up:`;try{if(navigator.share){await navigator.share({title:'Game Night',text,url:link});return 'shared'}}catch(e){if(e&&e.name==='AbortError')return 'cancel'}
+  try{await navigator.clipboard.writeText(link);toast('Link copied. Paste it in a text to '+name);return 'copied'}catch(_){ui.showLink=link;render();return 'show'}}
+/* 6-digit code to sign in on another phone */
+const codeDoc=c=>'signin-code-'+c+'-game-night';
+async function pplCode(){const pk=await pplMine();const c=String(Math.floor(100000+Math.random()*900000));const db=await fbDb(codeDoc(c));await db.doc('meta/me').set({pkey:pk,exp:now()+15*60000});ui.code={c,exp:now()+15*60000};render()}
+async function pplUseCode(c){c=(c||'').replace(/\D/g,'');if(c.length!==6){toast('Codes are 6 numbers');return}const db=await fbDb(codeDoc(c));const d=db&&await docOnce(db,'meta/me');
+  if(!d||!d.pkey||(d.exp||0)<now()){toast('That code didn’t work or has run out. Make a new one.');return}location.hash='p='+d.pkey;location.reload()}
+/* ---- home pieces ---- */
+function pplFaces(){if(!multi())return '';const P=pplPeople();if(!P.length)return '';const f=ui.roomF;const many=P.length>1;
+  const face=p=>{const ch=withRoom(p.act?null:p.k,()=>ava(p.o));return `<button class="pface${(f===p.k||(!many&&!f))?' on':''}" data-act="pface" data-k="${p.k}"><span class="pc">${ch}</span><b>${esc(p.name)}</b>${p.turns?`<em>${p.turns}</em>`:''}</button>`};
+  return `<div class="pfaces" role="group" aria-label="Who you're playing with">${many?`<button class="pface all${!f?' on':''}" data-act="pface" data-k=""><span class="pc">ALL</span><b>Everyone</b></button>`:''}${P.map(face).join('')}<button class="pface add" data-act="invite"><span class="pc">+</span><b>Invite</b></button></div>`}
+function pplOtherCards_unused(kind){/* hero / list items from rooms other than the open one (Everyone view) */if(!multi()||ui.roomF)return [];const out=[];for(const r of PPL.rooms){if(r.k===window.GN_ROOM)continue;const S=PPL.sum[r.k];if(!S||!S.seat)continue;
+  withRoom(r.k,()=>{for(const g of S.games){if(!G[g.type]||g.archived||g.status==='done')continue;const my=mmv(g)||livev(g);if((kind==='mine')===my)out.push({g,k:r.k,html:kind==='mine'?null:null,t:g.updatedAt||0})}})}return out}
+function viewPeople(){if(!multi())return `<div class="caught"><b>People</b><span>Open Game Night from your link to invite people.</span></div>`;
+  const P=pplPeople();let h=`<div class="pphead"><span class="ppme">${ava(me)}</span><div><b>${nm(me)}</b><small>That's you on this phone</small></div><button class="btn ghost" data-act="chars">Character</button></div>`;
+  h+=`<button class="pinv" data-act="invite"><span>+</span><div><b>Invite someone</b><small>Mom, your brother, a friend. They tap a link and play. No sign-up.</small></div></button>`;
+  h+=`<h2 class="hs">Your people <span class="ct">${P.length}</span></h2><div class="plist">${P.map(p=>{const rec={w:0,l:0};p.games.forEach(g=>{if(g.status==='done'){if(g.winner===p.seat)rec.w++;else if(g.winner===p.o)rec.l++}});
+    return `<div class="prow"><span class="pc">${withRoom(p.act?null:p.k,()=>ava(p.o))}</span><div class="ptx"><b>${esc(p.name)}</b><small>${p.games.filter(g=>g.status!=='done').length} going · you ${rec.w}–${rec.l}</small></div><button class="btn ghost sm" data-act="plink" data-k="${p.k}">Send link</button></div>`}).join('')}</div><p class="pfine">Lost phone or sent a link to the wrong person? ${P.map(p=>`<button class="link" data-act="preset" data-k="${p.k}">New link for ${esc(p.name)}</button>`).join(' ')}</p>`;
+  if(ui.showLink)h+=`<div class="pshow"><small>Copy this link and text it:</small><input id="pshowl" readonly value="${esc(ui.showLink)}" onclick="this.select()"></div>`;
+  h+=`<h2 class="hs">Your phones</h2><div class="pcode">${ui.code&&ui.code.exp>now()?`<b class="cdig">${ui.code.c.slice(0,3)} ${ui.code.c.slice(3)}</b><small>On the other phone, open Game Night and tap “I have a code”. Works for 15 minutes.</small>`:`<div><b>Sign in on another phone</b><small>Get a 6-digit code. No password.</small></div><button class="btn ghost sm" data-act="pcode">Get code</button>`}</div>`;
+  if(isAdmin())h+=`<button class="pinv tst" data-act="testers"><span>📊</span><div><b>Testers</b><small>Who joined and what they play. Only you see this.</small></div></button>`;
+  return h}
+function isAdmin(){/* Jen: pink seat in the very first room */const root=PPL.rooms[0];return multi()&&root&&root.seat==='p1'&&(!PPL.reg||PPL.reg==='reg-'+root.k)}
+async function viewTestersLoad(){const reg=pplReg();if(!reg)return;const db=await fbDb(reg);const R=await docOnce(db,'meta/rooms');const rooms=Object.entries((R&&R.rooms)||{});ui.tst={rooms:[],at:now()};
+  for(const [k,v] of rooms){const rdb=await fbDb(k);const gs=await new Promise(ok=>{let d=false,un=null;un=rdb.collection('games').onSnapshot(s=>{if(d)return;d=true;ok(s.docs.filter(x=>x.exists).map(x=>x.data()));try{typeof un==='function'&&un()}catch(_){}},()=>{d=true;ok([])});setTimeout(()=>{if(!d){d=true;ok([])}},8000)});
+    const wk=now()-7*864e5,cnt={};gs.forEach(g=>cnt[g.type]=(cnt[g.type]||0)+1);ui.tst.rooms.push({a:v.a,b:v.b,at:v.at,n:gs.length,wk:gs.filter(g=>(g.createdAt||0)>wk).length,fin:gs.filter(g=>g.status==='done').length,last:Math.max(0,...gs.map(g=>g.updatedAt||0)),top:Object.entries(cnt).sort((x,y)=>y[1]-x[1]).slice(0,3).map(x=>titleOf(x[0]))})}render()}
+function viewTesters(){const T=ui.tst;let h=`<div class="hrow"><button class="link" data-act="tst-back">‹ People</button><span></span></div><h2 class="hs">Testers</h2>`;if(!T)return h+'<p class="sub">Loading…</p>';
+  if(!T.rooms.length)return h+`<div class="caught"><b>No invites yet</b><span>When you invite someone, their games show up here.</span></div>`;
+  const tot=T.rooms.reduce((a,r)=>a+r.n,0),fin=T.rooms.reduce((a,r)=>a+r.fin,0);
+  h+=`<div class="stot"><div class="sp"><b>${T.rooms.length}</b><small>pairs</small></div><div class="sp"><b>${tot}</b><small>games</small></div><div class="sp"><b>${tot?Math.round(fin/tot*100):0}%</b><small>finished</small></div></div><div class="plist">`;
+  h+=T.rooms.sort((a,b)=>b.last-a.last).map(r=>`<div class="prow tr"><div class="ptx"><b>${esc(r.a)} &amp; ${esc(r.b)}</b><small>${r.n} games · ${r.wk} this week · ${r.fin} finished${r.last?' · last '+agoS(r.last):''}</small>${r.top.length?`<small>Plays most: ${esc(r.top.join(', '))}</small>`:''}</div></div>`).join('');
+  return h+'</div>'}
+/* first open from an invite: the welcome tour */
+function tourHtml(){const T=ui.tour;if(!T)return '';const by=T.by||'Your friend',st=T.step||0,inv=PPL.rooms.find(r=>r.k===window.GN_ROOM),o=other(me);
+  const dots=`<div class="tdots">${[0,1,2,3].map(i=>`<i class="${i===st?'on':''}"></i>`).join('')}</div>`;let b='';
+  if(st===0)b=`<div class="tbub">Hi ${nm(me)}! Want to play?</div><div class="tch">${CH.full(o,'cheer')}</div><h2>${esc(by)} invited you to Game Night</h2><p>Turn-by-turn games you play whenever you have a minute.</p>${dots}<button class="btn" data-act="tour-next">Let's go</button>`;
+  else if(st===1)b=`<h2>Make your character</h2><p>It plays in every game. You can change it any time.</p><div class="tch">${CH.full(me,'happy')}</div>${dots}<button class="btn" data-act="tour-chars">Make my character</button><button class="link" data-act="tour-next">Skip for now</button>`;
+  else if(st===2)b=`<h2>How it works</h2><div class="tsteps"><div><b>1</b>Take your turn whenever you want.</div><div><b>2</b>It shows up on ${esc(by)}'s phone. They play back.</div><div><b>3</b>Wins add up on your scoreboard together.</div></div>${navigator.standalone?'':`<div class="tsteps hs2"><div><b>⇧</b><span>Put it on your Home Screen: tap Share at the bottom of Safari, then <strong>Add to Home Screen</strong>. It opens like an app and remembers you.</span></div></div>`}${dots}<button class="btn" data-act="tour-next">Next</button>`;
+  else b=`<h2>Pick your first game</h2><p>${esc(by)} gets it on their phone right away.</p><div class="tgames">${['ttt','c4','wordle'].filter(k=>G[k]).map(k=>`<button class="t3" data-act="tour-game" data-k="${k}">${ICON[k]||''}<b>${titleOf(k)}</b></button>`).join('')}</div>${dots}<button class="link" data-act="tour-done">I'll look around first</button>`;
+  return `<div id="tour" role="dialog" aria-modal="true"><button class="tskip" data-act="tour-done">Skip</button><div class="tin">${b}</div></div>`}
+function tourPaint(){let el=document.getElementById('tourwrap');if(!ui.tour){if(el)el.remove();return}if(!el){el=document.createElement('div');el.id='tourwrap';document.body.appendChild(el)}el.innerHTML=tourHtml()}
+
 /* ============ Nov 10 phase 2: app shell (tabs) + new home ============ */
 const GMETA={clue:['Turns',30],race:['Turns',20],life:['Turns',25],trail:['Turns',10],slides:['Turns',10],battle:['Turns',15],who:['Turns',10],mtrain:['Turns',25],
   tanks:['Turns',10],knock:['Turns',5],paint:['Turns',10],simon:['Turns',5],dg:['Turns',10],bb:['Live',3],pong:['Live',3],hockey:['Live',3],rps:['Turns',2],bubble:['Score',2],tower:['Turns',10],ice:['Turns',5],surgeon:['Turns',5],bingo:['Turns',10],
@@ -13698,7 +13847,7 @@ function gMeta(k){if(ARC[k])return ['Score',2];return GMETA[k]||['Turns',10]}
 const CAT2=[['all','All'],['board','Board'],['cards','Cards'],['quick','Quick'],['arcade','Arcade'],['sports','Sports'],['words','Words'],['party','Party'],['live','Live']];
 function cat2Keys(c){const by={board:catOf('Classic board games'),cards:catOf('Cards'),quick:[...catOf('Quick strategy'),'rps','simon'],arcade:catOf('Arcade').concat(['bubble']),sports:catOf('Sports'),words:catOf('Words'),
   party:catOf('Party & skill').filter(k=>!['rps','simon','bubble','bb','pong','hockey'].includes(k)),live:['bb','pong','hockey']};return (by[c]||[]).filter(k=>G[k])}
-let homeTab='play';try{homeTab=localStorage.getItem('gn2-tab')||'play'}catch(e){}if(!['play','new','stats'].includes(homeTab))homeTab='play';
+let homeTab='play';try{homeTab=localStorage.getItem('gn2-tab')||'play'}catch(e){}if(!['play','new','stats','people'].includes(homeTab))homeTab='play';try{ui.roomF=sessionStorage.getItem('gn-roomf')||null}catch(_){}
 function setTab(t){homeTab=t;try{localStorage.setItem('gn2-tab',t)}catch(_){}}
 /* while you were away: the time this phone last looked at the app */
 let AWAY_FROM=0,BACK_AT=Date.now();try{AWAY_FROM=+localStorage.getItem('gn2-seen-at')||0}catch(_){}
@@ -13713,10 +13862,10 @@ function awayEvents(){if(practice||!me||!AWAY_FROM||ui.awayX)return null;const o
   const parts=[];if(moved.length)parts.push('moved in '+L(moved.slice(0,3))+(moved.length>3?` and ${moved.length-3} more`:''));if(won.length)parts.push('won '+L(won.slice(0,2)));if(started.length)parts.push('started '+L(started.slice(0,2)));
   let txt=parts.length?esc(nameOf(o))+' '+L(parts)+'.':'';if(lost.length)txt+=(txt?' ':'')+`You won ${esc(L(lost.slice(0,2)))}!`;return txt||null}
 const agoS=ts=>{if(!ts)return '';const s=Math.max(0,(now()-ts)/1000);return s<60?'just now':s<3600?Math.floor(s/60)+'m':s<86400?Math.floor(s/3600)+'h':Math.floor(s/86400)+'d'};
-function heroCard(g,i,n){const o=other(me),mb=miniBoard(g),art=mb?mb.replace('class="ico mini"','class="ico mini hb"'):(ICON[g.type]||'').replace('class="ico"','class="ico hb hbi"');
+function heroCard(g,i,n,room){const dr=room?` data-room="${room}"`:'';const o=other(me),mb=miniBoard(g),art=mb?mb.replace('class="ico mini"','class="ico mini hb"'):(ICON[g.type]||'').replace('class="ico"','class="ico hb hbi"');
   return `<div class="hero" style="--hc:${i}"><div class="hrow1"><span class="hav">${ava(o)}</span><span class="htx"><b>${livev(g)?'Live now':'Your turn'}</b><small>${esc(titleOf(g.type))} with ${esc(nameOf(o))}${g.updatedAt?' · '+agoS(g.updatedAt):''}</small></span></div>
-    <button class="hboard" data-act="open" data-id="${g.id}" aria-label="Open ${esc(titleOf(g.type))}">${art}<span class="hline">${esc(lineOf(g))}</span></button>
-    <div class="hgo">${n>1?`<span class="hpg">${i+1} of ${n}${i<n-1?' · swipe ›':''}</span>`:'<span></span>'}<button class="hplay" data-act="open" data-id="${g.id}">Play</button></div></div>`}
+    <button class="hboard" data-act="open" data-id="${g.id}"${dr} aria-label="Open ${esc(titleOf(g.type))}">${art}<span class="hline">${esc(lineOf(g))}</span></button>
+    <div class="hgo">${n>1?`<span class="hpg">${i+1} of ${n}${i<n-1?' · swipe ›':''}</span>`:'<span></span>'}<button class="hplay" data-act="open" data-id="${g.id}"${dr}>Play</button></div></div>`}
 function homeTiles(keys,tile){return `<div class="tiles3">${keys.map(tile).join('')}</div>`}
 function viewHome(){
   const known=games.filter(g=>G[g.type]);const o=nm(other(me||'p1'));
@@ -13737,15 +13886,19 @@ function viewHome(){
   const tile=k=>ed?`<div class="t3 edit${FV.hide.includes(k)?' hid':''}">${ICON[k]||''}<b>${titleOf(k)}</b><span class="t3ed"><button data-act="fav" data-k="${k}" class="${FV.fav.includes(k)?'on':''}" aria-label="${FV.fav.includes(k)?'Unpin':'Pin to favorites'}">★</button><button data-act="hide" data-k="${k}" class="${FV.hide.includes(k)?'on':''}" aria-label="${FV.hide.includes(k)?'Show':'Hide'}">${FV.hide.includes(k)?'Show':'Hide'}</button></span></div>`
     :`<button class="t3" data-act="new" data-k="${k}">${ICON[k]||''}<b>${hl(titleOf(k))}</b><em class="t3m">${(m=>m[0]+' · '+m[1]+' min')(gMeta(k))}</em>${rec(k)}</button>`;
   let h='';const tab=homeTab;
-  if(tab==='play'){
+  if(tab==='play'&&!ui.tstOn){
+    h+=pplFaces();const ev=multi()&&!ui.roomF&&PPL.rooms.length>1,xm=[],xw=[];
+    if(ev)for(const r of PPL.rooms){if(r.k===window.GN_ROOM)continue;const S=PPL.sum[r.k];if(!S||!S.seat)continue;withRoom(r.k,()=>{for(const g of S.games){if(!G[g.type]||g.archived||g.status==='done')continue;const my=mmv(g)||livev(g),it={g,k:r.k,t:g.updatedAt||0};(my?xm:xw).push(it)}})}
     if(me&&hereNow()){const og=HERE.opp.gid&&games.find(x=>x.id===HERE.opp.gid);h+=`<div class="herebar"><i></i><b>${o} is on now</b>${og&&G[og.type]?`<button class="link" data-act="open" data-id="${og.id}">in ${titleOf(og.type)} · join</button>`:''}</div>`}
     if(practice)h+=`<div class="prac on"><div><b>Practice mode</b><span>You play both sides and the phone hands you each turn. These games stay on this phone.</span></div><button class="btn ghost" data-act="practice-off">Done practicing</button></div>`;
     const aw=awayEvents();if(aw)h+=`<div class="away"><span class="awi" aria-hidden="true">☾</span><span><b>While you were away:</b> ${aw}</span><button class="awx" data-act="away-x" aria-label="Dismiss">×</button></div>`;
     if(me&&!(window.chars&&window.chars[me]))h+=`<button class="chprompt" data-act="chars"><span class="chpf">${CH.full(me,'happy')}</span><span><b>Make your character</b><small>It plays in every game. Takes a minute.</small></span><i>›</i></button>`;
-    if(mine.length)h+=`<div class="heros" id="heros">${mine.map((g,i)=>heroCard(g,i,mine.length)).join('')}</div>`;
-    else if(act.length)h+=`<div class="caught"><b>You're all caught up</b><span>Waiting on ${o}. Start something new while you wait?</span><div class="cbtn"><button class="btn" data-act="tab" data-t="new">New game</button><button class="btn ghost" data-act="surprise">🎲 Surprise me</button></div></div>`;
-    if(wait.length)h+=`<h2 class="hs">${practice?o+'’s move':'Waiting on '+o} <span class="ct">${wait.length}</span></h2><div class="list">${wait.map(g=>card(g,practice?`<span class="tag p-${other(me)}">${o}’s move</span>`:'<span class="tag wait">Waiting</span>')).join('')}</div>`;
-    if(!act.length)h+=`<div class="caught"><b>No games going</b><span>${res.length?'Rematch one below or start something new.':'Pick a game and '+o+' gets it on their phone.'}</span><div class="cbtn"><button class="btn" data-act="tab" data-t="new">New game</button><button class="btn ghost" data-act="surprise">🎲 Surprise me</button></div></div>`;
+    const allMine=[...mine.map(g=>({g,k:null,t:g.updatedAt||0})),...xm].sort((a,b)=>a.t-b.t);
+    if(allMine.length)h+=`<div class="heros" id="heros">${allMine.map((x,i)=>withRoom(x.k,()=>heroCard(x.g,i,allMine.length,x.k))).join('')}</div>`;
+    else if(act.length||xw.length)h+=`<div class="caught"><b>You're all caught up</b><span>Waiting on ${o}. Start something new while you wait?</span><div class="cbtn"><button class="btn" data-act="tab" data-t="new">New game</button><button class="btn ghost" data-act="surprise">🎲 Surprise me</button></div></div>`;
+    const allWait=[...wait.map(g=>({g,k:null,t:g.updatedAt||0})),...xw].sort((a,b)=>b.t-a.t);
+    if(allWait.length)h+=`<h2 class="hs">${practice?o+'’s move':ev?'Their turn':'Waiting on '+o} <span class="ct">${allWait.length}</span></h2><div class="list">${allWait.map(x=>withRoom(x.k,()=>{let c=card(x.g,practice?`<span class="tag p-${other(me)}">${o}’s move</span>`:`<span class="tag wait">${ev?esc(nameOf(other(me))):'Waiting'}</span>`);if(x.k)c=c.replace('data-act="open"',`data-act="open" data-room="${x.k}"`);return c})).join('')}</div>`;
+    if(!act.length&&!xw.length&&!xm.length)h+=`<div class="caught"><b>No games going</b><span>${res.length?'Rematch one below or start something new.':'Pick a game and '+o+' gets it on their phone.'}</span><div class="cbtn"><button class="btn" data-act="tab" data-t="new">New game</button><button class="btn ghost" data-act="surprise">🎲 Surprise me</button></div></div>`;
     if(res.length)h+=`<div class="hrow"><h2 class="hs">Results</h2><button class="link" data-act="tab" data-t="stats">All stats ›</button></div><div class="list">${res.slice(0,3).map(rcard).join('')}</div>`;
     if(!practice&&!act.length&&!res.length)h+=`<button class="prac" data-act="practice-on"><div><b>Practice solo</b><span>Try any game by playing both sides. Nothing is sent to ${o}.</span></div><i>→</i></button>`;
   }
@@ -13765,6 +13918,7 @@ function viewHome(){
       if(!ed&&FV.hide.length)h+=`<button class="link more" data-act="home-edit">${FV.hide.length} hidden game${FV.hide.length===1?'':'s'} · Edit list</button>`;
       if(!practice)h+=`<button class="prac" data-act="practice-on"><div><b>Practice solo</b><span>Try any game by playing both sides. Nothing is sent to ${o}.</span></div><i>→</i></button>`}
   }
+  else if(tab==='people'||ui.tstOn){h+=ui.tstOn?viewTesters():viewPeople()}
   else{
     const pl=[...new Set(done.map(g=>g.type))].map(k=>[k,h2h(k)]).filter(x=>x[1].p1+x[1].p2).sort((a,b)=>(b[1].p1+b[1].p2)-(a[1].p1+a[1].p2));
     h+=`<div class="stot"><div class="sp p1"><span class="sav">${ava('p1')}</span><b>${wins.p1}</b><small>${nm('p1')}</small></div><span class="svs">wins</span><div class="sp p2"><span class="sav">${ava('p2')}</span><b>${wins.p2}</b><small>${nm('p2')}</small></div></div>`;
@@ -13772,8 +13926,8 @@ function viewHome(){
     else h+=`<div class="caught"><b>No finished games yet</b><span>Wins show up here, game by game.</span></div>`;
     if(res.length)h+=`<h2 class="hs">Recent results</h2><div class="list">${res.slice(0,ui.resAll?24:6).map(rcard).join('')}</div>${res.length>6?`<button class="link more" data-act="res-all">${ui.resAll?'Show fewer':'Show more'}</button>`:''}`;
   }
-  const nMine=mine.length;
-  h+=`<nav class="tabbar" aria-label="Sections">${[['play','Play','<path d="M7 5l12 7-12 7z"/>'],['new','New game','<path d="M12 5v14M5 12h14"/>'],['stats','Stats','<path d="M6 19V11M12 19V5M18 19v-6"/>']].map(([t,l,ic])=>`<button class="tabb${tab===t?' on':''}" data-act="tab" data-t="${t}" aria-current="${tab===t?'page':'false'}"><svg viewBox="0 0 24 24" aria-hidden="true">${ic}</svg><span>${l}</span>${t==='play'&&nMine?`<em>${nMine}</em>`:''}</button>`).join('')}</nav>`;
+  let nMine=mine.length;try{if(multi())nMine=pplPeople().reduce((a,p)=>a+p.turns,0)}catch(_){}
+  h+=`<nav class="tabbar" aria-label="Sections">${[['play','Play','<path d="M7 5l12 7-12 7z"/>'],['new','New game','<path d="M12 5v14M5 12h14"/>'],...(multi()?[['people','People','<circle cx="9" cy="9" r="3.2"/><path d="M3.5 19c.8-3.2 3-5 5.5-5s4.7 1.8 5.5 5"/><circle cx="17" cy="8" r="2.6"/><path d="M15.5 13.3c2.6-.4 4.6 1.4 5 4.7"/>']]:[]),['stats','Stats','<path d="M6 19V11M12 19V5M18 19v-6"/>']].map(([t,l,ic])=>`<button class="tabb${tab===t?' on':''}" data-act="tab" data-t="${t}" aria-current="${tab===t?'page':'false'}"><svg viewBox="0 0 24 24" aria-hidden="true">${ic}</svg><span>${l}</span>${t==='play'&&nMine?`<em>${nMine}</em>`:''}</button>`).join('')}</nav>`;
   return h;
 }
 function surpriseKey(){const FV=homePrefs(),recent=[...games].sort((a,b)=>(b.createdAt||0)-(a.createdAt||0)).slice(0,8).map(g=>g.type);let pool=CATS.flatMap(c=>c[1]).filter(k=>G[k]&&!FV.hide.includes(k)&&!recent.includes(k)&&!['bb','pong','hockey'].includes(k));if(!pool.length)pool=CATS.flatMap(c=>c[1]).filter(k=>G[k]);return pool[Math.floor(Math.random()*pool.length)]}
@@ -13792,6 +13946,9 @@ function renderModal(){
   if(ui.modal==='me'&&me)h=`<h2>This phone plays as ${nm(me)}</h2><p class="mnote">Moves made here count as ${nm(me)}’s. Only switch if ${nm(other(me))} is using this phone.</p><div class="row"><button class="btn ghost" data-act="who" data-p="${other(me)}">Switch to ${nm(other(me))}</button><button class="btn ghost" data-act="names">Change names</button></div><p class="phoneinfo">Screen ${innerWidth}×${innerHeight} · ${Math.round((window.visualViewport?visualViewport.height:innerHeight))}vv · ${devicePixelRatio}x · ${(navigator.userAgent.match(/iPhone OS [0-9_]+|Android [0-9.]+|Mac OS X [0-9_]+|Windows NT [0-9.]+/)||['?'])[0].replace(/_/g,'.')} · v15</p><button class="btn" data-act="close">Done</button>`;
   else if(ui.modal==='who')h=`<h2>Who’s playing on this phone?</h2><div class="who"><button class="p1" data-act="who" data-p="p1">${nm('p1')}</button><button class="p2" data-act="who" data-p="p2">${nm('p2')}</button></div><button class="link" data-act="names" style="align-self:flex-start">Change names</button>`;
   else if(ui.modal==='names')h=`<h2>Player names</h2><label class="f"><span>Player 1 (pink)</span><input type="text" id="n1" value="${nm('p1')}" maxlength="16"></label><label class="f"><span>Player 2 (blue)</span><input type="text" id="n2" value="${nm('p2')}" maxlength="16"></label><div class="row"><button class="btn" data-act="names-save">Save</button><button class="btn ghost" data-act="${me?'close':'back-who'}">Cancel</button></div>`;
+  else if(ui.modal==='invite')h=ui.invRes?`<h2>Send ${esc(ui.invRes.name)} the link</h2><div class="invcard"><span class="biglogo sm"><i></i><i></i><i></i><i></i></span><div><b>${nm(me)} invited you to Game Night</b><small>Tap to play. No sign-up.</small></div></div><p class="mnote">The link is only for ${esc(ui.invRes.name)}. It opens straight in as them, and they can add it to their Home Screen.</p><div class="row"><button class="btn" data-act="inv-share">Send the link</button><button class="btn ghost" data-act="close">Later</button></div>`
+    :`<h2>Invite someone</h2><p class="mnote">You get your own games with them. Your games with ${multi()&&PPL.rooms[0]?esc(withRoom(PPL.rooms[0].k===window.GN_ROOM?null:PPL.rooms[0].k,()=>nameOf(other(me)))):'others'} stay private.</p><label class="f"><span>Their name</span><input type="text" id="inv-name" maxlength="16" placeholder="Mom" autocomplete="off"></label><div class="row"><button class="btn" data-act="inv-go">Make their link</button><button class="btn ghost" data-act="close">Cancel</button></div>`;
+  else if(ui.modal==='with')h=`<h2>Play ${esc(titleOf(ui.pendingNew||''))} with?</h2><div class="withl">${pplPeople().map(p=>`<button class="prow wp" data-act="with-pick" data-k="${p.k}"><span class="pc">${withRoom(p.act?null:p.k,()=>ava(p.o))}</span><div class="ptx"><b>${esc(p.name)}</b></div><i>›</i></button>`).join('')}</div><button class="link" data-act="close">Cancel</button>`;
   else if(ui.modal.startsWith('new-')&&G[ui.modal.slice(4)])h=G[ui.modal.slice(4)].modal();
   else if(ui.modal.startsWith('rules-'))h=rulesHtml(ui.modal.slice(6));
   const ae=document.activeElement,fid=ae&&m.contains(ae)?ae.id:null;
@@ -13827,7 +13984,7 @@ function boardZoom(g){const sel=BZ_SEL[g.type];if(!sel)return;const el=document.
   box.addEventListener('dblclick',e=>{if(e.target.closest('.bzbtns'))return;const r=box.getBoundingClientRect();if(z.s>1.05){z.s=1;z.x=0;z.y=0}else{z.s=2;z.x=-(e.clientX-r.left-r.width/2);z.y=-(e.clientY-r.top-r.height/2)}bzClamp(z,r.width,r.height);bzSave(g.id);apply()});
   apply()}
 /* ---------- real-app shell (Nov 1): settings, splash, slide transitions, swipe back, connection banner, profile cards, achievements, holiday looks ---------- */
-const GN_VER='105';
+const GN_VER='106';
 /* --- achievements, worked out from finished games (nothing extra stored) --- */
 const ACH=[
  ['first','🏆','First win','Win any game',(w,all,p)=>w.length>=1],
@@ -13941,6 +14098,7 @@ function render(){try{pushWatch()}catch(_){}
   if(navSnapEl){navSnapEl.classList.add(ui.navDir>0?'fwd':'back');document.body.appendChild(navSnapEl);if(ui.navDir>0){v.classList.add('navtop')}setTimeout(()=>{navSnapEl.remove();v.classList.remove('navtop')},460)}
   if(ui.navDir){navSlide(ui.navDir);ui.navDir=0}
   try{gbarTint()}catch(_){}
+  try{if(ui.tour){const tw=document.getElementById('tourwrap');if(tw)tw.hidden=route.screen==='chars';else tourPaint()}}catch(_){}
   if(ui.enter){ui.enter=false;v.classList.remove('enter');void v.offsetWidth;v.classList.add('enter');clearTimeout(ui.enterT);ui.enterT=setTimeout(()=>v.classList.remove('enter'),520)}
 }
 
@@ -13956,7 +14114,7 @@ document.addEventListener('keydown',e=>{
 });
 document.addEventListener('click',async e=>{
   const t=e.target.closest('[data-act]');if(!t||t.disabled)return;const a=t.dataset.act;
-  if(!me&&!['who','names','names-save','back-who'].includes(a)){openModal('who');return}
+  if(!me&&!['who','names','names-save','back-who','code-go'].includes(a)){openModal('who');return}
   const g=cur();
   if(/-again$/.test(a)&&g&&g.status==='done'&&g.rematchId){const r=games.find(x=>x.id===g.rematchId&&x.status!=='done'&&!x.archived);if(r){go(r.id);return}}
   switch(a){
@@ -13982,10 +14140,26 @@ document.addEventListener('click',async e=>{
     case 'home-edit':ui.homeEdit=!ui.homeEdit;render();return;
     case 'fav':{const f=homePrefs(),k=t.dataset.k;f.fav=f.fav.includes(k)?f.fav.filter(x=>x!==k):[...f.fav,k];homePrefsSet(f);render();return}
     case 'hide':{const f=homePrefs(),k=t.dataset.k;f.hide=f.hide.includes(k)?f.hide.filter(x=>x!==k):[...f.hide,k];if(f.hide.includes(k))f.fav=f.fav.filter(x=>x!==k);homePrefsSet(f);render();return}
-    case 'tab':setTab(t.dataset.t);ui.q='';ui.homeEdit=false;render();scrollTo(0,0);return;
+    case 'tab':setTab(t.dataset.t);ui.q='';ui.homeEdit=false;ui.tstOn=0;render();scrollTo(0,0);return;
+    case 'pface':{const k=t.dataset.k||null;if(!k||k===window.GN_ROOM){ui.roomF=k;try{sessionStorage.setItem('gn-roomf',k||'')}catch(_){}render();return}try{sessionStorage.setItem('gn-roomf',k)}catch(_){}roomSwitch(k,{tab:'play'});return}
+    case 'invite':ui.invRes=null;openModal('invite');setTimeout(()=>{const i=document.getElementById('inv-name');i&&i.focus()},80);return;
+    case 'inv-go':{const nmv=(document.getElementById('inv-name')||{}).value;t.disabled=true;const r=await pplInvite(nmv);t.disabled=false;if(r){ui.invRes=r;renderModal()}return}
+    case 'inv-share':if(ui.invRes){const r=await pplShare(ui.invRes.link,ui.invRes.name);if(r!=='cancel'){closeModal();setTab('people');render()}}return;
+    case 'plink':{const r=await pplLinkFor(t.dataset.k);if(r)await pplShare(r.link,r.name);return}
+    case 'preset':{const r=await pplResetLink(t.dataset.k);if(r){toast('New link made. The old one no longer works.');await pplShare(r.link,r.name)}return}
+    case 'pcode':await pplCode();return;
+    case 'code-go':await pplUseCode((document.getElementById('codein')||{}).value);return;
+    case 'testers':ui.tstOn=1;ui.tst=null;render();viewTestersLoad();return;
+    case 'tst-back':ui.tstOn=0;render();return;
+    case 'tour-next':ui.tour.step=(ui.tour.step||0)+1;tourPaint();return;
+    case 'tour-chars':ui.tour.step=2;ui.tourBack=1;tourPaint();document.getElementById('tourwrap').hidden=true;route={screen:'chars',id:null};render();return;
+    case 'tour-done':try{localStorage.setItem('gn-tour-'+ui.tour.pk,'1')}catch(_){}ui.tour=null;tourPaint();return;
+    case 'tour-game':{try{localStorage.setItem('gn-tour-'+ui.tour.pk,'1')}catch(_){}ui.tour=null;tourPaint();const k=t.dataset.k;if(NOSHEET.has(k)&&G[k]){await G[k].start();return}openModal('new-'+k);return}
+    case 'with-pick':{const k=ui.pendingNew,r=t.dataset.k;closeModal();if(!k)return;if(r===window.GN_ROOM){if(NOSHEET.has(k)&&G[k]){await G[k].start();return}openModal('new-'+k);return}roomSwitch(r,{newk:k});return}
+
     case 'cat2':ui.cat2=t.dataset.c;render();return;
     case 'away-x':ui.awayX=1;awaySave();render();return;
-    case 'surprise':{const k=surpriseKey();if(!k)return;toast('🎲 '+titleOf(k)+'!');ui.rematchFrom=null;if(NOSHEET.has(k)&&G[k]){await G[k].start();return}openModal('new-'+k);return}
+    case 'surprise':{const k=surpriseKey();if(!k)return;toast('🎲 '+titleOf(k)+'!');ui.rematchFrom=null;if(multi()&&!ui.roomF&&pplPeople().length>1){ui.pendingNew=k;openModal('with');return}if(NOSHEET.has(k)&&G[k]){await G[k].start();return}openModal('new-'+k);return}
     case 'cat':catSel=t.dataset.c;try{localStorage.setItem('gn2-cat',catSel)}catch(_){}render();return;
     case 'res-all':ui.resAll=!ui.resAll;render();return;
     case 'seen-all':notices().forEach(n=>markSeen(n.g));render();return;
@@ -13993,8 +14167,8 @@ document.addEventListener('click',async e=>{
       ui.rematchFrom=og.id;const prev=route;route={screen:'game',id:og.id};try{await G[og.type].act(og.type+'-again',t,og)}catch(err){console.error(err)}
       if(route.screen==='game'&&route.id===og.id){route=prev;if(!ui.modal)ui.rematchFrom=null;render()}return}
     case 'home':route={screen:'home',id:null};ui.g={};ui.enter=true;ui.navDir=-1;render();scrollTo(0,ui.homeY||0);return;
-    case 'open':{const r=t.getBoundingClientRect();ui.zoomFrom={x:r.left+r.width/2,y:r.top+r.height/2};go(t.dataset.id);return}
-    case 'new':ui.rematchFrom=null;if(NOSHEET.has(t.dataset.k)&&G[t.dataset.k]){await G[t.dataset.k].start();return}openModal('new-'+t.dataset.k);return;
+    case 'open':{if(t.dataset.room&&t.dataset.room!==window.GN_ROOM){roomSwitch(t.dataset.room,{open:t.dataset.id});return}const r=t.getBoundingClientRect();ui.zoomFrom={x:r.left+r.width/2,y:r.top+r.height/2};go(t.dataset.id);return}
+    case 'new':ui.rematchFrom=null;if(multi()&&!ui.roomF&&pplPeople().length>1&&route.screen==='home'&&homeTab!=='stats'){ui.pendingNew=t.dataset.k;openModal('with');return}if(NOSHEET.has(t.dataset.k)&&G[t.dataset.k]){await G[t.dataset.k].start();return}openModal('new-'+t.dataset.k);return;
     case 'rules':{const g=cur();if(g)openModal('rules-'+g.type);return}
     case 'resign':{t.dataset.act='resign2';t.textContent='Tap again to give '+nameOf(other(me))+' the win';return}
     case 'resign2':{const g=cur();closeModal();if(g&&g.status==='active'){const p={status:'done',winner:other(me),resigned:me,updatedAt:now()};try{clearTimeout((store.pend[g.id]||{}).t);delete store.pend[g.id];undoBar()}catch(_){}await store.run(db=>db.doc('games/'+g.id).update(p),()=>{if(store.local.games[g.id])deepMerge(store.local.games[g.id],p)});toast('You resigned. '+nameOf(other(me))+' wins this one.')}return}
@@ -14005,7 +14179,7 @@ document.addEventListener('click',async e=>{
     case 'practice-on':store.setPractice(true);return;
     case 'practice-off':store.setPractice(false);return;
     case 'nudge':nudgeSend();return;
-    case 'who':me=t.dataset.p;try{localStorage.setItem('gn2-me',me)}catch(err){}closeModal();ui.g={};cvDestroy();if(route.screen==='settings')route={screen:'home',id:null};render();return;
+    case 'who':me=t.dataset.p;try{localStorage.setItem('gn2-me',me);const rr=PPL.rooms.find(x=>x.k===window.GN_ROOM);if(rr){rr.seat=me;pplSave()}}catch(err){}closeModal();ui.g={};cvDestroy();if(route.screen==='settings')route={screen:'home',id:null};render();return;
     case 'names':openModal('names');return;
     case 'back-who':openModal('who');return;
     case 'names-save':{const n1=$('#n1').value.trim()||'Player 1',n2=$('#n2').value.trim()||'Player 2';names={p1:n1.slice(0,16),p2:n2.slice(0,16)};await store.setNames(names);if(me)closeModal();else openModal('who');render();return}
@@ -14014,7 +14188,7 @@ document.addEventListener('click',async e=>{
 });
 
 render();
-if(!me){if(practice){me='p1'}else openModal('who')}
+if(!me){if(practice){me='p1'}else if(!window.GN_FB)openModal('who')}
 store.start();
 })();
 </script>
