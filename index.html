@@ -110,6 +110,7 @@ document.addEventListener('touchmove',e=>{if(!document.body.classList.contains('
 .tkgo{min-width:140px}.tkgo[disabled]{opacity:.5}
 .tcvfoot{padding-top:10px}
 
+
 /* ---- characters ---- */
 .tsc.rpssc{background:linear-gradient(180deg,#14B8A6,#0E7C70)}
 .rpsst{font:800 .64rem var(--body);color:#fff;opacity:.85;margin-top:2px}
@@ -4019,8 +4020,49 @@ html:has(.mtwrap),body:has(.mtwrap){background:linear-gradient(180deg,var(--bg) 
 .mtrs table{width:100%;border-collapse:collapse;margin:8px 0 12px;font-variant-numeric:tabular-nums}.mtrs th,.mtrs td{padding:6px;border-bottom:1px solid var(--hair);text-align:center}.mtrs th:first-child{text-align:left}
 .gcard .tagw{display:flex;flex-direction:column;align-items:flex-end;gap:3px;flex:none}.gcard .ago{font-size:.66rem;font-weight:800;color:var(--muted)}
 .bar .nudge{margin-left:auto;width:38px;height:38px;border-radius:50%;border:0;background:#34C759;color:#fff;display:grid;place-items:center;box-shadow:0 3px 8px rgba(52,199,89,.35);flex:none}.bar .nudge svg{width:20px;height:20px}.bar .nudge+.pill{margin-left:0}
+
+/* ---- Nov 10: one frame, one motion system ---- */
+:root{--t-tap:.12s;--t-ui:.24s;--t-screen:.38s;--t-moment:.7s;--e-move:cubic-bezier(.2,.8,.2,1);--e-land:cubic-bezier(.3,1.4,.5,1)}
+#view.zoomin{animation:gnzoom2 var(--t-screen) var(--e-move) both}@keyframes gnzoom2{from{clip-path:circle(24px at var(--zx) var(--zy))}to{clip-path:circle(150% at var(--zx) var(--zy))}}
+#view.slidein{animation:slidein2 var(--t-screen) var(--e-move) both}@keyframes slidein2{from{transform:translateX(100%)}to{transform:none}}
+#view.slideback{animation:slideback2 var(--t-screen) var(--e-move) both}@keyframes slideback2{from{transform:translateX(-24%)}to{transform:none}}
+#view.navtop{position:relative;z-index:6;background:var(--bg,#fff);min-height:100vh}
+#navsnap{position:fixed;inset:0;overflow:hidden;pointer-events:none;background:transparent}
+#navsnap.fwd{z-index:5}
+#navsnap.back{z-index:7;box-shadow:-12px 0 30px rgba(0,0,0,.18);animation:snapout var(--t-screen) var(--e-move) forwards}
+@keyframes snapout{to{transform:translateX(100%)}}
+.gnsent{position:fixed;left:50%;top:84px;transform:translate(-50%,-50%);z-index:40;background:#fff;color:#111114;border-radius:99px;padding:8px 16px;font:900 .82rem var(--body);letter-spacing:.04em;box-shadow:0 6px 18px rgba(0,0,0,.22);pointer-events:none;animation:gnsent 1.05s var(--e-land) both}
+.gnsent b{color:#34C759}
+@keyframes gnsent{0%{opacity:0;transform:translate(-50%,-50%) scale(.6)}18%{opacity:1;transform:translate(-50%,-50%) scale(1)}78%{opacity:1;transform:translate(-50%,-50%) scale(1)}100%{opacity:0;transform:translate(-50%,-70%) scale(.96)}}
+/* game bar takes the game's own color */
+.bar.gbar.tint{background:var(--tint);color:#fff;margin:-8px -16px -10px;padding:calc(8px + 2px) 16px 8px;position:relative;z-index:2}
+.bar.gbar.tint h1{color:#fff}
+.bar.gbar.tint .back,.bar.gbar.tint .hq{background:rgba(255,255,255,.2);color:#fff;border:0}
+.bar.gbar.tint .pill{background:rgba(255,255,255,.2);color:#fff;border-color:transparent}
+.bar.gbar.tint .herepill{background:rgba(255,255,255,.22);color:#fff}
+.bar.gbar.tint+*{border-top-left-radius:0!important;border-top-right-radius:0!important}
+html.gtinted,html.gtinted body{background:var(--gtint)}
+/* readable help lines */
+.tnote{font-size:.86rem!important;color:rgba(255,255,255,.95)!important;line-height:1.3}
+/* messages always drop from the top, never over a button */
+html body #toast{bottom:auto;top:calc(10px + env(safe-area-inset-top,0px));animation-name:toastdown}
+/* one disabled look: same button, quieter, never muddy */
+#view .tsc .btn:disabled,#view .tsc .btn[disabled],#view .tkbar .btn[disabled]{opacity:1;background:rgba(255,255,255,.22)!important;color:rgba(255,255,255,.85)!important;box-shadow:none!important}
+/* press feedback everywhere */
+.btn,.pill,.tkw,.rpsb,.gcard,.t3{transition:transform var(--t-tap) var(--e-move)}
+.btn:not(:disabled):active,.tkw:not(:disabled):active{transform:scale(.96)}
+/* no accidental selection, callouts or double-tap zoom in games */
+body.ingame #view{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+body.ingame #view input,body.ingame #view textarea{-webkit-user-select:text;user-select:text}
+button,a,[data-act]{touch-action:manipulation}
+/* Memory Match backs: bold and easy to see */
+.mmb{background:radial-gradient(circle at 25% 25%,#FF7AA8 0 3px,transparent 3.5px) 0 0/14px 14px,radial-gradient(circle at 75% 75%,#FFD60A 0 3px,transparent 3.5px) 0 0/14px 14px,#2B2D42!important;border:3px solid #fff!important}
+@media (prefers-reduced-motion:reduce){#navsnap{display:none}.gnsent{animation-duration:.01s}}
+
+.bgshout:disabled{color:rgba(255,255,255,.85)}
 </style>
 
+<div id="splash"><div class="splin"><p class="splbrand"><span class="d" aria-hidden="true"><i></i><i></i><i></i><i></i></span>Game Night</p></div></div><script>setTimeout(()=>{const s=document.getElementById('splash');if(s)s.remove()},6000)</script>
 <div class="wrap">
   <header class="top">
     <p class="brand"><span class="d" aria-hidden="true"><i></i><i></i><i></i><i></i></span>Game Night</p>
@@ -4447,7 +4489,7 @@ const store={db:null,local:{games:{},meta:null},remote:[],key(){return practice?
   saveLocal(){try{localStorage.setItem(this.key(),JSON.stringify(this.local))}catch(e){}},
   pushLocal(){games=Object.entries(this.local.games).map(([id,d])=>({id,...clone(d)}));if(this.local.meta&&this.local.meta.names)names={...names,...this.local.meta.names};if(this.local.meta&&this.local.meta.chars&&!this.db)window.chars=this.local.meta.chars;render()},
   async start(){
-    try{CH.preload();if(!practice)splashOn()}catch(_){}
+    try{CH.preload();if(!practice)splashOn();else splashOff()}catch(_){}
     this.loadLocal();this.pushLocal();
     let db=null;if(window.GN_FB){/* hosted copy: the room key arrives once in the link (#k=...), then lives on this phone */
       let k=null;try{const m=/[#&]k=([A-Za-z0-9_-]{8,})/.exec(location.hash||'');if(m){k=m[1];localStorage.setItem('gn-room',k)/* the key stays in the address so Add to Home Screen keeps it (iOS home-screen apps get their own storage) */}else k=localStorage.getItem('gn-room')}catch(e){}
@@ -4471,6 +4513,7 @@ const store={db:null,local:{games:{},meta:null},remote:[],key(){return practice?
   },
   create(id,data){return this.run(db=>db.collection('games').doc(id).set(data),()=>{this.local.games[id]=clone(data)})},
   update(id,patch){patch.updatedAt=now();
+    try{const gs=games.find(x=>x.id===id);if(gs&&!practice&&gs.status==='active'&&gs.turn===me&&patch.turn&&patch.turn!==me)setTimeout(gnSent,30)}catch(_){}
     /* Nov 1: a 3-second undo for turn games. The move shows right away on this phone and is sent when the bar runs out (or the app is closed). */
     const g0=games.find(x=>x.id===id);if(this.db&&!practice&&g0&&UNDO_T.has(g0.type)&&g0.status==='active'&&(g0.turn===me||this.pend[id])){const P=this.pend[id]||(this.pend[id]={prev:clone(g0),patch:{}});deepMerge(P.patch,clone(patch));deepMerge(g0,clone(patch));
       clearTimeout(P.t);P.t=setTimeout(()=>this.flush(id),3000);P.until=Date.now()+3000;undoBar();render();return Promise.resolve()}
@@ -4496,7 +4539,7 @@ const newId=()=>'g'+now().toString(36)+Math.random().toString(36).slice(2,6);
 const cur=()=>route.screen==='game'?games.find(x=>x.id===route.id):null;
 const upd=(g,patch)=>{try{gnSfx('tap')}catch(_){}return store.update(g.id,patch)};
 function base(type,extra){return Object.assign({type,status:'active',winner:null,by:me,createdAt:now(),updatedAt:now()},extra)}
-function go(id){route={screen:'game',id};ui.g={};ui.enter=true;ui.navDir=1;closeModal();render();scrollTo(0,0);setTimeout(relayout,350);setTimeout(relayout,1100)}
+function go(id){if(route.screen==='home')ui.homeY=scrollY;route={screen:'game',id};ui.g={};ui.enter=true;ui.navDir=1;closeModal();render();scrollTo(0,0);setTimeout(relayout,350);setTimeout(relayout,1100)}
 async function create(doc){const id=newId();let from=ui.rematchFrom||null;ui.rematchFrom=null;if(!from){const c=cur();if(c&&c.status==='done'&&doc&&c.type===doc.type)from=c.id}if(from){const og=games.find(x=>x.id===from);if(og&&doc&&og.type===doc.type)doc.rematchOf=from;else from=null}await store.create(id,doc);try{if(pushOn()&&doc&&G[doc.type]){const t=pushTitle(doc);let mine=false;try{mine=doc.status==='active'&&!!G[doc.type].myMove(doc)}catch(_){}PUSH.mm[id]=mine;if(mine){PUSH.ch[id]=1}else pushSend(other(me),`${nameOf(me)} challenged you!`,`${t}${from?' rematch':''} is waiting for you. Tap to play.`).then(ok=>{if(ok)toast(`Sent! ${nameOf(other(me))} gets a notification.`)});if(!mine)PUSH.last[id]=Date.now()}}catch(_){}if(from)await store.run(db=>db.doc('games/'+from).update({rematchId:id}),()=>{if(store.local.games[from])store.local.games[from].rematchId=id});go(id)}
 
 /* ---------- shared ui bits ---------- */
@@ -13644,7 +13687,7 @@ function renderModal(){
 }
 
 /* ---------- render ---------- */
-const UNDO_T=new Set(['uttt','clue','race','life','trail','slides','battle','who','mtrain','fish','ttt','dots','c4','hang']);
+const UNDO_T=new Set([]);/* Nov 10: no undo, moves send right away */
 function undoBar(){let b=document.getElementById('undobar');const ids=Object.keys(store.pend);if(!ids.length){if(b)b.remove();clearInterval(undoBar.iv);undoBar.iv=null;return}
   if(!b){b=document.createElement('div');b.id='undobar';b.innerHTML='<span></span><button type="button">Undo</button>';document.body.appendChild(b);b.querySelector('button').addEventListener('click',()=>{const id=Object.keys(store.pend).pop();if(id)store.undo(id)})}
   const tick=()=>{const ids=Object.keys(store.pend);if(!ids.length)return undoBar();const left=Math.max(0,Math.ceil((store.pend[ids[ids.length-1]].until-Date.now())/1000));b.querySelector('span').textContent=`Sending your move in ${left}…`};tick();if(!undoBar.iv)undoBar.iv=setInterval(tick,250)}
@@ -13671,7 +13714,7 @@ function boardZoom(g){const sel=BZ_SEL[g.type];if(!sel)return;const el=document.
   box.addEventListener('dblclick',e=>{if(e.target.closest('.bzbtns'))return;const r=box.getBoundingClientRect();if(z.s>1.05){z.s=1;z.x=0;z.y=0}else{z.s=2;z.x=-(e.clientX-r.left-r.width/2);z.y=-(e.clientY-r.top-r.height/2)}bzClamp(z,r.width,r.height);bzSave(g.id);apply()});
   apply()}
 /* ---------- real-app shell (Nov 1): settings, splash, slide transitions, swipe back, connection banner, profile cards, achievements, holiday looks ---------- */
-const GN_VER='103';
+const GN_VER='104';
 /* --- achievements, worked out from finished games (nothing extra stored) --- */
 const ACH=[
  ['first','🏆','First win','Win any game',(w,all,p)=>w.length>=1],
@@ -13723,10 +13766,23 @@ function netBar(){let b=document.getElementById('netbar');const msg=NET.off?'Off
   if(!msg){if(b)b.remove();return}if(!b){b=document.createElement('div');b.id='netbar';document.body.appendChild(b)}b.textContent=msg}
 /* --- splash: logo + both characters while it connects --- */
 function splashOff(){const s=document.getElementById('splash');if(!s||s.classList.contains('out'))return;s.classList.add('out');setTimeout(()=>s.remove(),450)}
-function splashOn(){if(document.getElementById('splash'))return;const s=document.createElement('div');s.id='splash';
+function splashOn(){let s=document.getElementById('splash');if(s&&s.querySelector('.splchars'))return;if(!s){s=document.createElement('div');s.id='splash';document.body.appendChild(s)}
   s.innerHTML=`<div class="splin"><div class="splchars"><span>${CH.full('p1','cheer')}</span><span>${CH.full('p2','cheer')}</span></div><p class="splbrand"><span class="d" aria-hidden="true"><i></i><i></i><i></i><i></i></span>Game Night</p><small>for ${esc(nameOf('p1'))} &amp; ${esc(nameOf('p2'))}</small></div>`;
-  document.body.appendChild(s);setTimeout(splashOff,4000)}
+  setTimeout(splashOff,4000)}
 /* --- slide between screens, swipe from the left edge to go back --- */
+
+/* ---- Nov 10 frame + motion pass ---- */
+function navSnap(){const v=document.getElementById('view');if(!v||matchMedia('(prefers-reduced-motion: reduce)').matches||!v.firstElementChild)return null;const r=v.getBoundingClientRect(),w=document.createElement('div');w.id='navsnap';
+  const c=v.cloneNode(true);c.removeAttribute('id');c.className='navclone';c.style.cssText=`position:absolute;left:${r.left}px;top:${r.top}px;width:${r.width}px;margin:0`;
+  const src=v.querySelectorAll('canvas'),dst=c.querySelectorAll('canvas');src.forEach((x,i)=>{try{dst[i].getContext('2d').drawImage(x,0,0)}catch(_){}});w.appendChild(c);return w}
+function gnSent(){if(route.screen!=='game')return;const cap=document.querySelector('#view .tcap,#view .twcap,#view .pill-turn');const el=document.createElement('div');el.className='gnsent';el.innerHTML='<b>✓</b> Sent';
+  if(cap){const r=cap.getBoundingClientRect();if(r.width){el.style.left=(r.left+r.width/2)+'px';el.style.top=(r.top+r.height/2)+'px'}}document.body.appendChild(el);try{gnBuzz&&gnBuzz(10)}catch(_){}setTimeout(()=>el.remove(),1100)}
+function gnColorOf(el){for(let k=0;el&&k<3;k++,el=el.firstElementChild){const cs=getComputedStyle(el);if(cs.backgroundColor&&!/rgba\(0, 0, 0, 0\)|transparent/.test(cs.backgroundColor))return cs.backgroundColor;const m=/(rgba?\([^)]*\)|#[0-9a-fA-F]{3,8})/.exec(cs.backgroundImage||'');if(m)return m[1]}return null}
+function gbarTint(){const meta=document.querySelector('meta[name=theme-color]');const set=c=>{if(meta)meta.setAttribute('content',c);document.documentElement.style.setProperty('--gtint',c)};
+  const bar=document.querySelector('#view>.bar.gbar');if(route.screen!=='game'||!bar){document.documentElement.classList.remove('gtinted');set(document.documentElement.classList.contains('dark')?'#111216':'#ffffff');return}
+  let nx=bar.nextElementSibling;while(nx&&(nx.offsetHeight<4||getComputedStyle(nx).position==='absolute'||getComputedStyle(nx).position==='fixed'))nx=nx.nextElementSibling;const col=nx&&gnColorOf(nx);
+  if(!col||/255, 255, 255\)|#fff\b|#ffffff/i.test(col)){bar.classList.remove('tint');document.documentElement.classList.remove('gtinted');return}
+  bar.classList.add('tint');bar.style.setProperty('--tint',col);document.documentElement.classList.add('gtinted');set(col)}
 function navSlide(dir){const v=document.getElementById('view');const zf=ui.zoomFrom;ui.zoomFrom=null;if(!v||matchMedia('(prefers-reduced-motion: reduce)').matches)return;v.classList.remove('slidein','slideback','zoomin');void v.offsetWidth;
   if(dir>0&&zf){const r=v.getBoundingClientRect();v.style.setProperty('--zx',Math.round(zf.x-r.left)+'px');v.style.setProperty('--zy',Math.round(zf.y-r.top)+'px');v.classList.add('zoomin')}else v.classList.add(dir>0?'slidein':'slideback');clearTimeout(navSlide.t);navSlide.t=setTimeout(()=>{v.classList.remove('slidein','slideback','zoomin');v.style.transformOrigin=''},400)}
 (()=>{let sx=null,sy=0,t0=0;addEventListener('touchstart',e=>{const t=e.touches[0];if(e.touches.length===1&&t.clientX<22&&route.screen!=='home'){sx=t.clientX;sy=t.clientY;t0=Date.now()}else sx=null},{passive:true});
@@ -13757,6 +13813,7 @@ function practiceHandoff(){clearTimeout(pracT);if(!practice)return;pracT=setTime
 function render(){try{pushWatch()}catch(_){}
   if(drag){ui.needRender=true;return}
   ui.vpKey=vpKey();renderChips();
+  const navSnapEl=ui.navDir?navSnap():null;if(ui.navDir)ui.enter=false;
   const v=$('#view'),ae=document.activeElement,fid=ae&&ae.id&&v.contains(ae)?ae.id:null,pos=fid?ae.selectionStart:null;
   const g=cur();
   if(route.screen==='settings'&&me){document.body.classList.remove('ingame');document.documentElement.classList.remove('ingame');cvDestroy();v.innerHTML=viewSettings()}
@@ -13768,7 +13825,9 @@ function render(){try{pushWatch()}catch(_){}
   shellNotify();try{hereBeat()}catch(_){}
   {let ps=document.getElementById('profov');if(ui.prof&&me){if(!ps){ps=document.createElement('div');ps.id='profov';document.body.appendChild(ps)}ps.innerHTML=profSheet(ui.prof)}else if(ps)ps.remove()}
   try{achCheck();holApply();netBar();gnBadge()}catch(_){}
+  if(navSnapEl){navSnapEl.classList.add(ui.navDir>0?'fwd':'back');document.body.appendChild(navSnapEl);if(ui.navDir>0){v.classList.add('navtop')}setTimeout(()=>{navSnapEl.remove();v.classList.remove('navtop')},460)}
   if(ui.navDir){navSlide(ui.navDir);ui.navDir=0}
+  try{gbarTint()}catch(_){}
   if(ui.enter){ui.enter=false;v.classList.remove('enter');void v.offsetWidth;v.classList.add('enter');clearTimeout(ui.enterT);ui.enterT=setTimeout(()=>v.classList.remove('enter'),520)}
 }
 
@@ -13816,7 +13875,7 @@ document.addEventListener('click',async e=>{
     case 'rematch':{const og=games.find(x=>x.id===t.dataset.id);if(!og||!G[og.type])return;const r=og.rematchId&&games.find(x=>x.id===og.rematchId&&x.status!=='done'&&!x.archived);if(r){go(r.id);return}
       ui.rematchFrom=og.id;const prev=route;route={screen:'game',id:og.id};try{await G[og.type].act(og.type+'-again',t,og)}catch(err){console.error(err)}
       if(route.screen==='game'&&route.id===og.id){route=prev;if(!ui.modal)ui.rematchFrom=null;render()}return}
-    case 'home':route={screen:'home',id:null};ui.g={};ui.enter=true;ui.navDir=-1;render();scrollTo(0,0);return;
+    case 'home':route={screen:'home',id:null};ui.g={};ui.enter=true;ui.navDir=-1;render();scrollTo(0,ui.homeY||0);return;
     case 'open':{const r=t.getBoundingClientRect();ui.zoomFrom={x:r.left+r.width/2,y:r.top+r.height/2};go(t.dataset.id);return}
     case 'new':ui.rematchFrom=null;if(NOSHEET.has(t.dataset.k)&&G[t.dataset.k]){await G[t.dataset.k].start();return}openModal('new-'+t.dataset.k);return;
     case 'rules':{const g=cur();if(g)openModal('rules-'+g.type);return}
