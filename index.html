@@ -4060,6 +4060,63 @@ button,a,[data-act]{touch-action:manipulation}
 @media (prefers-reduced-motion:reduce){#navsnap{display:none}.gnsent{animation-duration:.01s}}
 
 .bgshout:disabled{color:rgba(255,255,255,.85)}
+
+/* ---- Nov 10 phase 2: tabs + new home ---- */
+body:not(.ingame) .wrap{padding-bottom:calc(86px + env(safe-area-inset-bottom,0px))}
+.tabbar{position:fixed;left:0;right:0;bottom:0;z-index:15;display:flex;justify-content:center;gap:4px;padding:6px max(12px,env(safe-area-inset-left,0px)) calc(8px + env(safe-area-inset-bottom,0px));background:color-mix(in srgb,var(--surface,#fff) 88%,transparent);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-top:1px solid var(--hair,#E7E8EE)}
+.tabb{flex:1;max-width:150px;border:0;background:none;display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 4px 2px;color:var(--muted,#7A7D8A);font:800 .72rem var(--body);position:relative;cursor:pointer;min-height:48px}
+.tabb svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.tabb:first-child svg path{fill:currentColor;stroke-width:1.6}
+.tabb.on{color:var(--ink,#111114)}
+.tabb.on::before{content:'';position:absolute;top:0;width:28px;height:3px;border-radius:2px;background:var(--pop,#FFD60A)}
+.tabb em{position:absolute;top:2px;left:calc(50% + 6px);min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:#FF3B30;color:#fff;font:900 .68rem/18px var(--body);font-style:normal;box-shadow:0 0 0 2px var(--surface,#fff)}
+.tabb:active{transform:scale(.94)}
+body.ingame .tabbar{display:none}
+.away{display:flex;gap:8px;align-items:flex-start;background:var(--chip,#F1F2F6);border-radius:14px;padding:10px 12px;font-size:.88rem;line-height:1.35;animation:rise var(--t-ui) var(--e-move) both}
+.away .awi{font-size:1rem;line-height:1.2}.away b{font-weight:900}
+.away .awx{margin-left:auto;border:0;background:none;color:var(--muted,#7A7D8A);font-size:1.2rem;line-height:1;padding:0 2px;min-width:28px;min-height:28px}
+.heros{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;margin-inline:-16px;padding:2px 16px 6px;scrollbar-width:none}
+.heros::-webkit-scrollbar{display:none}
+.hero{flex:0 0 calc(100% - 22px);scroll-snap-align:center;background:var(--pop,#FFD60A);color:#2B2300;border-radius:22px;padding:12px;display:flex;flex-direction:column;gap:10px;box-shadow:0 6px 0 #D9B400}
+.heros .hero:only-child{flex-basis:100%}
+.hrow1{display:flex;align-items:center;gap:10px}
+.hav{width:40px;height:40px;border-radius:50%;overflow:hidden;background:#fff;flex:none;display:grid;place-items:center;box-shadow:0 0 0 2px #fff}
+.hav>*{width:100%;height:100%}
+.htx{display:flex;flex-direction:column;min-width:0}.htx b{font:800 1.45rem/1 var(--display);letter-spacing:-.02em}.htx small{font-weight:800;font-size:.82rem;color:#5A4B00;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hboard{border:0;background:#fff;border-radius:16px;padding:12px;display:flex;flex-direction:column;align-items:center;gap:8px;cursor:pointer;color:#3B3D48}
+.hboard .hb{width:132px;height:132px}
+.hboard .hbi{width:96px;height:96px}
+.hline{font-weight:800;font-size:.86rem;text-align:center}
+.hgo{display:flex;justify-content:space-between;align-items:center}
+.hpg{font:900 .72rem var(--body);letter-spacing:.06em;text-transform:uppercase;color:#5A4B00}
+.hplay{border:0;background:#111114;color:#FFD60A;border-radius:99px;padding:11px 30px;font:800 1rem var(--display);cursor:pointer;transition:transform var(--t-tap) var(--e-move)}
+.hplay:active{transform:scale(.95)}
+.caught{background:var(--surface,#fff);border:1px solid var(--hair,#E7E8EE);border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:4px;text-align:center;align-items:center}
+.caught b{font:800 1.15rem var(--display)}.caught span{color:var(--muted,#6B6E7C);font-weight:700;font-size:.9rem}
+.cbtn{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap;justify-content:center}
+.chprompt{display:flex;align-items:center;gap:12px;border:1px dashed var(--hair,#D9DAE1);background:var(--surface,#fff);border-radius:16px;padding:8px 12px;text-align:left;cursor:pointer}
+.chprompt .chpf{width:40px;height:56px;flex:none;display:block}.chprompt .chpf svg{width:100%;height:100%}
+.chprompt b{display:block;font:800 .98rem var(--display)}.chprompt small{color:var(--muted,#6B6E7C);font-weight:700}.chprompt i{margin-left:auto;font-style:normal;font-size:1.3rem;color:var(--muted,#9A9DAA)}
+.srow{display:flex;gap:8px;align-items:center;position:sticky;top:env(safe-area-inset-top,0px);z-index:4;background:var(--bg,#fff);padding:6px 0;margin-top:-6px}
+.sfield{flex:1;display:flex;align-items:center;gap:8px;background:var(--chip,#F1F2F6);border-radius:14px;padding:0 12px;min-height:46px;color:var(--muted,#7A7D8A);font-size:1.1rem}
+.sfield:focus-within{background:var(--surface,#fff);box-shadow:0 0 0 2px var(--ink,#111114)}
+.sfield input{flex:1;border:0;background:none;font:800 1rem var(--body);color:var(--ink,#111114);min-width:0;outline:none;-webkit-user-select:text;user-select:text}
+.surp{border:0;background:var(--ink,#111114);color:var(--surface,#fff);border-radius:14px;padding:0 14px;min-height:46px;font:800 .9rem var(--display);white-space:nowrap;cursor:pointer;transition:transform var(--t-tap) var(--e-move)}
+.surp:active{transform:scale(.95) rotate(-3deg)}
+.t3 .t3m{font:900 .6rem var(--body);font-style:normal;letter-spacing:.05em;text-transform:uppercase;color:var(--muted,#8A8D9A)}
+.t3 mark{background:#FFF3B0;color:inherit;border-radius:3px}
+.stot{display:flex;align-items:center;justify-content:center;gap:16px;background:var(--surface,#fff);border:1px solid var(--hair,#E7E8EE);border-radius:20px;padding:16px}
+.stot .sp{display:flex;flex-direction:column;align-items:center;gap:2px}.stot .sav{width:52px;height:52px;border-radius:50%;overflow:hidden;display:block}.stot .sav>*{width:100%;height:100%}
+.stot b{font:800 2rem/1 var(--display);font-variant-numeric:tabular-nums}.stot .p1 b{color:var(--p1)}.stot .p2 b{color:var(--p2)}.stot small{font-weight:800;color:var(--muted,#6B6E7C)}
+.svs{font:900 .72rem var(--body);letter-spacing:.1em;text-transform:uppercase;color:var(--muted,#8A8D9A)}
+.sgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
+.sg{display:grid;grid-template-columns:32px 1fr auto;grid-template-rows:auto auto;gap:4px 8px;align-items:center;text-align:left;background:var(--surface,#fff);border:1px solid var(--hair,#E7E8EE);border-radius:14px;padding:8px 10px;cursor:pointer}
+.sg .ico{width:32px;height:32px;grid-row:1/3}.sgt{font:800 .82rem var(--display);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.sgr{display:flex;gap:6px;font:900 .82rem var(--body);font-variant-numeric:tabular-nums}.sgr .p1{color:var(--p1);font-style:normal}.sgr .p2{color:var(--p2);font-style:normal}
+.sgb{grid-column:2/4;display:flex;height:5px;border-radius:3px;overflow:hidden;gap:2px}.sgb i{display:block}.sgb .p1{background:var(--p1)}.sgb .p2{background:var(--p2)}
+#ptr{position:fixed;left:50%;top:calc(6px + env(safe-area-inset-top,0px));z-index:30;width:34px;height:34px;margin-top:-34px;border-radius:50%;background:var(--surface,#fff);box-shadow:0 4px 14px rgba(0,0,0,.18);display:grid;place-items:center;opacity:0;transform:translate(-50%,0);pointer-events:none}
+#ptr i{width:16px;height:16px;border-radius:50%;border:3px solid var(--hair,#D9DAE1);border-top-color:var(--ink,#111114)}
+#ptr.ready i{border-top-color:#34C759}#ptr.spin i{animation:ptrs .6s linear infinite}@keyframes ptrs{to{transform:rotate(360deg)}}
+html.dark .hboard{background:#1E2030;color:#E7E8EE}
 </style>
 
 <div id="splash"><div class="splin"><p class="splbrand"><span class="d" aria-hidden="true"><i></i><i></i><i></i><i></i></span>Game Night</p></div></div><script>setTimeout(()=>{const s=document.getElementById('splash');if(s)s.remove()},6000)</script>
@@ -4539,7 +4596,7 @@ const newId=()=>'g'+now().toString(36)+Math.random().toString(36).slice(2,6);
 const cur=()=>route.screen==='game'?games.find(x=>x.id===route.id):null;
 const upd=(g,patch)=>{try{gnSfx('tap')}catch(_){}return store.update(g.id,patch)};
 function base(type,extra){return Object.assign({type,status:'active',winner:null,by:me,createdAt:now(),updatedAt:now()},extra)}
-function go(id){if(route.screen==='home')ui.homeY=scrollY;route={screen:'game',id};ui.g={};ui.enter=true;ui.navDir=1;closeModal();render();scrollTo(0,0);setTimeout(relayout,350);setTimeout(relayout,1100)}
+function go(id){if(route.screen==='home')ui.homeY=scrollY;try{if(homeTab==='new'){setTab('play');ui.homeY=0}}catch(_){}route={screen:'game',id};ui.g={};ui.enter=true;ui.navDir=1;closeModal();render();scrollTo(0,0);setTimeout(relayout,350);setTimeout(relayout,1100)}
 async function create(doc){const id=newId();let from=ui.rematchFrom||null;ui.rematchFrom=null;if(!from){const c=cur();if(c&&c.status==='done'&&doc&&c.type===doc.type)from=c.id}if(from){const og=games.find(x=>x.id===from);if(og&&doc&&og.type===doc.type)doc.rematchOf=from;else from=null}await store.create(id,doc);try{if(pushOn()&&doc&&G[doc.type]){const t=pushTitle(doc);let mine=false;try{mine=doc.status==='active'&&!!G[doc.type].myMove(doc)}catch(_){}PUSH.mm[id]=mine;if(mine){PUSH.ch[id]=1}else pushSend(other(me),`${nameOf(me)} challenged you!`,`${t}${from?' rematch':''} is waiting for you. Tap to play.`).then(ok=>{if(ok)toast(`Sent! ${nameOf(other(me))} gets a notification.`)});if(!mine)PUSH.last[id]=Date.now()}}catch(_){}if(from)await store.run(db=>db.doc('games/'+from).update({rematchId:id}),()=>{if(store.local.games[from])store.local.games[from].rematchId=id});go(id)}
 
 /* ---------- shared ui bits ---------- */
@@ -4602,6 +4659,8 @@ function miniBoard(g){try{const C={p1:'#FF2D87',p2:'#1F6BFF'},wrap=(bg,inner)=>`
   if(g.type==='uttt'&&g.W){let h='';for(let k=0;k<9;k++){const x=5+(k%3)*9.6,y=5+Math.floor(k/3)*9.6,w=g.W[k];h+=`<rect x="${x}" y="${y}" width="8.4" height="8.4" rx="1.8" fill="${w==='X'?C[g.x]:w==='O'?C[other(g.x)]:'rgba(255,255,255,.18)'}"/>`;if(w==='.')for(let c=0;c<9;c++){const ch=g.b[k*9+c];if(ch!=='.')h+=`<rect x="${x+.6+(c%3)*2.6}" y="${y+.6+Math.floor(c/3)*2.6}" width="2" height="2" rx=".5" fill="${C[ch==='X'?g.x:other(g.x)]}"/>`}}return wrap('#3B4CB8',h)}
   if(g.type==='dots'&&g.n){const n=g.n,cs=24/n;let h='';for(let r=0;r<n;r++)for(let c=0;c<n;c++){const o=(g.boxes||{})[r+'-'+c];h+=`<rect x="${7+c*cs+.5}" y="${7+r*cs+.5}" width="${cs-1}" height="${cs-1}" rx="1" fill="${o?C[o]:'rgba(255,255,255,.12)'}"/>`}return wrap('#2A2F42',h)}
   if(g.type==='bingo'&&g.cards){const card=g.cards[me],cl=new Set(g.balls||[]),dd=g['d'+me]||'';let h='';for(let i=0;i<25;i++){const on=i===12||(dd[i]==='1'&&cl.has(card[i]));h+=`<rect x="${6.5+(i%5)*5.2}" y="${6.5+Math.floor(i/5)*5.2}" width="4.4" height="4.4" rx="1" fill="${on?'#FF4F8B':'rgba(255,255,255,.85)'}"/>`}return wrap('#7B3FE4',h)}
+  if(g.type==='mancala'&&g.b){let h='';const bs=me==='p1'?0:7,os=me==='p1'?7:0;h+=`<rect x="7" y="4" width="24" height="5" rx="2.5" fill="#6F4325"/><rect x="7" y="29" width="24" height="5" rx="2.5" fill="#6F4325"/><text x="19" y="8.3" font-size="4" font-weight="900" text-anchor="middle" fill="#fff">${g.b[os+6]}</text><text x="19" y="33.3" font-size="4" font-weight="900" text-anchor="middle" fill="#FFD60A">${g.b[bs+6]}</text>`;for(let r=0;r<6;r++){const L=g.b[os+5-r],R=g.b[bs+r],y=11.5+r*3.2;h+=`<circle cx="14" cy="${y}" r="1.45" fill="#6F4325"/><circle cx="24" cy="${y}" r="1.45" fill="${R?'#FFD60A':'#6F4325'}"/>`;if(L)h+=`<circle cx="14" cy="${y}" r=".7" fill="#fff"/>`}return wrap('#9C6644',h)}
+  if(g.type==='memory'&&g.cards){const got=g.got||{};let h='';g.cards.forEach((f,i)=>{h+=`<rect x="${7.5+(i%4)*6}" y="${4.5+Math.floor(i/4)*6}" width="5" height="5" rx="1" fill="${got[i]?C[got[i]]:'#2B2D42'}"/>`});return wrap('#FF7AA8',h)}
 }catch(_){}return ''}
 function rulesHtml(k){const r=RULES[k];if(!r)return '';const t=(G[k]&&G[k].title)||'';
  const g=cur(),rec=h2h(k),canRes=g&&g.type===k&&g.status==='active'&&!NORESIGN.has(k)&&!practice;
@@ -13629,47 +13688,101 @@ function shellNotify(){if(practice||!me)return;let ns=[];try{ns=notices()}catch(
   if(route.screen==='game'&&nw.length){const n=nw[0],c=cur();toast(c&&n.g.rematchOf===c.id?`${nameOf(n.g.by)} wants a rematch. Tap Join.`:n.t)}}
 function shellGame(g){markSeen(g);if(g.status!=='done'||!g.rematchId)return;const r=games.find(x=>x.id===g.rematchId&&x.status!=='done'&&!x.archived);if(!r)return;
   document.querySelectorAll(`#view [data-act="${g.type}-again"]`).forEach(b=>{b.textContent=r.by===me?'Open rematch':'Join rematch';b.classList.add('rejoin')})}
+/* ============ Nov 10 phase 2: app shell (tabs) + new home ============ */
+const GMETA={clue:['Turns',30],race:['Turns',20],life:['Turns',25],trail:['Turns',10],slides:['Turns',10],battle:['Turns',15],who:['Turns',10],mtrain:['Turns',25],
+  tanks:['Turns',10],knock:['Turns',5],paint:['Turns',10],simon:['Turns',5],dg:['Turns',10],bb:['Live',3],pong:['Live',3],hockey:['Live',3],rps:['Turns',2],bubble:['Score',2],tower:['Turns',10],ice:['Turns',5],surgeon:['Turns',5],bingo:['Turns',10],
+  gin:['Turns',15],memory:['Turns',5],fish:['Turns',10],cornhole:['Turns',10],pool:['Turns',15],golf:['Turns',10],bowl:['Turns',10],hoops:['Turns',5],cup:['Turns',10],archery:['Turns',5],
+  ws:['Score',3],xword:['Together',10],hang:['Turns',5],wordle:['Turns',5],mancala:['Turns',10],ttt:['Turns',3],uttt:['Turns',10],dots:['Turns',10],c4:['Turns',5]};
+const GALIAS={pong:'ping pong table tennis',hockey:'air hockey',bb:'snowball',tower:'jenga blocks',ice:'penguin ice',surgeon:'operation doctor',race:'sorry',trail:'candy land',slides:'chutes ladders snakes',mtrain:'dominos dominoes train',who:'guess who',battle:'battleship sea ships',cup:'beer pong cups',pool:'8 ball billiards pool',ws:'word search',xword:'crossword',wordle:'word duel wordle',hang:'hangman',fish:'go fish cards',gin:'gin rummy cards',memory:'memory match pairs cards',ttt:'tic tac toe xo',uttt:'super tic tac toe',c4:'connect four 4',dots:'dots boxes',dg:'draw guess pictionary drawing',rps:'rock paper scissors',bingo:'bingo',golf:'mini golf putt',bowl:'bowling',hoops:'basketball hoops',archery:'archery bow arrow',cornhole:'cornhole bags',mancala:'mancala stones',simon:'simon says memory colors',knock:'knockout penguins ice',paint:'paintball',tanks:'tanks artillery',kart:'racing kart cars',derby:'baseball home run',qb:'football',soccer:'soccer football',tennis:'tennis',boxing:'boxing punch',diner:'diner restaurant cooking',salon:'pet salon dog cat',dance:'dance ddr arrows',rock:'guitar music rhythm',piano:'piano tiles music',pinball:'pinball'};
+function gMeta(k){if(ARC[k])return ['Score',2];return GMETA[k]||['Turns',10]}
+const CAT2=[['all','All'],['board','Board'],['cards','Cards'],['quick','Quick'],['arcade','Arcade'],['sports','Sports'],['words','Words'],['party','Party'],['live','Live']];
+function cat2Keys(c){const by={board:catOf('Classic board games'),cards:catOf('Cards'),quick:[...catOf('Quick strategy'),'rps','simon'],arcade:catOf('Arcade').concat(['bubble']),sports:catOf('Sports'),words:catOf('Words'),
+  party:catOf('Party & skill').filter(k=>!['rps','simon','bubble','bb','pong','hockey'].includes(k)),live:['bb','pong','hockey']};return (by[c]||[]).filter(k=>G[k])}
+let homeTab='play';try{homeTab=localStorage.getItem('gn2-tab')||'play'}catch(e){}if(!['play','new','stats'].includes(homeTab))homeTab='play';
+function setTab(t){homeTab=t;try{localStorage.setItem('gn2-tab',t)}catch(_){}}
+/* while you were away: the time this phone last looked at the app */
+let AWAY_FROM=0,BACK_AT=Date.now();try{AWAY_FROM=+localStorage.getItem('gn2-seen-at')||0}catch(_){}
+const awaySave=()=>{try{localStorage.setItem('gn2-seen-at',String(now()))}catch(_){}};
+document.addEventListener('visibilitychange',()=>{if(document.hidden)awaySave();else{try{AWAY_FROM=+localStorage.getItem('gn2-seen-at')||AWAY_FROM}catch(_){}BACK_AT=Date.now();ui.awayX=0;if(route.screen==='home')render()}});addEventListener('pagehide',awaySave);
+function awayEvents(){if(practice||!me||!AWAY_FROM||ui.awayX)return null;const o=other(me),since=AWAY_FROM,moved=[],won=[],lost=[],started=[];
+  for(const g of games){if(!G[g.type]||g.archived||(g.updatedAt||0)<=since||(g.updatedAt||0)>BACK_AT+4000)continue;const t=titleOf(g.type);
+    if((g.createdAt||0)>since&&g.by===o&&g.status!=='done'){started.push(t);continue}
+    if(g.status==='done'){if(g.winner===o)won.push(t);else if(g.winner===me)lost.push(t);continue}
+    if(mmv(g))moved.push(t)}
+  const L=a=>a.length<=1?a.join(''):a.length===2?a.join(' and '):a.slice(0,-1).join(', ')+' and '+a[a.length-1];
+  const parts=[];if(moved.length)parts.push('moved in '+L(moved.slice(0,3))+(moved.length>3?` and ${moved.length-3} more`:''));if(won.length)parts.push('won '+L(won.slice(0,2)));if(started.length)parts.push('started '+L(started.slice(0,2)));
+  let txt=parts.length?esc(nameOf(o))+' '+L(parts)+'.':'';if(lost.length)txt+=(txt?' ':'')+`You won ${esc(L(lost.slice(0,2)))}!`;return txt||null}
+const agoS=ts=>{if(!ts)return '';const s=Math.max(0,(now()-ts)/1000);return s<60?'just now':s<3600?Math.floor(s/60)+'m':s<86400?Math.floor(s/3600)+'h':Math.floor(s/86400)+'d'};
+function heroCard(g,i,n){const o=other(me),mb=miniBoard(g),art=mb?mb.replace('class="ico mini"','class="ico mini hb"'):(ICON[g.type]||'').replace('class="ico"','class="ico hb hbi"');
+  return `<div class="hero" style="--hc:${i}"><div class="hrow1"><span class="hav">${ava(o)}</span><span class="htx"><b>${livev(g)?'Live now':'Your turn'}</b><small>${esc(titleOf(g.type))} with ${esc(nameOf(o))}${g.updatedAt?' · '+agoS(g.updatedAt):''}</small></span></div>
+    <button class="hboard" data-act="open" data-id="${g.id}" aria-label="Open ${esc(titleOf(g.type))}">${art}<span class="hline">${esc(lineOf(g))}</span></button>
+    <div class="hgo">${n>1?`<span class="hpg">${i+1} of ${n}${i<n-1?' · swipe ›':''}</span>`:'<span></span>'}<button class="hplay" data-act="open" data-id="${g.id}">Play</button></div></div>`}
+function homeTiles(keys,tile){return `<div class="tiles3">${keys.map(tile).join('')}</div>`}
 function viewHome(){
   const known=games.filter(g=>G[g.type]);const o=nm(other(me||'p1'));
   const byT=(a,b)=>(b.updatedAt||0)-(a.updatedAt||0);
   const act=known.filter(g=>g.status!=='done'&&!g.archived);
-  const mine=act.filter(g=>mmv(g)||livev(g)).sort(byT),wait=act.filter(g=>!mmv(g)&&!livev(g)).sort(byT);
+  const mine=act.filter(g=>mmv(g)||livev(g)).sort((a,b)=>(a.updatedAt||0)-(b.updatedAt||0)),wait=act.filter(g=>!mmv(g)&&!livev(g)).sort(byT);
   const done=known.filter(g=>g.status==='done');
   const wins={p1:0,p2:0};done.forEach(g=>{if(wins[g.winner]!=null)wins[g.winner]++});
   const res=done.filter(g=>!g.archived).sort((a,b)=>(isFresh(b)-isFresh(a))||byT(a,b));
-  const ns=notices();
   const newB=g=>isFresh(g)?'<i class="nb">New</i>':'';
-  /* when the game last moved, so playing at different times stays easy to follow */
-  const ago=ts=>{if(!ts)return '';const s=Math.max(0,(now()-ts)/1000);return s<60?'just now':s<3600?Math.floor(s/60)+'m ago':s<86400?Math.floor(s/3600)+'h ago':Math.floor(s/86400)+'d ago'};
-  const card=(g,tag)=>`<button class="gcard${isFresh(g)?' fresh':''}" data-act="open" data-id="${g.id}">${miniBoard(g)||ICON[g.type]||''}<span class="tx"><span class="tt">${titleOf(g.type)}${newB(g)}</span><span class="sb">${esc(lineOf(g))}</span></span><span class="tagw">${hereIn(g.id)?`<span class="tag here">● Here now</span>`:tag}${g.updatedAt?`<small class="ago">${ago(g.updatedAt)}</small>`:''}</span></button>`;
+  const card=(g,tag)=>`<button class="gcard${isFresh(g)?' fresh':''}" data-act="open" data-id="${g.id}">${miniBoard(g)||ICON[g.type]||''}<span class="tx"><span class="tt">${titleOf(g.type)}${newB(g)}</span><span class="sb">${esc(lineOf(g))}</span></span><span class="tagw">${hereIn(g.id)?`<span class="tag here">● Here now</span>`:tag}${g.updatedAt?`<small class="ago">${agoS(g.updatedAt)}${agoS(g.updatedAt)==='just now'?'':' ago'}</small>`:''}</span></button>`;
   const rcard=g=>{const w=g.winner,pw=w==='p1'||w==='p2',r=g.rematchId&&games.find(x=>x.id===g.rematchId&&x.status!=='done'&&!x.archived);
     const wt=w==='tie'?'Tie game':!pw?'Game over':(!practice&&w===me)?'You won!':nm(w)+' won';
     const rb=r?(r.by===me||seenGet().ids[r.id]?`<button class="btn ghost rb" data-act="open" data-id="${r.id}">Open rematch</button>`:`<button class="btn rb rejoin" data-act="open" data-id="${r.id}">Join rematch</button>`):`<button class="btn rb" data-act="rematch" data-id="${g.id}">Rematch</button>`;
-    return `<div class="rcard${isFresh(g)?' fresh':''}"><button class="rmain" data-act="open" data-id="${g.id}">${ICON[g.type]||''}<span class="tx"><span class="tt">${titleOf(g.type)}${newB(g)}</span><span class="won w-${pw?w:'tie'}">${pw?`<i class="chwon">${CH.mini(w,w===me?(CH.get(w).win||'cheer'):(CH.get(w).win||'cheer'))}</i>`:''}${wt}</span></span></button>${rb}<button class="rx" data-act="archive" data-id="${g.id}" aria-label="Clear from list">×</button></div>`};
-  let h='';
-  if(me&&hereNow()){const og=HERE.opp.gid&&games.find(x=>x.id===HERE.opp.gid);h+=`<div class="herebar"><i></i><b>${o} is on now</b>${og&&G[og.type]?`<button class="link" data-act="open" data-id="${og.id}">in ${titleOf(og.type)} · join</button>`:''}</div>`}
-  if(me)h+=`<div class="chhome"><button class="chf" data-act="prof" data-p="${me}">${CH.full(me,'happy')}${esc(nameOf(me))}</button><button class="chf" data-act="prof" data-p="${other(me)}">${CH.full(other(me),'happy')}${esc(nameOf(other(me)))}</button><button class="chtx" data-act="chars"><b>Your characters</b><small>${window.chars&&window.chars[me]?'Tap to edit yours ›':'<em class="chcta">Make yours ›</em>'}</small></button></div>`;
-  if(practice)h+=`<div class="prac on"><div><b>Practice mode</b><span>You play both sides and the phone hands you each turn. These games stay on this phone.</span></div><button class="btn ghost" data-act="practice-off">Done practicing</button></div>`;
-  if(ns.length)h+=`<section class="notes" aria-label="New for you">${ns.slice(0,2).map(n=>`<button class="note ${n.k==='done'?'w-'+n.w:'k-'+n.k}" data-act="open" data-id="${n.g.id}">${ICON[n.g.type]||''}<span class="tx"><b>${esc(n.b||n.t)}</b><small>${n.k==='done'?'See how it ended':n.k==='rematch'?esc(G[n.g.type].title)+' · Tap to join':'Tap to play'}</small></span><i>›</i></button>`).join('')}${ns.length>2?`<button class="link" data-act="seen-all">+${ns.length-2} more below · Mark all seen</button>`:''}</section>`;
-  if(mine.length)h+=`<h2 class="hs">${practice?nm(me)+'’s move':'Your turn'} <span class="ct">${mine.length}</span></h2><div class="list">${mine.map(g=>card(g,livev(g)?'<span class="tag live">Live</span>':'<span class="tag go">Your move</span>')).join('')}</div>`;
-  if(wait.length)h+=`<h2 class="hs">${practice?o+'’s move':'Waiting on '+o} <span class="ct">${wait.length}</span></h2><div class="list">${wait.map(g=>card(g,practice?`<span class="tag p-${other(me)}">${o}’s move</span>`:'<span class="tag wait">Waiting</span>')).join('')}</div>`;
-  if(!act.length)h+=`<p class="empty">${res.length?'No games in play. Rematch one below or start a new game.':'No games in play yet. Pick one below.'}</p>`;
-  if(res.length)h+=`<div class="hrow"><h2 class="hs">Results</h2><span class="tally" aria-label="Wins"><b class="c-p1">${wins.p1}</b> ${nm('p1')}<i>·</i>${nm('p2')} <b class="c-p2">${wins.p2}</b></span></div><div class="list">${res.slice(0,ui.resAll?12:3).map(rcard).join('')}</div>${res.length>3?`<button class="link more" data-act="res-all">${ui.resAll?'Show fewer':'Show all '+Math.min(res.length,12)}</button>`:''}`;
-  const rt=[];[...known].sort((a,b)=>(b.createdAt||0)-(a.createdAt||0)).forEach(g=>{if(!rt.includes(g.type))rt.push(g.type)});
-  /* favorites and hidden games (Nov 1), per phone */
-  const FV=homePrefs(),ed=!!ui.homeEdit,vis=k=>ed||!FV.hide.includes(k);
-  const tile=k=>ed?`<div class="t3 edit${FV.hide.includes(k)?' hid':''}">${ICON[k]||''}<b>${titleOf(k)}</b><span class="t3ed"><button data-act="fav" data-k="${k}" class="${FV.fav.includes(k)?'on':''}" aria-label="${FV.fav.includes(k)?'Unpin':'Pin to favorites'}">★</button><button data-act="hide" data-k="${k}" class="${FV.hide.includes(k)?'on':''}" aria-label="${FV.hide.includes(k)?'Show':'Hide'}">${FV.hide.includes(k)?'Show':'Hide'}</button></span></div>`:`<button class="t3" data-act="new" data-k="${k}">${ICON[k]||''}<b>${titleOf(k)}</b>${(r=>r.p1+r.p2?`<small class="t3rec"><i class="p1">${r.p1}</i>–<i class="p2">${r.p2}</i></small>`:'')(h2h(k))}</button>`;
-  const ks=catSel==='all'?null:CAT_KEYS[catSel];
-  h+=`<div class="hrow"><h2 class="hs">New game</h2><button class="link" data-act="home-edit">${ed?'Done':'Edit list'}</button></div>`;
-  if(ed)h+=`<p class="sub" style="margin:0 0 8px">Tap ★ to pin a game to the top, Hide to take it off your list. Only on this phone.</p>`;
-  const favs=FV.fav.filter(k=>G[k]&&!FV.hide.includes(k));if(favs.length&&!ed)h+=`<h3 class="cat">★ Favorites</h3><div class="tiles3">${favs.map(tile).join('')}</div>`;
-  if(rt.length&&!ed)h+=`<div class="recent"><span class="rl">Played lately</span><div class="rrow">${rt.filter(vis).slice(0,6).map(tile).join('')}</div></div>`;
-  h+=`<div class="cats" role="group" aria-label="Game type">${CAT_TABS.map(([c,l])=>`<button class="catc" data-act="cat" data-c="${c}" aria-pressed="${catSel===c}">${l}</button>`).join('')}</div>`;
-  h+=ks?`<div class="tiles3">${ks.filter(k=>G[k]&&vis(k)).map(tile).join('')}</div>`:[['board','Board games'],['party','Party & cards'],['sports','Sports'],['words','Words'],['quick','Quick strategy']].map(([c,t])=>[t,CAT_KEYS[c].filter(x=>G[x]&&vis(x))]).filter(([t,k])=>k.length).map(([t,k])=>`<h3 class="cat">${t}</h3><div class="tiles3">${k.map(tile).join('')}</div>`).join('');
-  if(!ed&&FV.hide.length)h+=`<button class="link more" data-act="home-edit">${FV.hide.length} hidden game${FV.hide.length===1?'':'s'} · Edit list</button>`;
-  if(!practice)h+=`<button class="prac" data-act="practice-on"><div><b>Practice solo</b><span>Try any game by playing both sides. Nothing is sent to ${o}.</span></div><i>→</i></button>`;
+    return `<div class="rcard${isFresh(g)?' fresh':''}"><button class="rmain" data-act="open" data-id="${g.id}">${ICON[g.type]||''}<span class="tx"><span class="tt">${titleOf(g.type)}${newB(g)}</span><span class="won w-${pw?w:'tie'}">${pw?`<i class="chwon">${CH.mini(w,CH.get(w).win||'cheer')}</i>`:''}${wt}</span></span></button>${rb}<button class="rx" data-act="archive" data-id="${g.id}" aria-label="Clear from list">×</button></div>`};
+  const FV=homePrefs(),ed=!!ui.homeEdit,vis=k=>ed||!FV.hide.includes(k),rec=k=>{const r=h2h(k);return r.p1+r.p2?`<small class="t3rec"><i class="p1">${r.p1}</i>–<i class="p2">${r.p2}</i></small>`:''};
+  const q=(ui.q||'').trim().toLowerCase(),hl=t=>{if(!q)return t;const i=t.toLowerCase().indexOf(q);return i<0?t:t.slice(0,i)+'<mark>'+t.slice(i,i+q.length)+'</mark>'+t.slice(i+q.length)};
+  const tile=k=>ed?`<div class="t3 edit${FV.hide.includes(k)?' hid':''}">${ICON[k]||''}<b>${titleOf(k)}</b><span class="t3ed"><button data-act="fav" data-k="${k}" class="${FV.fav.includes(k)?'on':''}" aria-label="${FV.fav.includes(k)?'Unpin':'Pin to favorites'}">★</button><button data-act="hide" data-k="${k}" class="${FV.hide.includes(k)?'on':''}" aria-label="${FV.hide.includes(k)?'Show':'Hide'}">${FV.hide.includes(k)?'Show':'Hide'}</button></span></div>`
+    :`<button class="t3" data-act="new" data-k="${k}">${ICON[k]||''}<b>${hl(titleOf(k))}</b><em class="t3m">${(m=>m[0]+' · '+m[1]+' min')(gMeta(k))}</em>${rec(k)}</button>`;
+  let h='';const tab=homeTab;
+  if(tab==='play'){
+    if(me&&hereNow()){const og=HERE.opp.gid&&games.find(x=>x.id===HERE.opp.gid);h+=`<div class="herebar"><i></i><b>${o} is on now</b>${og&&G[og.type]?`<button class="link" data-act="open" data-id="${og.id}">in ${titleOf(og.type)} · join</button>`:''}</div>`}
+    if(practice)h+=`<div class="prac on"><div><b>Practice mode</b><span>You play both sides and the phone hands you each turn. These games stay on this phone.</span></div><button class="btn ghost" data-act="practice-off">Done practicing</button></div>`;
+    const aw=awayEvents();if(aw)h+=`<div class="away"><span class="awi" aria-hidden="true">☾</span><span><b>While you were away:</b> ${aw}</span><button class="awx" data-act="away-x" aria-label="Dismiss">×</button></div>`;
+    if(me&&!(window.chars&&window.chars[me]))h+=`<button class="chprompt" data-act="chars"><span class="chpf">${CH.full(me,'happy')}</span><span><b>Make your character</b><small>It plays in every game. Takes a minute.</small></span><i>›</i></button>`;
+    if(mine.length)h+=`<div class="heros" id="heros">${mine.map((g,i)=>heroCard(g,i,mine.length)).join('')}</div>`;
+    else if(act.length)h+=`<div class="caught"><b>You're all caught up</b><span>Waiting on ${o}. Start something new while you wait?</span><div class="cbtn"><button class="btn" data-act="tab" data-t="new">New game</button><button class="btn ghost" data-act="surprise">🎲 Surprise me</button></div></div>`;
+    if(wait.length)h+=`<h2 class="hs">${practice?o+'’s move':'Waiting on '+o} <span class="ct">${wait.length}</span></h2><div class="list">${wait.map(g=>card(g,practice?`<span class="tag p-${other(me)}">${o}’s move</span>`:'<span class="tag wait">Waiting</span>')).join('')}</div>`;
+    if(!act.length)h+=`<div class="caught"><b>No games going</b><span>${res.length?'Rematch one below or start something new.':'Pick a game and '+o+' gets it on their phone.'}</span><div class="cbtn"><button class="btn" data-act="tab" data-t="new">New game</button><button class="btn ghost" data-act="surprise">🎲 Surprise me</button></div></div>`;
+    if(res.length)h+=`<div class="hrow"><h2 class="hs">Results</h2><button class="link" data-act="tab" data-t="stats">All stats ›</button></div><div class="list">${res.slice(0,3).map(rcard).join('')}</div>`;
+    if(!practice&&!act.length&&!res.length)h+=`<button class="prac" data-act="practice-on"><div><b>Practice solo</b><span>Try any game by playing both sides. Nothing is sent to ${o}.</span></div><i>→</i></button>`;
+  }
+  else if(tab==='new'){
+    h+=`<div class="srow"><label class="sfield"><span aria-hidden="true">⌕</span><input id="hsearch" type="search" placeholder="Search ${CATS.reduce((a,c)=>a+c[1].length,0)} games" value="${esc(ui.q||'')}" autocomplete="off" enterkeyhint="search"></label><button class="surp" data-act="surprise">🎲 Surprise me</button></div>`;
+    const sel=ui.cat2||'all';
+    if(!q)h+=`<div class="cats" role="group" aria-label="Game type">${CAT2.map(([c,l])=>`<button class="catc" data-act="cat2" data-c="${c}" aria-pressed="${sel===c}">${l}</button>`).join('')}</div>`;
+    const ALL=CATS.flatMap(c=>c[1]).filter(k=>G[k]);
+    if(q){const hit=ALL.filter(k=>vis(k)&&(titleOf(k).toLowerCase().includes(q)||(GALIAS[k]||'').includes(q)||gMeta(k)[0].toLowerCase()===q));
+      h+=`<p class="cat">${hit.length} match${hit.length===1?'':'es'}</p>`+(hit.length?homeTiles(hit,tile):`<p class="sub">Nothing called “${esc(ui.q)}”. Try “cards”, “dice” or “pong”.</p>`)}
+    else{h+=`<div class="hrow"><span></span><button class="link" data-act="home-edit">${ed?'Done':'Edit list'}</button></div>`;
+      if(ed)h+=`<p class="sub" style="margin:0 0 8px">Tap ★ to pin a game to the top, Hide to take it off your list. Only on this phone.</p>`;
+      if(sel==='all'){const favs=FV.fav.filter(k=>G[k]&&!FV.hide.includes(k));if(favs.length&&!ed)h+=`<h3 class="cat">★ Favorites</h3>`+homeTiles(favs,tile);
+        const rt=[];[...known].sort((a,b)=>(b.createdAt||0)-(a.createdAt||0)).forEach(g=>{if(!rt.includes(g.type))rt.push(g.type)});if(rt.length&&!ed)h+=`<h3 class="cat">Played lately</h3>`+homeTiles(rt.filter(vis).slice(0,6),tile);
+        h+=CAT2.slice(1).map(([c,l])=>[l,cat2Keys(c).filter(vis)]).filter(x=>x[1].length).map(([l,k])=>`<h3 class="cat">${l}</h3>`+homeTiles(k,tile)).join('')}
+      else h+=homeTiles(cat2Keys(sel).filter(vis),tile);
+      if(!ed&&FV.hide.length)h+=`<button class="link more" data-act="home-edit">${FV.hide.length} hidden game${FV.hide.length===1?'':'s'} · Edit list</button>`;
+      if(!practice)h+=`<button class="prac" data-act="practice-on"><div><b>Practice solo</b><span>Try any game by playing both sides. Nothing is sent to ${o}.</span></div><i>→</i></button>`}
+  }
+  else{
+    const pl=[...new Set(done.map(g=>g.type))].map(k=>[k,h2h(k)]).filter(x=>x[1].p1+x[1].p2).sort((a,b)=>(b[1].p1+b[1].p2)-(a[1].p1+a[1].p2));
+    h+=`<div class="stot"><div class="sp p1"><span class="sav">${ava('p1')}</span><b>${wins.p1}</b><small>${nm('p1')}</small></div><span class="svs">wins</span><div class="sp p2"><span class="sav">${ava('p2')}</span><b>${wins.p2}</b><small>${nm('p2')}</small></div></div>`;
+    if(pl.length)h+=`<h2 class="hs">By game</h2><div class="sgrid">${pl.map(([k,r])=>`<button class="sg" data-act="new" data-k="${k}">${ICON[k]||''}<span class="sgt">${titleOf(k)}</span><span class="sgr"><i class="p1">${r.p1}</i><i class="p2">${r.p2}</i></span><span class="sgb"><i class="p1" style="flex:${r.p1||.001}"></i><i class="p2" style="flex:${r.p2||.001}"></i></span></button>`).join('')}</div>`;
+    else h+=`<div class="caught"><b>No finished games yet</b><span>Wins show up here, game by game.</span></div>`;
+    if(res.length)h+=`<h2 class="hs">Recent results</h2><div class="list">${res.slice(0,ui.resAll?24:6).map(rcard).join('')}</div>${res.length>6?`<button class="link more" data-act="res-all">${ui.resAll?'Show fewer':'Show more'}</button>`:''}`;
+  }
+  const nMine=mine.length;
+  h+=`<nav class="tabbar" aria-label="Sections">${[['play','Play','<path d="M7 5l12 7-12 7z"/>'],['new','New game','<path d="M12 5v14M5 12h14"/>'],['stats','Stats','<path d="M6 19V11M12 19V5M18 19v-6"/>']].map(([t,l,ic])=>`<button class="tabb${tab===t?' on':''}" data-act="tab" data-t="${t}" aria-current="${tab===t?'page':'false'}"><svg viewBox="0 0 24 24" aria-hidden="true">${ic}</svg><span>${l}</span>${t==='play'&&nMine?`<em>${nMine}</em>`:''}</button>`).join('')}</nav>`;
   return h;
 }
+function surpriseKey(){const FV=homePrefs(),recent=[...games].sort((a,b)=>(b.createdAt||0)-(a.createdAt||0)).slice(0,8).map(g=>g.type);let pool=CATS.flatMap(c=>c[1]).filter(k=>G[k]&&!FV.hide.includes(k)&&!recent.includes(k)&&!['bb','pong','hockey'].includes(k));if(!pool.length)pool=CATS.flatMap(c=>c[1]).filter(k=>G[k]);return pool[Math.floor(Math.random()*pool.length)]}
+document.addEventListener('input',e=>{if(e.target.id==='hsearch'){ui.q=e.target.value;render()}});
+/* pull down on the home to refresh (no reload button when it runs from the Home Screen) */
+(()=>{let y0=null,pulled=0;const ind=()=>{let el=document.getElementById('ptr');if(!el){el=document.createElement('div');el.id='ptr';el.innerHTML='<i></i>';document.body.appendChild(el)}return el};
+  addEventListener('touchstart',e=>{y0=route.screen==='home'&&scrollY<=0&&!ui.modal&&e.touches.length===1?e.touches[0].clientY:null;pulled=0},{passive:true});
+  addEventListener('touchmove',e=>{if(y0==null)return;pulled=Math.max(0,e.touches[0].clientY-y0);if(pulled>12){const el=ind();el.style.transform=`translate(-50%,${Math.min(70,pulled*.5)}px) rotate(${pulled*3}deg)`;el.style.opacity=Math.min(1,pulled/90);el.classList.toggle('ready',pulled>110)}},{passive:true});
+  addEventListener('touchend',()=>{if(y0==null)return;const el=document.getElementById('ptr');y0=null;if(pulled>110&&el){el.classList.add('spin');try{store.flushAll&&store.flushAll()}catch(_){}setTimeout(()=>location.reload(),350)}else if(el){el.style.opacity=0;el.style.transform='translate(-50%,0)'}},{passive:true})})();
 
 /* ---------- modals ---------- */
 function openModal(kind){ui.modal=kind;renderModal()}
@@ -13714,7 +13827,7 @@ function boardZoom(g){const sel=BZ_SEL[g.type];if(!sel)return;const el=document.
   box.addEventListener('dblclick',e=>{if(e.target.closest('.bzbtns'))return;const r=box.getBoundingClientRect();if(z.s>1.05){z.s=1;z.x=0;z.y=0}else{z.s=2;z.x=-(e.clientX-r.left-r.width/2);z.y=-(e.clientY-r.top-r.height/2)}bzClamp(z,r.width,r.height);bzSave(g.id);apply()});
   apply()}
 /* ---------- real-app shell (Nov 1): settings, splash, slide transitions, swipe back, connection banner, profile cards, achievements, holiday looks ---------- */
-const GN_VER='104';
+const GN_VER='105';
 /* --- achievements, worked out from finished games (nothing extra stored) --- */
 const ACH=[
  ['first','🏆','First win','Win any game',(w,all,p)=>w.length>=1],
@@ -13869,6 +13982,10 @@ document.addEventListener('click',async e=>{
     case 'home-edit':ui.homeEdit=!ui.homeEdit;render();return;
     case 'fav':{const f=homePrefs(),k=t.dataset.k;f.fav=f.fav.includes(k)?f.fav.filter(x=>x!==k):[...f.fav,k];homePrefsSet(f);render();return}
     case 'hide':{const f=homePrefs(),k=t.dataset.k;f.hide=f.hide.includes(k)?f.hide.filter(x=>x!==k):[...f.hide,k];if(f.hide.includes(k))f.fav=f.fav.filter(x=>x!==k);homePrefsSet(f);render();return}
+    case 'tab':setTab(t.dataset.t);ui.q='';ui.homeEdit=false;render();scrollTo(0,0);return;
+    case 'cat2':ui.cat2=t.dataset.c;render();return;
+    case 'away-x':ui.awayX=1;awaySave();render();return;
+    case 'surprise':{const k=surpriseKey();if(!k)return;toast('🎲 '+titleOf(k)+'!');ui.rematchFrom=null;if(NOSHEET.has(k)&&G[k]){await G[k].start();return}openModal('new-'+k);return}
     case 'cat':catSel=t.dataset.c;try{localStorage.setItem('gn2-cat',catSel)}catch(_){}render();return;
     case 'res-all':ui.resAll=!ui.resAll;render();return;
     case 'seen-all':notices().forEach(n=>markSeen(n.g));render();return;
