@@ -4544,7 +4544,7 @@ const RULES={
  who:['Find their mystery person','Ask one yes or no question a turn, in chat or out loud.','Tap the faces that don’t match to flip them down.','Tap Guess when you know. A wrong guess loses.']
 };
 const OWNHELP=new Set(['clue','trail','battle']);
-const NOSHEET=new Set(['tanks','knock','cornhole','paint','gin','simon','mancala','memory','stack','snake','hopper','roadhop','piano','flick','skee','tilt','rps','bubble','xword','uttt','dg','ttt','c4','fish','ice','tower','surgeon','bowl','archery','race','life','trail','who']);
+const NOSHEET=new Set(['pinball','diner','salon','dance','rock','derby','qb','soccer','kart','tennis','boxing','tanks','knock','cornhole','paint','gin','simon','mancala','memory','stack','snake','hopper','roadhop','piano','flick','skee','tilt','rps','bubble','xword','uttt','dg','ttt','c4','fish','ice','tower','surgeon','bowl','archery','race','life','trail','who']);
 const AUTORULES=new Set(['race','mtrain','who','bb','uttt','pong','dg','hockey','xword']);
 /* head-to-head record for one game type, from every finished game (cleared ones too) */
 function h2h(k){const r={p1:0,p2:0};for(const g of games){if(g.type===k&&g.status==='done'&&(g.winner==='p1'||g.winner==='p2'))r[g.winner]++}return r}
@@ -11548,6 +11548,310 @@ TCVD.paint={
 
 RULES["tanks"]=["Knock their health to zero", "Drag back from anywhere and let go to fire. Further back is more power.", "Watch the wind at the top; it pushes your shell.", "Shots dig craters. Triple fires three shells (2 per game); Big Bomb hits hard (1 per game)."];RULES["knock"]=["Last pucks on the ice win", "Drag back from each of your pucks to aim it, then tap Go.", "You both aim in secret. When you're both in, everything slides at once.", "Pucks that slide off the ice are out. The ice shrinks every round."];RULES["cornhole"]=["First to 21", "Swipe up to toss. Longer and faster swipes go further; angle aims left and right.", "In the hole is 3, on the board is 1.", "Each round you both throw 4 bags. Points cancel: only the difference counts, for whoever scored more."];RULES["paint"]=["Last one standing", "Each round, tap where to move (up to 2 squares), then tap a square to aim, then Fire.", "You both plan in secret. Then you both move and both shoot at once.", "Crates block paint. Three hits and you're out."];
 window.__tcv={TCV,TCVD,G,pbReach,me:()=>me,other};
+/* ============ ARCADE BATCH C ============ */
+/* ---- Pinball ---- */
+function pbSegHit(b,s,r){const [x1,y1,x2,y2]=s,dx=x2-x1,dy=y2-y1,L2=dx*dx+dy*dy;let t=((b.x-x1)*dx+(b.y-y1)*dy)/L2;t=Math.max(0,Math.min(1,t));const px=x1+dx*t,py=y1+dy*t,ox=b.x-px,oy=b.y-py,d=Math.hypot(ox,oy);if(d>=r||d===0)return null;return {nx:ox/d,ny:oy/d,pen:r-d,px,py,t}}
+arcDefine('pinball',{title:'Pinball',blurb:'Flip, bump and light the stars. Three balls.',c1:'#7B2CBF',c2:'#240046',
+  how:'Tap the left or right side of the screen to flip. Hit bumpers, light all four stars for a bonus. Three balls.',
+  rules:['Highest score wins','Tap the left half for the left flipper, the right half for the right one.','Bumpers are 100. Each star is 250; light all four for 1,000.','You get three balls.'],
+  icon:arcIco('#5A189A','<circle cx="13" cy="12" r="4" fill="#FF7DB8"/><circle cx="25" cy="12" r="4" fill="#7FE3FF"/><circle cx="19" cy="20" r="4" fill="#FFD60A"/><path d="M8 31l8-3M30 31l-8-3" stroke="#fff" stroke-width="2.6" stroke-linecap="round"/><circle cx="19" cy="27" r="2.2" fill="#E5E7EB"/>'),
+  init(S){S.balls=3;S.ball=null;S.fl={L:0,R:0,l:0,r:0};S.stars=[0,0,0,0];S.lit=0;S.wait=1;S.mult=1},
+  geo(S){const H=S.H,fy=H-22,seg=[];const add=(a,b,c,d,k)=>seg.push([a,b,c,d,k||0]);
+    add(4,26,4,H-50);add(96,26,96,H-50);add(4,H-50,27,fy);add(96,H-50,73,fy);
+    for(let i=0;i<10;i++){const a0=Math.PI+i*Math.PI/10,a1=Math.PI+(i+1)*Math.PI/10;add(50+46*Math.cos(a0),26+22*Math.sin(a0),50+46*Math.cos(a1),26+22*Math.sin(a1))}
+    add(14,H-62,20,H-44,70);add(86,H-62,80,H-44,70);
+    return {seg,fy,bump:[[33,H*.3,6],[67,H*.3,6],[50,H*.42,6.5]],stars:[[26,H*.17],[42,H*.14],[58,H*.14],[74,H*.17]]}},
+  flipSeg(S,side,G0){const up=side==='L'?S.fl.l:S.fl.r,px=side==='L'?27:73,py=G0.fy,len=17,ang=.52-up*1.0,dir=side==='L'?1:-1;return [px,py,px+Math.cos(ang)*len*dir,py+Math.sin(ang)*len]},
+  hud:S=>`ball ${Math.min(3,4-S.balls)} of 3${S.mult>1?' · x'+S.mult:''}`,
+  down(S,p){if(S.wait){S.wait=0;const r=S.rnd;S.ball={x:88,y:S.H-60,vx:-20-r()*25,vy:-150-r()*30};try{gnFx('boing')}catch(_){}return}if(p.x<50)S.fl.L=1;else S.fl.R=1;try{gnFx('clack',{vol:.5})}catch(_){}},
+  up(S,p){S.fl.L=0;S.fl.R=0},
+  step(S,dt){const G0=this.geo(S);for(const k of ['L','R']){const key=k==='L'?'l':'r',tgt=S.fl[k]?1:0,prev=S.fl[key];S.fl[key]=tgt>prev?Math.min(1,prev+dt*14):Math.max(0,prev-dt*8);S.fl['w'+k]=(S.fl[key]-prev)/dt}
+    const b=S.ball;if(!b)return;const n=8,h=dt/n,R=2.4;
+    for(let i=0;i<n;i++){b.vy+=110*h;b.x+=b.vx*h;b.y+=b.vy*h;
+      for(const s of G0.seg){const c=pbSegHit(b,s,R);if(!c)continue;b.x+=c.nx*c.pen;b.y+=c.ny*c.pen;const vn=b.vx*c.nx+b.vy*c.ny;if(vn<0){b.vx-=1.7*vn*c.nx;b.vy-=1.7*vn*c.ny;if(s[4]){b.vx+=c.nx*s[4];b.vy+=c.ny*s[4];S.score+=10*S.mult;try{gnFx('boing',{pitch:1.4,vol:.4})}catch(_){}}}}
+      for(const k of ['L','R']){const s=this.flipSeg(S,k,G0),c=pbSegHit(b,s,R+.8);if(!c)continue;b.x+=c.nx*c.pen;b.y+=c.ny*c.pen;const w=S.fl['w'+k]||0,arm=c.t*17,surf=w>0?w*arm*.55:0;const vn=b.vx*c.nx+b.vy*c.ny;if(vn<surf){const add=surf-vn;b.vx+=c.nx*add*1.15;b.vy+=c.ny*add*1.15}}
+      for(const [x,y,r] of G0.bump){const dx=b.x-x,dy=b.y-y,d=Math.hypot(dx,dy);if(d<r+R){const nx=dx/d,ny=dy/d;b.x=x+nx*(r+R);b.y=y+ny*(r+R);const sp=Math.max(85,Math.hypot(b.vx,b.vy));b.vx=nx*sp;b.vy=ny*sp;S.score+=100*S.mult;S.hitB={x,y,t:S.t};arcPop(S,'+'+100*S.mult,x,y-8,'#FFD60A');try{gnFx('boing',{pitch:1.1});gnImpact('light')}catch(_){}}}
+      G0.stars.forEach(([x,y],k)=>{if(!S.stars[k]&&Math.hypot(b.x-x,b.y-y)<4.5){S.stars[k]=1;S.score+=250*S.mult;arcPop(S,'★ +'+250*S.mult,x,y+6,'#FFD60A');try{gnFx('note',{pitch:1+k*.25})}catch(_){}
+        if(S.stars.every(Boolean)){S.score+=1000*S.mult;S.mult=Math.min(5,S.mult+1);arcPop(S,`ALL STARS! +${1000*(S.mult-1)} · x${S.mult}`,50,S.H*.5,'#FFD60A',true);S.stars=[0,0,0,0];try{gnImpact('win')}catch(_){}}}});
+      const sp=Math.hypot(b.vx,b.vy);if(sp>230){b.vx*=230/sp;b.vy*=230/sp}}
+    if(b.y>S.H+6){S.ball=null;S.balls--;S.mult=1;try{gnFx('thunk',{pitch:.6})}catch(_){}if(S.balls<=0)S.over=true;else{S.wait=1;arcPop(S,'BALL LOST',50,S.H*.5,'#fff',true)}}},
+  draw(c,S,t){const G0=this.geo(S),H=S.H;arcBg(c,H,'#3C096C','#10002B');c.fillStyle='rgba(255,255,255,.05)';for(let i=0;i<8;i++){c.beginPath();c.arc(50,H*.5,10+i*9,0,7);c.fill()}
+    c.strokeStyle='#C77DFF';c.lineWidth=1.4;c.lineCap='round';for(const s of G0.seg){c.strokeStyle=s[4]?'#FF7DB8':'#C77DFF';c.lineWidth=s[4]?2:1.4;c.beginPath();c.moveTo(s[0],s[1]);c.lineTo(s[2],s[3]);c.stroke()}
+    G0.bump.forEach(([x,y,r],k)=>{const hit=S.hitB&&S.hitB.x===x&&S.t-S.hitB.t<.15;c.fillStyle=['#FF7DB8','#7FE3FF','#FFD60A'][k];c.beginPath();c.arc(x,y,r*(hit?1.15:1),0,7);c.fill();c.fillStyle='#fff';c.beginPath();c.arc(x,y,r*.5,0,7);c.fill();c.strokeStyle='rgba(255,255,255,.5)';c.lineWidth=.8;c.beginPath();c.arc(x,y,r+1.4,0,7);c.stroke()});
+    G0.stars.forEach(([x,y],k)=>arcTxt(c,'★',x,y,6,S.stars[k]?'#FFD60A':'rgba(255,255,255,.25)'));
+    for(const k of ['L','R']){const s=this.flipSeg(S,k,G0);c.strokeStyle='#fff';c.lineWidth=3.6;c.beginPath();c.moveTo(s[0],s[1]);c.lineTo(s[2],s[3]);c.stroke();c.fillStyle='#FF2D87';c.beginPath();c.arc(s[0],s[1],2,0,7);c.fill()}
+    const b=S.ball;if(b){const g=c.createRadialGradient(b.x-.8,b.y-.8,.3,b.x,b.y,2.4);g.addColorStop(0,'#fff');g.addColorStop(1,'#9AA0B4');c.fillStyle=g;c.beginPath();c.arc(b.x,b.y,2.4,0,7);c.fill()}
+    for(let i=0;i<S.balls-(b?1:0);i++){c.fillStyle='#E5E7EB';c.beginPath();c.arc(8+i*5,H-5,1.6,0,7);c.fill()}
+    if(S.wait)arcTxt(c,'TAP TO LAUNCH',50,H*.6,4,'#fff');if(S.mult>1)arcTxt(c,'x'+S.mult,92,H-6,3.4,'#FFD60A')}
+});
+
+/* ---- Diner Rush ---- */
+const DR_D=['🍔','🍕','🥗','🍰'];
+arcDefine('diner',{title:'Diner Rush',blurb:'Cook, carry, serve. Keep the customers happy.',c1:'#FF6B6B',c2:'#C92A2A',
+  how:'Tap a dish to start cooking it. When it’s ready, tap it to pick it up (you can carry two), then tap the table that ordered it. Quick service = bigger tips. 90 seconds.',
+  rules:['Most tips wins','Tap a dish on the counter to cook it.','When it pops up ready, tap it to grab it. Carry up to two.','Tap a table to serve the dish it wants. Faster service tips more.','A customer who waits too long leaves.'],
+  icon:arcIco('#FF6B6B','<rect x="5" y="22" width="28" height="4" rx="2" fill="#fff"/><circle cx="12" cy="15" r="5" fill="#FFE0B8"/><text x="25" y="20" font-size="10" text-anchor="middle">🍔</text><rect x="9" y="27" width="20" height="5" fill="#C92A2A"/>'),
+  init(S){S.T=90;S.tables=[0,1,2,3].map(i=>({c:null,wait:2+i*3.2+S.rnd()*2}));S.cook=DR_D.map(()=>({st:0,t:0}));S.hand=[];S.left=0},
+  hud:S=>`${Math.max(0,Math.ceil(S.T-S.t))}s`,
+  lay(S){const H=S.H;return {tab:[[25,H*.22],[75,H*.22],[25,H*.47],[75,H*.47]],cnt:DR_D.map((_,i)=>[14+i*24,H-16])}},
+  down(S,p){const L=this.lay(S);
+    for(let i=0;i<4;i++){const [x,y]=L.cnt[i];if(Math.abs(p.x-x)<11&&Math.abs(p.y-y)<12){const ck=S.cook[i];if(ck.st===0){ck.st=1;ck.t=0;try{gnFx('tick')}catch(_){}}else if(ck.st===2){if(S.hand.length<2){S.hand.push(i);ck.st=0;try{gnFx('pop')}catch(_){}}else arcPop(S,'HANDS FULL',50,S.H*.7,'#fff')}return}}
+    for(let i=0;i<4;i++){const [x,y]=L.tab[i],T=S.tables[i];if(Math.abs(p.x-x)<20&&Math.abs(p.y-y)<14&&T.c){const h=S.hand.indexOf(T.c.d);if(h>=0){S.hand.splice(h,1);const tip=Math.round(10+40*Math.max(0,T.c.p));S.score+=tip;arcPop(S,'+$'+tip,x,y-10,'#FFD60A',tip>35);try{gnFx('clunk');gnImpact('light')}catch(_){}T.c=null;T.wait=1.5+S.rnd()*3}else{arcPop(S,'NOT THAT!',x,y-10,'#fff');try{gnFx('clank',{vol:.4})}catch(_){}}return}}},
+  step(S,dt){if(S.t>=S.T){S.over=true;return}const sp=1+S.t/90;
+    S.cook.forEach((ck,i)=>{if(ck.st===1){ck.t+=dt;if(ck.t>=1.6+i*.3){ck.st=2;try{gnFx('beep',{vol:.4})}catch(_){}}}});
+    S.tables.forEach((T,i)=>{if(!T.c){T.wait-=dt*sp;if(T.wait<=0)T.c={d:Math.floor(S.rnd()*4),p:1,mood:0}}else{T.c.p-=dt/(16-Math.min(7,S.t/12));if(T.c.p<=0){T.c=null;T.wait=2+S.rnd()*3;S.left++;arcPop(S,'LEFT!',this.lay(S).tab[i][0],this.lay(S).tab[i][1]-10,'#FF6B6B');try{gnFx('thunk',{pitch:.7})}catch(_){}}}})},
+  draw(c,S,t){const H=S.H,L=this.lay(S);c.fillStyle='#FFF4E6';c.fillRect(0,0,100,H);for(let y=0;y<H*.62;y+=8)for(let x=0;x<100;x+=8){c.fillStyle=((x+y)/8)%2?'#FFE8CC':'#FFF4E6';c.fillRect(x,y,8,8)}
+    L.tab.forEach(([x,y],i)=>{const T=S.tables[i];c.fillStyle='rgba(0,0,0,.1)';c.beginPath();c.ellipse(x,y+7,15,3.5,0,0,7);c.fill();c.fillStyle='#C92A2A';c.fillRect(x-14,y,28,6);c.fillStyle='#fff';c.fillRect(x-14,y,28,1.4);
+      if(T.c){const mood=T.c.p>.6?'😊':T.c.p>.3?'😐':'😠';arcTxt(c,mood,x-8,y-5,9);c.fillStyle='#fff';c.beginPath();c.roundRect?c.roundRect(x+1,y-15,12,10,3):c.rect(x+1,y-15,12,10);c.fill();c.strokeStyle='#ddd';c.lineWidth=.3;c.stroke();arcTxt(c,DR_D[T.c.d],x+7,y-10,6);
+        c.fillStyle='rgba(0,0,0,.15)';c.fillRect(x-14,y+8,28,1.6);c.fillStyle=T.c.p>.6?'#2BD96B':T.c.p>.3?'#FFD60A':'#FF3B30';c.fillRect(x-14,y+8,28*T.c.p,1.6)}});
+    c.fillStyle='#8D6E63';c.fillRect(0,H*.62,100,H*.38);c.fillStyle='#D7CCC8';c.fillRect(0,H-30,100,30);
+    arcMe(c,50,H*.72,14,S.hand.length?'cheer':'happy');S.hand.forEach((d,k)=>arcTxt(c,DR_D[d],k?59:41,H*.66,6));
+    L.cnt.forEach(([x,y],i)=>{const ck=S.cook[i];c.fillStyle=ck.st===2?'#FFD60A':'#fff';c.beginPath();c.roundRect?c.roundRect(x-10,y-11,20,22,4):c.rect(x-10,y-11,20,22);c.fill();arcTxt(c,DR_D[i],x,y-1,8);
+      if(ck.st===1){c.fillStyle='rgba(0,0,0,.45)';c.fillRect(x-10,y+7,20,3);c.fillStyle='#FF9F1C';c.fillRect(x-10,y+7,20*Math.min(1,ck.t/(1.6+i*.3)),3);arcTxt(c,'♨',x+7,y-8,4,'#999')}
+      if(ck.st===2)arcTxt(c,'READY',x,y+8,2.4,'#3A2E00')});
+    if(S.t<4)arcTxt(c,'TAP A DISH TO COOK IT',50,H*.56,3.4,'#C92A2A')}
+});
+
+/* ---- Pet Salon ---- */
+const PS_T=[['wash','🧽','Scrub'],['dry','💨','Dry'],['brush','🪮','Brush'],['bow','🎀','Bow']];
+arcDefine('salon',{title:'Pet Salon',blurb:'Scrub, dry, brush and bow. Pamper as many pets as you can.',c1:'#F783AC',c2:'#A61E4D',
+  how:'Pick a tool at the bottom, then rub it over the pet. Do the steps in order. Finished pets pay out; faster is better. 75 seconds.',
+  rules:['Most money wins','Each pet needs the steps shown on its card, in order.','Tap a tool, then rub over the pet until the bar fills.','Wrong tool does nothing. Finish fast for a bigger tip.'],
+  icon:arcIco('#F783AC','<ellipse cx="19" cy="22" rx="10" ry="8" fill="#fff"/><circle cx="19" cy="13" r="6" fill="#fff"/><path d="M13 9l-2-4 4 2M25 9l2-4-4 2" fill="#fff"/><circle cx="17" cy="12" r="1" fill="#333"/><circle cx="21" cy="12" r="1" fill="#333"/><circle cx="27" cy="27" r="3" fill="#BDE0FE"/><circle cx="11" cy="28" r="2" fill="#BDE0FE"/>'),
+  init(S){S.T=75;S.tool=0;this.newPet(S);S.done=0},
+  newPet(S){const r=S.rnd,k=r()<.5?'dog':'cat',steps=[0,1,2,3].filter(i=>i===0||r()<.75);S.pet={k,col:['#F4D9B0','#C8A27C','#E8E8E8','#2F2F2F','#F5A65B'][Math.floor(r()*5)],steps,i:0,prog:0,t0:S.t,bowC:['#FF2D87','#3D7BFF','#FFD60A'][Math.floor(r()*3)],spots:[...Array(7)].map(()=>[r()*24-12,r()*18-8])}},
+  hud:S=>`${Math.max(0,Math.ceil(S.T-S.t))}s · ${S.done} pets`,
+  down(S,p){const H=S.H;if(p.y>H-22){const i=Math.max(0,Math.min(3,Math.floor(p.x/25)));S.tool=i;try{gnFx('tick')}catch(_){}return}S.rub=p},
+  move(S,p){if(!S.rub)return;const d=Math.hypot(p.x-S.rub.x,p.y-S.rub.y);S.rub=p;const P=S.pet,need=P.steps[P.i],cx=50,cy=S.H*.48;if(Math.hypot(p.x-cx,p.y-cy)>30)return;
+    if(S.tool!==need){if(!S.warnT||S.t-S.warnT>1.2){S.warnT=S.t;arcPop(S,`USE ${PS_T[need][2].toUpperCase()}`,50,S.H*.2,'#fff')}return}
+    P.prog+=d/(need===3?8:need===0?140:110);if(Math.random()<.3)try{gnFx('plip',{pitch:1+P.prog,vol:.25})}catch(_){}
+    if(P.prog>=1){P.prog=0;P.i++;try{gnFx('pop')}catch(_){}if(P.i>=P.steps.length){const tm=S.t-P.t0,tip=Math.round(20+P.steps.length*8+Math.max(0,30-tm*2.5));S.score+=tip;S.done++;arcPop(S,'+$'+tip,50,S.H*.3,'#FFD60A',true);try{gnImpact('light')}catch(_){}S.leaving={k:P,t:S.t};this.newPet(S)}}},
+  up(S){S.rub=null},
+  step(S,dt){if(S.t>=S.T)S.over=true},
+  drawPet(c,P,x,y,s,stage){const dirty=stage<1,wet=stage===1,col=P.col;c.save();c.translate(x,y);c.scale(s,s);
+    c.fillStyle='rgba(0,0,0,.12)';c.beginPath();c.ellipse(0,18,18,4,0,0,7);c.fill();c.fillStyle=col;
+    if(P.k==='dog'){c.beginPath();c.ellipse(0,6,16,11,0,0,7);c.fill();c.beginPath();c.arc(0,-8,10,0,7);c.fill();c.fillStyle=col==='#2F2F2F'?'#555':'#8D6E63';c.beginPath();c.ellipse(-10,-8,4,8,.3,0,7);c.ellipse(10,-8,4,8,-.3,0,7);c.fill()}
+    else{c.beginPath();c.ellipse(0,7,14,10,0,0,7);c.fill();c.beginPath();c.arc(0,-7,9,0,7);c.fill();c.beginPath();c.moveTo(-8,-12);c.lineTo(-6,-20);c.lineTo(-2,-14);c.moveTo(8,-12);c.lineTo(6,-20);c.lineTo(2,-14);c.fill()}
+    c.fillStyle=col==='#2F2F2F'?'#fff':'#222';c.beginPath();c.arc(-3.5,-8,1.3,0,7);c.arc(3.5,-8,1.3,0,7);c.fill();c.fillStyle='#FF8FAB';c.beginPath();c.arc(0,-4.5,1.4,0,7);c.fill();
+    if(dirty){c.fillStyle='rgba(110,80,40,.55)';P.spots.forEach(([a,b],i)=>{if(i/P.spots.length>=P.prog||stage>0){c.beginPath();c.arc(a,b+4,2.6,0,7);c.fill()}})}
+    if(wet){c.fillStyle='rgba(120,190,255,.6)';for(let i=0;i<6;i++){c.beginPath();c.arc(-12+i*5,10+(i%2)*3,1.2,0,7);c.fill()}}
+    c.restore()},
+  bow(c,P,x,y){c.fillStyle=P.bowC;c.beginPath();c.moveTo(x+6,y-21);c.lineTo(x+1,y-24);c.lineTo(x+1,y-18);c.closePath();c.moveTo(x+6,y-21);c.lineTo(x+11,y-24);c.lineTo(x+11,y-18);c.closePath();c.fill();c.beginPath();c.arc(x+6,y-21,1.4,0,7);c.fill()},
+  draw(c,S,t){const H=S.H,P=S.pet,need=P.steps[P.i];arcBg(c,H,'#FFE3EC','#FFC2D6');c.fillStyle='#fff';c.fillRect(10,H*.66,80,4);
+    const Lv=S.leaving&&S.t-S.leaving.t<.8?S.leaving:null,e=Lv?(S.t-Lv.t)/.8:1;
+    if(Lv){this.drawPet(c,Lv.k,50+e*80,H*.48,1.25,3);this.bow(c,Lv.k,50+e*80,H*.48);for(let i=0;i<6;i++)arcTxt(c,'✦',50+e*80+Math.cos(i+t/200)*20,H*.48+Math.sin(i*1.3+t/250)*14,3,'#fff')}
+    const px=Lv?-30+e*80:50;this.drawPet(c,P,px,H*.48,1.25,need===0?0:need===1?1:2);
+    if(need===2&&P.prog>0)for(let i=0;i<Math.floor(P.prog*8);i++)arcTxt(c,'✦',px+Math.cos(i*2.4)*18,H*.48+Math.sin(i*1.9)*12,2.6,'#fff');
+    if(need===3&&P.prog>.3)this.bow(c,P,px,H*.48);
+    if(need===0&&P.prog>0){c.fillStyle='rgba(255,255,255,.85)';for(let i=0;i<Math.floor(P.prog*12);i++){c.beginPath();c.arc(50+Math.sin(i*2.1)*18,H*.48+Math.cos(i*1.7)*12,1.6+i%3*.6,0,7);c.fill()}}
+    /* card */c.fillStyle='#fff';c.beginPath();c.roundRect?c.roundRect(14,16,72,13,4):c.rect(14,16,72,13);c.fill();P.steps.forEach((s,k)=>{const x=50+(k-(P.steps.length-1)/2)*15;c.globalAlpha=k<P.i?.35:1;arcTxt(c,PS_T[s][1],x,22.5,6);if(k===P.i){c.strokeStyle='#F783AC';c.lineWidth=.8;c.strokeRect(x-6,17.5,12,10)}c.globalAlpha=1});
+    c.fillStyle='rgba(0,0,0,.12)';c.fillRect(25,H*.72,50,2.4);c.fillStyle='#F783AC';c.fillRect(25,H*.72,50*P.prog,2.4);
+    PS_T.forEach((tl,i)=>{const x=i*25+12.5,on=S.tool===i;c.fillStyle=on?'#F783AC':'#fff';c.fillRect(i*25+1.5,H-21,22,19);arcTxt(c,tl[1],x,H-14,7);c.font=mgFont(2.3,900);c.fillStyle=on?'#fff':'#A61E4D';c.textAlign='center';c.fillText(tl[2],x,H-5)});
+    if(S.rub){arcTxt(c,PS_T[S.tool][1],S.rub.x,S.rub.y-4,8)}
+    if(S.t<5)arcTxt(c,'PICK THE TOOL, THEN RUB THE PET',50,H*.8,3,'#A61E4D')}
+});
+
+/* ---- shared rhythm chart + judging (Dance Off, Rhythm Rock) ---- */
+function rhChart(S,bpm,len){const b=60/bpm,notes=[];let last=-1;for(let k=4;k*b<len;k++){const t=k*b,dens=.45+Math.min(.4,t/len*.5);if(S.rnd()<dens){let l=Math.floor(S.rnd()*4);if(l===last&&S.rnd()<.5)l=(l+1+Math.floor(S.rnd()*3))%4;last=l;notes.push({t,l,s:0})}
+    if(t>len*.35&&S.rnd()<dens*.35){notes.push({t:t+b/2,l:Math.floor(S.rnd()*4),s:0})}}
+  if(!notes.length)notes.push({t:3,l:0,s:0});return notes}
+function rhJudge(S,lane){let best=null,bd=1;for(const n of S.notes){if(n.s||n.l!==lane)continue;const d=Math.abs(n.t-S.t);if(d<bd){bd=d;best=n}if(n.t-S.t>.4)break}
+  if(!best||bd>.22){S.combo=0;S.bad=S.t;return null}
+  const g=bd<.07?['PERFECT',300,'#FFD60A']:bd<.14?['GREAT',150,'#7FE3FF']:['GOOD',50,'#fff'];best.s=1;S.combo++;S.maxc=Math.max(S.maxc||0,S.combo);const m=Math.min(2,1+S.combo/20);S.score+=Math.round(g[1]*m);S.lastG={g:g[0],col:g[2],t:S.t};return best}
+function rhStep(S,dt){const b=60/S.bpm,bi=Math.floor(S.t/b);if(bi!==S.bi&&S.t>0){S.bi=bi;try{gnFx(bi%2?'tok':'thunk',{vol:.35,pitch:bi%4===0?.8:1})}catch(_){}}
+  for(const n of S.notes){if(n.s)continue;if(S.t-n.t>.22){n.s=2;S.combo=0;S.bad=S.t}else if(n.t>S.t)break}
+  if(S.t>S.len+1.2)S.over=true}
+arcDefine('dance',{title:'Dance Off',blurb:'Tap the arrows on the beat. Keep the combo going.',c1:'#3A0CA3',c2:'#7209B7',
+  how:'Arrows float up to the top row. Tap that lane right when an arrow hits its outline. Perfect timing and long combos score big.',
+  rules:['Highest score wins','Tap the lane as each arrow reaches the outlines at the top.','Perfect 300, Great 150, Good 50.','Combos multiply your points up to 2x. A miss resets the combo.'],
+  icon:arcIco('#7209B7','<text x="10" y="17" font-size="10" fill="#FF7DB8" text-anchor="middle" font-weight="900">←</text><text x="19" y="17" font-size="10" fill="#7FE3FF" text-anchor="middle" font-weight="900">↓</text><text x="28" y="17" font-size="10" fill="#FFD60A" text-anchor="middle" font-weight="900">↑</text><text x="19" y="31" font-size="10" fill="#B8F5C8" text-anchor="middle" font-weight="900">→</text>'),
+  init(S){S.bpm=118;S.len=55;S.notes=rhChart(S,S.bpm,S.len);S.combo=0;S.t=-2;S.bi=-1},
+  hud:S=>S.combo>2?`${S.combo} combo`:`${Math.max(0,Math.ceil(S.len-S.t))}s`,
+  down(S,p){const l=Math.max(0,Math.min(3,Math.floor(p.x/25)));S.press=[l,S.t];const n=rhJudge(S,l);try{n?gnFx('pop',{vol:.4,pitch:1+l*.12}):gnFx('tick',{vol:.25})}catch(_){}},
+  step(S,dt){rhStep(S,dt)},
+  draw(c,S,t){const H=S.H,ty=16,sp=(H-30)/1.9,AR=['←','↓','↑','→'],CO=['#FF7DB8','#7FE3FF','#FFD60A','#B8F5C8'];arcBg(c,H,'#240046','#5A189A');
+    const beat=S.t>0?(S.t*S.bpm/60)%1:0;c.fillStyle=`rgba(255,255,255,${.05+.08*(1-beat)})`;for(let i=0;i<5;i++){c.fillRect(i*25-.2,0,.4,H)}
+    arcMe(c,50,H-4,26+(1-beat)*1.2,S.bad&&S.t-S.bad<.4?'shocked':S.combo>=10?'cheer':'happy');
+    for(let l=0;l<4;l++){const x=l*25+12.5,pr=S.press&&S.press[0]===l&&S.t-S.press[1]<.12;c.globalAlpha=pr?1:.55;arcTxt(c,AR[l],x,ty,pr?11:10,'rgba(255,255,255,.9)');c.globalAlpha=1}
+    for(const n of S.notes){const y=ty+(n.t-S.t)*sp;if(y>H+10)break;if(y<-10||n.s===1)continue;arcTxt(c,AR[n.l],n.l*25+12.5,y,9,n.s===2?'rgba(255,255,255,.25)':CO[n.l])}
+    if(S.lastG&&S.t-S.lastG.t<.5)arcTxt(c,S.lastG.g,50,H*.42,5,S.lastG.col);if(S.combo>=5)arcTxt(c,S.combo+' COMBO',50,H*.5,3.4,'#fff');
+    if(S.t<0)arcTxt(c,Math.ceil(-S.t)+'',50,H*.35,14,'#fff')}
+});
+arcDefine('rock',{title:'Rhythm Rock',blurb:'Hit the notes as they reach the line. Play the whole song!',c1:'#FF4D6D',c2:'#590D22',
+  how:'Notes roll down four strings. Tap the matching lane as each note crosses the line at the bottom. Every hit plays the song.',
+  rules:['Highest score wins','Tap the lane when a note crosses the strum line.','Perfect 300, Great 150, Good 50.','Long combos multiply up to 2x. Missing resets the combo.'],
+  icon:arcIco('#C9184A','<path d="M12 6L4 32h30L26 6z" fill="#1E1E2A"/><path d="M15 6l-4 26M19 6v26M23 6l4 26" stroke="#555" stroke-width=".6"/><circle cx="10" cy="27" r="2.6" fill="#2BD96B"/><circle cx="16" cy="18" r="2.2" fill="#FF3B30"/><circle cx="22" cy="12" r="1.8" fill="#FFD60A"/><path d="M6 28h26" stroke="#fff" stroke-width="1.2"/>'),
+  init(S){S.bpm=132;S.len=55;S.notes=rhChart(S,S.bpm,S.len);const scale=[0,2,4,7,9,12,14,16];S.notes.forEach((n,i)=>{n.p=Math.pow(2,scale[(n.l*2+Math.floor(i/4))%scale.length]/12)});S.combo=0;S.t=-2;S.bi=-1},
+  hud:S=>S.combo>2?`${S.combo} combo`:`${Math.max(0,Math.ceil(S.len-S.t))}s`,
+  geo(S,u,l){const H=S.H,top=H*.12,st=H-24,p=1-u,y=top+(st-top)*p*p,w=(.32+.68*p*p),x=50+(l-1.5)*22*w;return [x,y,w]},
+  down(S,p){const [,st]=this.geo(S,0,0);let best=0,bd=99;for(let l=0;l<4;l++){const [x]=this.geo(S,0,l),d=Math.abs(p.x-x);if(d<bd){bd=d;best=l}}S.press=[best,S.t];const n=rhJudge(S,best);try{n?gnFx('note',{pitch:n.p,vol:.7}):gnFx('clank',{vol:.2})}catch(_){}},
+  step(S,dt){rhStep(S,dt)},
+  draw(c,S,t){const H=S.H,CO=['#2BD96B','#FF3B30','#FFD60A','#3D7BFF'],look=1.5;arcBg(c,H,'#12000A','#590D22');
+    const tl=this.geo(S,1,-.6),tr=this.geo(S,1,3.6),bl=this.geo(S,0,-.6),br=this.geo(S,0,3.6);c.fillStyle='#1E1E2A';c.beginPath();c.moveTo(tl[0],tl[1]);c.lineTo(tr[0],tr[1]);c.lineTo(br[0],br[1]+20);c.lineTo(bl[0],bl[1]+20);c.fill();
+    const beat=S.t>0?(S.t*S.bpm/60):0;c.strokeStyle='rgba(255,255,255,.12)';c.lineWidth=.3;for(let k=Math.ceil(beat);k<beat+look*S.bpm/60;k++){const u=(k*60/S.bpm-S.t)/look,a=this.geo(S,u,-.6),b=this.geo(S,u,3.6);c.beginPath();c.moveTo(a[0],a[1]);c.lineTo(b[0],b[1]);c.stroke()}
+    for(let l=0;l<4;l++){const a=this.geo(S,1,l),b=this.geo(S,0,l);c.strokeStyle='rgba(255,255,255,.25)';c.lineWidth=.4;c.beginPath();c.moveTo(a[0],a[1]);c.lineTo(b[0],b[1]+20);c.stroke()}
+    const sl=this.geo(S,0,-.6),sr=this.geo(S,0,3.6);c.strokeStyle='#fff';c.lineWidth=1;c.beginPath();c.moveTo(sl[0],sl[1]);c.lineTo(sr[0],sr[1]);c.stroke();
+    for(let l=0;l<4;l++){const [x,y]=this.geo(S,0,l),pr=S.press&&S.press[0]===l&&S.t-S.press[1]<.12;c.strokeStyle=CO[l];c.lineWidth=1.2;c.fillStyle=pr?CO[l]:'rgba(0,0,0,.4)';c.beginPath();c.ellipse(x,y,7,3.2,0,0,7);c.fill();c.stroke()}
+    for(let i=S.notes.length-1;i>=0;i--){const n=S.notes[i],u=(n.t-S.t)/look;if(u>1||u<-.1||n.s===1)continue;const [x,y,w]=this.geo(S,Math.max(0,u),n.l);c.fillStyle=n.s===2?'rgba(255,255,255,.2)':CO[n.l];c.beginPath();c.ellipse(x,y,6.5*w,3*w,0,0,7);c.fill();c.fillStyle='rgba(255,255,255,.7)';c.beginPath();c.ellipse(x,y-.6*w,3*w,1.2*w,0,0,7);c.fill()}
+    if(S.lastG&&S.t-S.lastG.t<.5)arcTxt(c,S.lastG.g,50,H*.4,5,S.lastG.col);if(S.combo>=5)arcTxt(c,S.combo+' COMBO',50,H*.48,3.4,'#fff');
+    arcMe(c,12,H*.36,16,S.combo>=10?'cheer':S.bad&&S.t-S.bad<.4?'shocked':'happy');if(S.t<0)arcTxt(c,Math.ceil(-S.t)+'',50,H*.35,14,'#fff')}
+});
+
+/* ============ ARCADE BATCH D: backyard sports, racing, tennis, boxing ============ */
+/* ---- Home Run Derby ---- */
+arcDefine('derby',{title:'Home Run Derby',blurb:'Time your swing. Ten pitches. Longest bombs win.',c1:'#2D6A4F',c2:'#1B4332',
+  how:'Tap to swing when the ball reaches the plate. Perfect timing goes deep; early pulls it, late goes the other way. Ten pitches.',
+  rules:['Most home-run feet wins','Tap to swing as the ball reaches the plate.','Home runs add their distance. Anything short is an out.','Pitches get trickier: changeups and fastballs.'],
+  icon:arcIco('#2D6A4F','<path d="M4 34L19 18 34 34z" fill="#C9A35A"/><path d="M19 22l2 2-2 2-2-2z" fill="#fff"/><path d="M8 10l12 12" stroke="#E8C07D" stroke-width="3" stroke-linecap="round"/><circle cx="28" cy="9" r="3" fill="#fff"/>'),
+  init(S){S.n=0;S.pitch=null;S.wait=1.2;S.hrs=0;S.hit=null},
+  hud:S=>`pitch ${Math.min(10,S.n+1)} of 10 · ${S.hrs} HR`,
+  newPitch(S){const r=S.rnd,kind=S.n<3?'s':r()<.35?'c':r()<.5?'f':'s',dur=kind==='f'?.62:kind==='c'?1.15:.85;S.pitch={t:0,dur,kind,x:(r()-.5)*6,swung:0}},
+  down(S){const P=S.pitch;if(!P||P.swung)return;P.swung=1;S.swingT=S.t;const e=P.t-P.dur;try{gnFx('whoosh',{vol:.5})}catch(_){}
+    if(Math.abs(e)<.13){const q=1-Math.abs(e)/.13,dist=Math.round(220+q*240+S.rnd()*20),ang=Math.max(-40,Math.min(40,-e*320));S.hit={dist,ang,t:0,hr:dist>=330};P.done=1;try{gnFx('clack',{pitch:1.2});gnImpact(dist>=330?'win':'light')}catch(_){}}
+    else{S.miss=S.t}},
+  step(S,dt){if(S.hit){S.hit.t+=dt;if(S.hit.t>2.2){const h=S.hit;if(h.hr){S.score+=h.dist;S.hrs++;}S.hit=null;S.pitch=null;S.n++;S.wait=1;if(S.n>=10)S.over=true}return}
+    if(!S.pitch){S.wait-=dt;if(S.wait<=0&&S.n<10)this.newPitch(S);return}const P=S.pitch;P.t+=dt;if(P.t>P.dur+.45){S.pitch=null;S.n++;S.wait=.9;arcPop(S,P.swung?'STRIKE':'STRIKE (no swing)',50,S.H*.45,'#fff');if(S.n>=10)S.over=true}},
+  draw(c,S,t){const H=S.H;arcBg(c,H,'#7EC8E3','#BDE8F7');c.fillStyle='#2D6A4F';c.fillRect(0,H*.32,100,H);c.fillStyle='#40916C';for(let i=0;i<8;i++)c.fillRect(0,H*.32+i*H*.085,100,H*.04);
+    c.fillStyle='#C9A35A';c.beginPath();c.moveTo(50,H*.36);c.lineTo(10,H);c.lineTo(90,H);c.fill();c.fillStyle='#E9D8A6';c.beginPath();c.arc(50,H*.47,5,0,7);c.fill();
+    c.fillStyle='#1B4332';c.fillRect(0,H*.3,100,2.2);arcTxt(c,'400',50,H*.27,2.6,'#fff');
+    /* pitcher */c.fillStyle='#FF6B6B';c.fillRect(48,H*.42,4,6);c.fillStyle='#FFE0B8';c.beginPath();c.arc(50,H*.41,1.6,0,7);c.fill();
+    const P=S.pitch;if(P&&!P.done){const e=Math.min(1.15,P.t/P.dur),y=H*.44+(H*.84-H*.44)*Math.pow(e,1.6),r=.7+e*2.6,dx=P.kind==='c'?Math.sin(e*3)*2:0;c.fillStyle='rgba(0,0,0,.15)';c.beginPath();c.ellipse(50+P.x*e+dx,y+r*2,r,r*.4,0,0,7);c.fill();c.fillStyle='#fff';c.beginPath();c.arc(50+P.x*e+dx,y,r,0,7);c.fill();c.strokeStyle='#E5383B';c.lineWidth=.3;c.beginPath();c.arc(50+P.x*e+dx-r*.4,y,r*.7,-1,1);c.stroke()}
+    if(S.hit){const h=S.hit,e=Math.min(1,h.t/1.6),a=h.ang*Math.PI/180,d=h.dist/400,x=50+Math.sin(a)*d*48*e,y=H*.84-(H*.84-H*.3)*d*e-Math.sin(e*Math.PI)*H*.25,r=2.6*(1-e*.8);c.fillStyle='#fff';c.beginPath();c.arc(x,y,Math.max(.5,r),0,7);c.fill();
+      if(h.t>1.5)arcTxt(c,h.hr?`HOME RUN! ${h.dist} FT`:`${h.dist} FT · OUT`,50,H*.2,h.hr?5:4,h.hr?'#FFD60A':'#fff')}
+    /* batter: my character, bat swings */arcMe(c,62,H-2,22,S.hit&&S.hit.hr?'cheer':S.miss&&S.t-S.miss<.8?'pout':'happy');const sw=S.swingT&&S.t-S.swingT<.25?(S.t-S.swingT)/.25:0;c.save();c.translate(58,H*.86);c.rotate(-.9+sw*2.6);c.fillStyle='#E8C07D';c.fillRect(-1,-14,2,14);c.restore();
+    if(!S.n&&!P&&!S.hit)arcTxt(c,'TAP TO SWING',50,H*.6,4,'#fff')}
+});
+
+/* ---- QB Toss (backyard football) ---- */
+arcDefine('qb',{title:'QB Toss',blurb:'Lead your receivers. Hit them in stride. 8 throws.',c1:'#6A994E',c2:'#386641',
+  how:'Receivers run their routes. Drag from the quarterback to where you want the ball to land and let go. Throw ahead of them! Defenders can knock it away.',
+  rules:['Most points wins','Drag from your QB to a spot and let go to throw there.','Catches score the yards gained. Catches in the end zone are touchdowns (+50).','If a defender is closer to the ball, it’s broken up. 8 throws.'],
+  icon:arcIco('#6A994E','<path d="M4 8h30M4 16h30M4 24h30" stroke="#fff" stroke-width=".8" opacity=".6"/><ellipse cx="19" cy="20" rx="7" ry="4.4" fill="#8B4513" transform="rotate(-30 19 20)"/><path d="M16 21l6-3" stroke="#fff" stroke-width=".9"/>'),
+  init(S){S.n=0;this.play(S)},
+  play(S){const r=S.rnd,H=S.H,los=H-40;S.los=los;S.rec=[0,1,2].map(i=>{const x0=20+i*30,route=Math.floor(r()*4);return {x:x0,y:los,x0,y0:los,route,sp:22+r()*8,t:0}});S.def=S.rec.map(R=>({x:R.x+(r()-.5)*8,y:los-18-r()*10,sp:17+r()*6}));S.ball=null;S.p0=S.t;S.res=null},
+  hud:S=>`throw ${Math.min(8,S.n+1)} of 8`,
+  path(R,t,H){const s=R.sp*t,turn=22;const Y0=R.y0;if(s<turn)return [R.x0,Y0-s];const k=s-turn,dir=R.x0<50?1:R.x0>50?-1:(R.route%2?1:-1);
+    switch(R.route){case 0:return [R.x0,Y0-s];case 1:return [R.x0+dir*k*.9,Y0-turn-k*.4];case 2:return [R.x0+dir*k*.7,Y0-turn-k*.7];default:return [R.x0-dir*k*.8,Y0-turn-k*.5]}},
+  down(S,p){if(S.ball||S.res)return;S.aim={a:p,b:p}},move(S,p){if(S.aim)S.aim.b=p},
+  up(S,p){const A=S.aim;S.aim=null;if(!A||S.ball)return;const qx=50,qy=S.los+10;const tx=A.b.x,ty=A.b.y;if(Math.hypot(tx-qx,ty-qy)<8)return;const d=Math.hypot(tx-qx,ty-qy);S.ball={x0:qx,y0:qy,tx,ty,t:0,dur:.35+d/110};try{gnFx('whoosh',{vol:.5})}catch(_){}},
+  step(S,dt){const el=S.t-S.p0;if(S.res){if(S.t-S.res.t>1.4){S.n++;if(S.n>=8)S.over=true;else this.play(S)}return}
+    if(el<.6)return;S.rec.forEach(R=>{R.t=el-.6;const [x,y]=this.path(R,R.t,S.H);R.x=x;R.y=y});
+    S.def.forEach((D,i)=>{const R=S.rec[i],dx=R.x-D.x,dy=R.y-6-D.y,d=Math.hypot(dx,dy)||1;D.x+=dx/d*D.sp*dt;D.y+=dy/d*D.sp*dt});
+    const B=S.ball;if(B){B.t+=dt;if(B.t>=B.dur){let best=null,bd=6;S.rec.forEach(R=>{const d=Math.hypot(R.x-B.tx,R.y-B.ty);if(d<bd){bd=d;best=R}});let dd=99;S.def.forEach(D=>{dd=Math.min(dd,Math.hypot(D.x-B.tx,D.y-B.ty))});
+        if(best&&dd>bd+1){const yds=Math.max(1,Math.round((S.los-B.ty)/2.2)),td=B.ty<S.H*.16,pts=yds+(td?50:0);S.score+=pts;S.res={t:S.t,txt:td?`TOUCHDOWN! +${pts}`:`CATCH! +${pts}`,ok:1};try{gnFx(td?'clunk':'thup');gnImpact(td?'win':'light')}catch(_){}}
+        else{S.res={t:S.t,txt:dd<6?'BROKEN UP!':'INCOMPLETE',ok:0};try{gnFx('thunk',{pitch:.7})}catch(_){}}arcPop(S,S.res.txt,50,S.H*.4,S.res.ok?'#FFD60A':'#fff',true)}}
+    else if(el>5.5){S.res={t:S.t,txt:'SACKED!',ok:0};arcPop(S,'SACKED!',50,S.H*.4,'#fff',true)}},
+  draw(c,S,t){const H=S.H;c.fillStyle='#386641';c.fillRect(0,0,100,H);for(let y=H;y>0;y-=11){c.fillStyle=Math.floor(y/11)%2?'#3E7148':'#386641';c.fillRect(0,y-11,100,11);c.fillStyle='rgba(255,255,255,.5)';c.fillRect(0,y,100,.4)}
+    c.fillStyle='#BC4749';c.fillRect(0,0,100,H*.16);arcTxt(c,'END ZONE',50,H*.08,4,'rgba(255,255,255,.8)');c.fillStyle='#FFD60A';c.fillRect(0,S.los,100,.6);
+    S.def.forEach(D=>{c.fillStyle='#1E2233';c.beginPath();c.arc(D.x,D.y,2.6,0,7);c.fill()});
+    S.rec.forEach(R=>{c.fillStyle=PCOL[me]||'#FF2D87';c.beginPath();c.arc(R.x,R.y,2.6,0,7);c.fill();c.fillStyle='#fff';c.font=mgFont(2.2,900);c.textAlign='center';c.textBaseline='middle';c.fillText('★',R.x,R.y)});
+    arcMe(c,50,S.los+18,12,S.res?(S.res.ok?'cheer':'pout'):'happy');
+    const B=S.ball;if(B&&!S.res){const e=Math.min(1,B.t/B.dur),x=B.x0+(B.tx-B.x0)*e,y=B.y0+(B.ty-B.y0)*e,z=Math.sin(e*Math.PI)*8;c.fillStyle='rgba(0,0,0,.25)';c.beginPath();c.ellipse(x,y,1.4,.7,0,0,7);c.fill();c.fillStyle='#8B4513';c.beginPath();c.ellipse(x,y-z,1.8+z*.08,1.1+z*.05,-.5,0,7);c.fill();
+      c.strokeStyle='rgba(255,255,255,.5)';c.lineWidth=.3;c.beginPath();c.arc(B.tx,B.ty,2,0,7);c.stroke()}
+    if(S.aim){c.strokeStyle='rgba(255,255,255,.7)';c.setLineDash([1,1]);c.lineWidth=.5;c.beginPath();c.moveTo(50,S.los+10);c.lineTo(S.aim.b.x,S.aim.b.y);c.stroke();c.setLineDash([]);c.strokeStyle='#FFD60A';c.beginPath();c.arc(S.aim.b.x,S.aim.b.y,2.4,0,7);c.stroke()}
+    if(!S.n&&!S.ball&&S.t-S.p0<3)arcTxt(c,'DRAG FROM THE QB TO THROW',50,H*.55,3.2,'#fff')}
+});
+
+/* ---- Backyard Soccer (dribble past defenders, then shoot) ---- */
+arcDefine('soccer',{title:'Backyard Soccer',blurb:'Dribble past defenders, then bury it. 75 seconds.',c1:'#38B000',c2:'#007200',
+  how:'Drag left and right to dribble around defenders. When you reach the box, swipe up to shoot past the keeper. Each goal starts a faster attack.',
+  rules:['Most points wins','Drag left and right to steer around defenders.','Coins on the way are 10. A goal is 100, top corner 150.','Get tackled and the attack restarts. 75 seconds.'],
+  icon:arcIco('#38B000','<rect x="9" y="5" width="20" height="9" fill="none" stroke="#fff" stroke-width="1.4"/><circle cx="19" cy="27" r="5" fill="#fff"/><path d="M19 24l2.4 1.8-1 2.8h-2.8l-1-2.8z" fill="#1E2233"/>'),
+  init(S){S.T=75;S.att=0;this.attack(S)},
+  attack(S){const r=S.rnd;S.px=50;S.dist=0;S.len=140+S.att*20;S.sp=34+S.att*5;S.defs=[];for(let d=30;d<S.len-25;d+=16+r()*12)S.defs.push({d,x:15+r()*70,vx:(r()-.5)*(10+S.att*4)});S.coins=[];for(let d=20;d<S.len-20;d+=9)if(r()<.5)S.coins.push({d,x:15+r()*70});S.shoot=0;S.shot=null;S.gk={x:50,dir:1};S.tackled=0},
+  hud:S=>`${Math.max(0,Math.ceil(S.T-S.t))}s`,
+  down(S,p){S.drag=p;S.sw=[{...p,t:S.t}]},move(S,p){if(S.drag&&!S.shoot){S.px=Math.max(8,Math.min(92,S.px+(p.x-S.drag.x)*1.2))}S.drag=p;if(S.sw)S.sw.push({...p,t:S.t})},
+  up(S){const w=S.sw;S.sw=null;S.drag=null;if(!S.shoot||S.shot||!w||w.length<2)return;const a=w[0],b=w[w.length-1];if(a.y-b.y<8)return;S.shot={x0:S.px,tx:S.px+(b.x-a.x)*1.4,hi:Math.min(1,(a.y-b.y)/40),t:0};try{gnFx('thunk')}catch(_){}},
+  step(S,dt){if(S.t>=S.T){S.over=true;return}if(S.tackled){S.tackled-=dt;if(S.tackled<=0)this.attack(S);return}
+    if(!S.shoot){S.dist+=S.sp*dt;S.defs.forEach(D=>{D.x+=D.vx*dt;if(D.x<10||D.x>90)D.vx*=-1;const y=D.d-S.dist;if(Math.abs(y)<3.5&&Math.abs(D.x-S.px)<5.5&&!S.tackled){S.tackled=1.2;arcPop(S,'TACKLED!',50,S.H*.5,'#fff',true);try{gnFx('clank');gnImpact('heavy')}catch(_){}}});
+      S.coins=S.coins.filter(C=>{const y=C.d-S.dist;if(Math.abs(y)<3&&Math.abs(C.x-S.px)<5){S.score+=10;try{gnFx('pop',{vol:.4,pitch:1.3})}catch(_){}return false}return true});if(S.dist>=S.len){S.shoot=1;arcPop(S,'SHOOT!',50,S.H*.5,'#FFD60A',true)}}
+    else{const g=S.gk;g.x+=g.dir*(26+S.att*5)*dt;if(g.x>70)g.dir=-1;if(g.x<30)g.dir=1;const B=S.shot;if(B){B.t+=dt/.6;if(B.t>=1&&!B.done){B.done=1;const inG=B.tx>24&&B.tx<76,saved=inG&&Math.abs(B.tx-g.x)<8&&B.hi<.85,corner=inG&&(B.tx<32||B.tx>68)&&B.hi>.7;
+          if(inG&&!saved){const pts=corner?150:100;S.score+=pts;arcPop(S,corner?'TOP BINS! +150':'GOAL! +100',50,S.H*.4,'#FFD60A',true);try{gnFx('swish');gnImpact('win')}catch(_){}S.att++}else{arcPop(S,saved?'SAVED!':'WIDE!',50,S.H*.4,'#fff',true)}setTimeout(()=>{if(!S.over)this.attack(S)},800)}}}},
+  draw(c,S,t){const H=S.H;c.fillStyle='#38B000';c.fillRect(0,0,100,H);const off=S.dist%16;for(let y=-16;y<H;y+=16){c.fillStyle='#2D9600';c.fillRect(0,y+off,100,8)}
+    const py=H*.78,Y=d=>py-(d-S.dist)*1.0;
+    if(S.len-S.dist<H){const gy=Y(S.len)-30;c.strokeStyle='#fff';c.lineWidth=1;c.strokeRect(24,gy-10,52,10);c.strokeStyle='rgba(255,255,255,.4)';c.lineWidth=.3;for(let x=26;x<76;x+=3){c.beginPath();c.moveTo(x,gy-10);c.lineTo(x,gy);c.stroke()}c.strokeStyle='#fff';c.lineWidth=.5;c.strokeRect(14,gy,72,26);
+      c.fillStyle='#FF9F1C';c.fillRect(S.gk.x-4,gy-7,8,7);c.fillStyle='#FFE0B8';c.beginPath();c.arc(S.gk.x,gy-8.5,2,0,7);c.fill()}
+    S.coins.forEach(C=>{const y=Y(C.d);if(y>-5&&y<H+5){c.fillStyle='#FFD60A';c.beginPath();c.arc(C.x,y,1.8,0,7);c.fill()}});
+    S.defs.forEach(D=>{const y=Y(D.d);if(y>-8&&y<H+8){c.fillStyle='#1E2233';c.fillRect(D.x-3,y-4,6,5);c.fillStyle='#FFE0B8';c.beginPath();c.arc(D.x,y-5.5,1.8,0,7);c.fill()}});
+    arcMe(c,S.px,py+3,13,S.tackled?'pout':'happy');const B=S.shot;let bx=S.px,by=py+1;if(B){const e=Math.min(1,B.t),gy=Y(S.len)-30;bx=B.x0+(B.tx-B.x0)*e;by=py+1+(gy-6-B.hi*3-(py+1))*e}c.fillStyle='#fff';c.beginPath();c.arc(bx,by,1.8,0,7);c.fill();c.fillStyle='#1E2233';c.beginPath();c.arc(bx,by,.7,0,7);c.fill();
+    if(S.t<3)arcTxt(c,'DRAG TO DRIBBLE',50,H*.45,3.6,'#fff');if(S.shoot&&!S.shot)arcTxt(c,'SWIPE UP TO SHOOT',50,H*.92,3.4,'#fff')}
+});
+
+/* ---- Kart Dash (racing) ---- */
+arcDefine('kart',{title:'Kart Dash',blurb:'Steer, dodge, boost. Go as far as you can in 60 seconds.',c1:'#F77F00',c2:'#D62828',
+  how:'Drag left and right to steer. Stay on the road, dodge the other karts and hit the yellow boost pads. Distance is your score.',
+  rules:['Furthest distance wins','Drag left and right to steer.','Off the road or bumping a kart slows you down.','Yellow pads give a burst of speed. 60 seconds.'],
+  icon:arcIco('#F77F00','<path d="M12 4c-6 10 6 18 0 30h14c6-12-6-20 0-30z" fill="#555"/><path d="M19 6c-3 8 3 16 0 26" stroke="#fff" stroke-width="1" stroke-dasharray="2 2"/><rect x="15" y="22" width="7" height="9" rx="2" fill="#FF2D87"/>'),
+  init(S){S.T=60;S.x=50;S.d=0;S.v=30;S.boost=0;S.cars=[];S.pads=[];const r=S.rnd;for(let d=60;d<4000;d+=26+r()*30)S.cars.push({d,o:(r()-.5)*1.4,v:14+r()*10});for(let d=80;d<4000;d+=70+r()*80)S.pads.push({d,o:(r()-.5)*1.2});S.seedA=r()*6;S.seedB=r()*6},
+  cx(S,d){return 50+Math.sin(d*.012+S.seedA)*18+Math.sin(d*.027+S.seedB)*10},
+  hud:S=>`${Math.max(0,Math.ceil(S.T-S.t))}s · ${Math.round(S.v*3.6/3)} mph`,
+  down(S,p){S.dr=p},move(S,p){if(S.dr){S.x=Math.max(4,Math.min(96,S.x+(p.x-S.dr.x)*1.3));S.dr=p}},up(S){S.dr=null},
+  step(S,dt){if(S.t>=S.T){S.over=true;return}const RW=17,c0=this.cx(S,S.d+12),off=Math.abs(S.x-c0)>RW;let tgt=off?22:58+Math.min(30,S.t*.6);if(S.boost>0){S.boost-=dt;tgt+=35}S.v+=(tgt-S.v)*Math.min(1,dt*(off?3:1.2));S.d+=S.v*dt;S.score=Math.round(S.d);
+    S.cars.forEach(C=>{C.d+=C.v*dt;const y=C.d-S.d;if(y>8&&y<16){const x=this.cx(S,C.d)+C.o*RW;if(Math.abs(x-S.x)<6&&!C.hit){C.hit=1;S.v*=.45;arcPop(S,'BUMP!',S.x,S.H*.6,'#fff');try{gnFx('clank');gnImpact('heavy')}catch(_){}}}});
+    S.pads.forEach(P=>{const y=P.d-S.d;if(y>8&&y<16&&!P.hit){const x=this.cx(S,P.d)+P.o*RW;if(Math.abs(x-S.x)<6){P.hit=1;S.boost=1.6;arcPop(S,'BOOST!',S.x,S.H*.6,'#FFD60A');try{gnFx('whoosh')}catch(_){}}}})},
+  draw(c,S,t){const H=S.H,base=S.d,py=H*.82,RW=17,Y=d=>py-(d-base-12)*1.2;c.fillStyle='#55A630';c.fillRect(0,0,100,H);
+    for(let y=H;y>-4;y-=2){const d=base+12+(py-y)/1.2,x=this.cx(S,d);c.fillStyle=Math.floor(d/6)%2?'#E63946':'#fff';c.fillRect(x-RW-2,y,2,2.1);c.fillRect(x+RW,y,2,2.1);c.fillStyle='#5C5C66';c.fillRect(x-RW,y,RW*2,2.1);if(Math.floor(d/5)%2){c.fillStyle='rgba(255,255,255,.6)';c.fillRect(x-.4,y,.8,2.1)}}
+    S.pads.forEach(P=>{const y=Y(P.d);if(y<-5||y>H+5||P.hit)return;const x=this.cx(S,P.d)+P.o*RW;c.fillStyle='#FFD60A';c.fillRect(x-4,y-2,8,4);arcTxt(c,'»',x,y,3,'#F77F00')});
+    const kart=(x,y,col)=>{c.fillStyle='#222';c.fillRect(x-4,y-4,1.6,3);c.fillRect(x+2.4,y-4,1.6,3);c.fillRect(x-4,y+2,1.6,3);c.fillRect(x+2.4,y+2,1.6,3);c.fillStyle=col;c.beginPath();c.roundRect?c.roundRect(x-3,y-5,6,10,2):c.rect(x-3,y-5,6,10);c.fill()};
+    S.cars.forEach(C=>{const y=Y(C.d);if(y<-8||y>H+8)return;kart(this.cx(S,C.d)+C.o*RW,y,'#3D7BFF')});
+    kart(S.x,py,PCOL[me]||'#FF2D87');arcMe(c,S.x,py+1,8,S.boost>0?'cheer':'happy');if(S.boost>0){c.fillStyle='rgba(255,159,28,.8)';c.beginPath();c.moveTo(S.x-2,py+5);c.lineTo(S.x,py+9+Math.random()*3);c.lineTo(S.x+2,py+5);c.fill()}
+    if(S.t<3)arcTxt(c,'DRAG TO STEER',50,H*.4,4,'#fff')}
+});
+
+/* ---- Tennis Rally ---- */
+arcDefine('tennis',{title:'Tennis Rally',blurb:'Time your swing, aim for the corners. Three lives.',c1:'#80B918',c2:'#2B9348',
+  how:'Tap as the ball reaches you to swing. Tap on the left or right to aim that way. Corners beat the other player. Miss three and you’re done.',
+  rules:['Highest score wins','Tap when the ball reaches your racket. Where you tap aims the shot.','Each return is 10. A winner is 100 plus 10 per shot in the rally.','Three misses and the match is over. They get faster.'],
+  icon:arcIco('#2B9348','<path d="M8 4h22l6 30H2z" fill="#4A9E3F"/><path d="M19 4v30M5 19h28" stroke="#fff" stroke-width=".8"/><circle cx="26" cy="12" r="2.6" fill="#E9FF70"/><ellipse cx="12" cy="27" rx="4" ry="5" fill="none" stroke="#FF2D87" stroke-width="1.4"/>'),
+  init(S){S.lives=3;S.rally=0;S.cpu=50;S.lvl=0;this.serve(S)},
+  serve(S){S.ball={dir:1,x0:S.cpu,tx:30+S.rnd()*40,t:0,dur:1.25,hit:0};S.rally=0;S.wait=0},
+  hud:S=>`${'♥'.repeat(S.lives)} · rally ${S.rally}`,
+  geo(S,u){/* u 0 far baseline, 1 near */const H=S.H,top=H*.2,bot=H*.86,y=top+(bot-top)*u,w=.55+.45*u;return {y,w}},
+  down(S,p){const B=S.ball;if(!B||B.dir!==1||B.hit)return;const e=B.t/B.dur;S.swing=S.t;if(e>.82&&e<1.1){B.hit=1;S.rally++;S.score+=10;const aim=Math.max(-1,Math.min(1,(p.x-50)/30)),q=1-Math.abs(e-.96)/.14,tx=50+aim*36;try{gnFx('thwip',{pitch:1+q*.3});gnImpact('light')}catch(_){}
+      S.ball={dir:-1,x0:S.me||50,tx:Math.max(12,Math.min(88,tx)),t:0,dur:Math.max(.55,1.05-S.lvl*.04-q*.15),hit:0}}},
+  step(S,dt){const B=S.ball;S.me=B&&B.dir===1?B.x0+(B.tx-B.x0)*Math.min(1,B.t/B.dur):50+(S.me?(S.me-50)*.95:0);if(S.wait>0){S.wait-=dt;if(S.wait<=0){if(S.lives<=0)S.over=true;else this.serve(S)}return}if(!B)return;B.t+=dt;
+    if(B.dir===-1){const reach=26+S.lvl*3+S.rally*1.2;S.cpu+=Math.sign(B.tx-S.cpu)*Math.min(Math.abs(B.tx-S.cpu),reach*dt);if(B.t>=B.dur){if(Math.abs(S.cpu-B.tx)<5){try{gnFx('thwip',{pitch:.9})}catch(_){}S.ball={dir:1,x0:S.cpu,tx:22+S.rnd()*56,t:0,dur:Math.max(.62,1.15-S.lvl*.05-S.rally*.02),hit:0}}else{const pts=100+S.rally*10;S.score+=pts;S.lvl++;arcPop(S,`WINNER! +${pts}`,50,S.H*.35,'#FFD60A',true);try{gnFx('clunk');gnImpact('win')}catch(_){}S.ball=null;S.wait=1.1}}}
+    else{S.cpu+=(50-S.cpu)*dt*1.5;if(B.t/B.dur>1.12){S.lives--;arcPop(S,S.lives?'MISSED!':'GAME OVER',50,S.H*.5,'#fff',true);try{gnFx('thunk',{pitch:.6})}catch(_){}S.ball=null;S.wait=1.1}}},
+  draw(c,S,t){const H=S.H,g=u=>this.geo(S,u);arcBg(c,H,'#1A759F','#168AAD');const a=g(0),b=g(1),X=(x,w)=>50+(x-50)*w;c.fillStyle='#4A9E3F';c.beginPath();c.moveTo(X(4,a.w),a.y);c.lineTo(X(96,a.w),a.y);c.lineTo(X(96,b.w),b.y);c.lineTo(X(4,b.w),b.y);c.fill();
+    c.strokeStyle='#fff';c.lineWidth=.6;c.beginPath();c.moveTo(X(4,a.w),a.y);c.lineTo(X(96,a.w),a.y);c.lineTo(X(96,b.w),b.y);c.lineTo(X(4,b.w),b.y);c.closePath();c.moveTo(X(50,a.w),a.y);c.lineTo(X(50,b.w),b.y);c.stroke();
+    const n=g(.5);c.fillStyle='rgba(255,255,255,.85)';c.fillRect(X(2,n.w),n.y-3,X(98,n.w)-X(2,n.w),.6);c.strokeStyle='rgba(255,255,255,.35)';c.lineWidth=.2;for(let x=2;x<98;x+=2){c.beginPath();c.moveTo(X(x,n.w),n.y-3);c.lineTo(X(x,n.w),n.y);c.stroke()}
+    /* cpu */const cy=g(0).y;c.fillStyle='#3D7BFF';c.fillRect(X(S.cpu,a.w)-2,cy-7,4,6);c.fillStyle='#FFE0B8';c.beginPath();c.arc(X(S.cpu,a.w),cy-8.5,1.6,0,7);c.fill();
+    const B=S.ball;if(B){const e=Math.min(1.15,B.t/B.dur),u=B.dir===1?e:1-e,gg=g(Math.max(0,Math.min(1.1,u))),x=X(B.x0+(B.tx-B.x0)*Math.min(1,e),gg.w),hgt=Math.sin(Math.min(1,e)*Math.PI)*8*gg.w;c.fillStyle='rgba(0,0,0,.25)';c.beginPath();c.ellipse(x,gg.y,1.4*gg.w,.6*gg.w,0,0,7);c.fill();c.fillStyle='#E9FF70';c.beginPath();c.arc(x,gg.y-hgt-1,1.3*gg.w+.4,0,7);c.fill()}
+    const mx=X(S.me||50,1);arcMe(c,mx,H*.97,16,S.wait>0&&!B&&S.lives<3?'pout':'happy');const sw=S.swing&&S.t-S.swing<.2?(S.t-S.swing)/.2:0;c.save();c.translate(mx+5,H*.86);c.rotate(-1.2+sw*2);c.strokeStyle='#FF2D87';c.lineWidth=.8;c.beginPath();c.ellipse(0,-6,2.6,3.4,0,0,7);c.stroke();c.fillStyle='#333';c.fillRect(-.4,-2.6,.8,3);c.restore();
+    if(S.rally===0&&B&&B.dir===1&&S.t<4)arcTxt(c,'TAP WHEN IT REACHES YOU',50,H*.6,3.4,'#fff')}
+});
+
+/* ---- Boxing ---- */
+arcDefine('boxing',{title:'Boxing',blurb:'Dodge the big swings, counter when they miss. Knock them out!',c1:'#D00000',c2:'#370617',
+  how:'Watch for a glowing glove: tap the opposite side at the bottom to dodge. Tap their face to jab. Right after they miss, counters hit hard.',
+  rules:['Most points wins','A glowing glove means a punch is coming. Tap the bottom left or right to dodge away from it.','Tap their face to jab. Blocked jabs do little; counters after a miss do a lot.','Knock out an opponent for a bonus; the next one is tougher. Your health doesn’t come back.'],
+  icon:arcIco('#D00000','<circle cx="19" cy="14" r="8" fill="#FFE0B8"/><circle cx="16" cy="13" r="1" fill="#333"/><circle cx="22" cy="13" r="1" fill="#333"/><ellipse cx="9" cy="27" rx="6" ry="5" fill="#FF2D87"/><ellipse cx="29" cy="27" rx="6" ry="5" fill="#3D7BFF"/>'),
+  init(S){S.hp=100;S.lvl=0;this.foe(S);S.dodge=0},
+  foe(S){S.f={hp:60+S.lvl*25,st:'idle',t:1.2,side:0,open:0,col:['#3D7BFF','#2BB673','#9D4EDD','#FF9F1C','#1E2233'][S.lvl%5]}},
+  hud:S=>`you ${Math.max(0,Math.round(S.hp))} · foe ${S.lvl+1}`,
+  down(S,p){const H=S.H,f=S.f;if(p.y>H*.78){S.dodge=p.x<50?-1:1;S.dT=S.t;try{gnFx('whoosh',{vol:.35})}catch(_){}return}
+    if(Math.abs(p.x-50)<22&&p.y<H*.62&&p.y>H*.12){S.jab=S.t;let dmg,txt;if(f.open>0){dmg=14+S.rnd()*6;txt='COUNTER!';try{gnImpact('heavy')}catch(_){}}else if(f.st==='wind'){dmg=6;txt='POW'}else{dmg=1.5;txt='blocked'}
+      dmg=Math.round(dmg);f.hp-=dmg;S.score+=dmg*10;S.hitF={t:S.t};arcPop(S,txt,50+(S.rnd()-.5)*20,H*.3,dmg>10?'#FFD60A':'#fff',dmg>10);try{gnFx(dmg>5?'thunk':'tok',{pitch:dmg>10?.7:1.2})}catch(_){}
+      if(f.hp<=0){S.score+=500;S.lvl++;arcPop(S,'K.O.! +500',50,H*.45,'#FFD60A',true);try{gnFx('clunk');gnImpact('win')}catch(_){}S.koT=S.t;this.foe(S);S.f.t=1.8}}},
+  step(S,dt){const f=S.f;f.t-=dt;f.open=Math.max(0,f.open-dt);if(S.t-S.dT>.45)S.dodge=0;if(S.hp<=0){S.over=true;return}if(S.t>90){S.over=true;return}
+    const sp=1+S.lvl*.15;if(f.t>0)return;
+    if(f.st==='idle'){f.st='wind';f.side=S.rnd()<.5?-1:1;f.t=Math.max(.38,.8-S.lvl*.07)}
+    else if(f.st==='wind'){f.st='punch';f.t=.18;const dodged=S.dodge===-f.side;if(dodged){f.open=.9;arcPop(S,'DODGED!',50,S.H*.6,'#7FE3FF');try{gnFx('swish',{vol:.5})}catch(_){}}else{const d=12+S.lvl*2;S.hp-=d;S.hurt=S.t;arcPop(S,'-'+d,50,S.H*.72,'#FF3B30',true);try{gnFx('crunch');gnImpact('heavy')}catch(_){}}}
+    else{f.st='idle';f.t=(.7+S.rnd()*1.1)/sp}},
+  draw(c,S,t){const H=S.H,f=S.f;arcBg(c,H,'#370617','#6A040F');c.fillStyle='rgba(255,255,255,.08)';for(let i=0;i<3;i++)c.fillRect(0,H*.55+i*5,100,.8);c.fillStyle='#9D0208';c.fillRect(0,H*.66,100,H);
+    const bob=Math.sin(t/180)*1.2,hit=S.hitF&&S.t-S.hitF.t<.15,shake=hit?(Math.random()-.5)*2:0,fx=50+shake,fy=H*.36+bob;
+    c.fillStyle=f.col;c.beginPath();c.moveTo(fx-22,H*.66);c.quadraticCurveTo(fx-24,fy+12,fx,fy+10);c.quadraticCurveTo(fx+24,fy+12,fx+22,H*.66);c.fill();
+    c.fillStyle='#FFE0B8';c.beginPath();c.arc(fx,fy,12,0,7);c.fill();c.fillStyle='#333';const eyes=f.open>0?'@':hit?'x':'•';c.font=mgFont(4,900);c.textAlign='center';c.textBaseline='middle';c.fillText(eyes,fx-4,fy-1);c.fillText(eyes,fx+4,fy-1);c.fillStyle='#C1121F';c.fillRect(fx-4,fy+5,8,f.st==='wind'?2.4:1.2);
+    c.fillStyle=f.col;c.fillRect(fx-14,fy-12,28,4);
+    const glove=(side)=>{const wind=f.st==='wind'&&f.side===side,punch=f.st==='punch'&&f.side===side,guard=f.open<=0&&f.st==='idle';let x=fx+side*13,y=fy+(guard?2:14),r=6;if(wind){x=fx+side*24;y=fy-6;r=7}if(punch){x=50+side*8;y=H*.62;r=12}
+      if(wind){c.fillStyle='rgba(255,214,10,.45)';c.beginPath();c.arc(x,y,r+3+Math.sin(t/50)*1,0,7);c.fill()}c.fillStyle='#D00000';c.beginPath();c.arc(x,y,r,0,7);c.fill();c.fillStyle='rgba(255,255,255,.35)';c.beginPath();c.arc(x-r*.3,y-r*.3,r*.35,0,7);c.fill()};glove(-1);glove(1);
+    if(f.open>0)arcTxt(c,'OPEN! HIT!',50,H*.1,4,'#FFD60A');
+    /* my gloves */const jb=S.jab&&S.t-S.jab<.12;c.fillStyle=PCOL[me]||'#FF2D87';c.beginPath();c.arc(30+S.dodge*10,H*.84-(jb?14:0),8,0,7);c.arc(70+S.dodge*10,H*.84,8,0,7);c.fill();
+    if(S.hurt&&S.t-S.hurt<.25){c.fillStyle='rgba(255,0,0,.25)';c.fillRect(0,0,100,H)}
+    c.fillStyle='rgba(0,0,0,.4)';c.fillRect(5,H-8,40,3);c.fillStyle='#2BD96B';c.fillRect(5,H-8,40*Math.max(0,S.hp)/100,3);c.fillStyle='rgba(0,0,0,.4)';c.fillRect(55,H-8,40,3);c.fillStyle='#FF3B30';c.fillRect(55,H-8,40*Math.max(0,f.hp)/(60+S.lvl*25),3);
+    arcTxt(c,'◀ DODGE',14,H*.78,2.6,'rgba(255,255,255,.5)');arcTxt(c,'DODGE ▶',86,H*.78,2.6,'rgba(255,255,255,.5)');if(S.t<4)arcTxt(c,'TAP THE FACE TO JAB',50,H*.52,3.2,'#fff')}
+});
+
 /* ============ SLIDES & LADDERS ============ */
 const SL_JUMP={1:38,4:14,9:31,21:42,28:84,36:44,51:67,71:91,80:100,16:6,47:26,49:11,56:53,62:19,64:60,87:24,93:73,95:75,98:78};
 /* layouts: 1 = classic (all saved games), 2 = tidy board with no crossing pieces (new games default). g.quick: spins count double and reaching 100 wins */
@@ -13245,7 +13549,7 @@ Object.assign(ICON,{
   hockey:`<svg class="ico" viewBox="0 0 38 38" aria-hidden="true"><rect x="1" y="1" width="36" height="36" rx="9" fill="#1F6BFF"/><rect x="5" y="5" width="28" height="28" rx="4" fill="#EAF4FF"/><path d="M5 19h28" stroke="#E5322B" stroke-width="1"/><rect x="14" y="4" width="10" height="2.4" fill="#0B1B33"/><rect x="14" y="31.6" width="10" height="2.4" fill="#0B1B33"/><circle cx="19" cy="25" r="4.4" fill="#FF2D87"/><circle cx="19" cy="25" r="2.4" fill="#FF7DB8"/><circle cx="22" cy="14" r="2.6" fill="#1E2233"/></svg>`,
   xword:`<svg class="ico" viewBox="0 0 38 38" aria-hidden="true"><rect x="1" y="1" width="36" height="36" rx="9" fill="#3D4BD8"/><g fill="#fff"><rect x="7" y="7" width="7" height="7" rx="1.2"/><rect x="15.5" y="7" width="7" height="7" rx="1.2"/><rect x="24" y="7" width="7" height="7" rx="1.2"/><rect x="15.5" y="15.5" width="7" height="7" rx="1.2"/><rect x="15.5" y="24" width="7" height="7" rx="1.2"/></g><text x="10.5" y="12.6" font-size="5.5" font-weight="900" fill="#E0156F" text-anchor="middle" font-family="sans-serif">L</text><text x="19" y="12.6" font-size="5.5" font-weight="900" fill="#1550D8" text-anchor="middle" font-family="sans-serif">O</text></svg>`
 });
-const CATS=[['Classic board games',['clue','race','life','trail','slides','battle','who','mtrain']],['Party & skill',['tanks','knock','paint','simon','dg','bb','pong','hockey','rps','bubble','tower','ice','surgeon','bingo']],['Arcade',['stack','snake','hopper','roadhop','piano','flick','skee','tilt']],['Cards',['gin','memory','fish']],['Sports',['cornhole','pool','golf','bowl','hoops','cup','archery']],['Words',['ws','xword','hang','wordle']],['Quick strategy',['mancala','ttt','uttt','dots','c4']]];
+const CATS=[['Classic board games',['clue','race','life','trail','slides','battle','who','mtrain']],['Party & skill',['tanks','knock','paint','simon','dg','bb','pong','hockey','rps','bubble','tower','ice','surgeon','bingo']],['Arcade',['pinball','diner','salon','dance','rock','stack','snake','hopper','roadhop','piano','flick','skee','tilt']],['Cards',['gin','memory','fish']],['Sports',['derby','qb','soccer','kart','tennis','boxing','cornhole','pool','golf','bowl','hoops','cup','archery']],['Words',['ws','xword','hang','wordle']],['Quick strategy',['mancala','ttt','uttt','dots','c4']]];
 const ORDER=CATS.flatMap(c=>c[1]);
 const titleOf=k=>esc(G[k].title);
 
@@ -13367,7 +13671,7 @@ function boardZoom(g){const sel=BZ_SEL[g.type];if(!sel)return;const el=document.
   box.addEventListener('dblclick',e=>{if(e.target.closest('.bzbtns'))return;const r=box.getBoundingClientRect();if(z.s>1.05){z.s=1;z.x=0;z.y=0}else{z.s=2;z.x=-(e.clientX-r.left-r.width/2);z.y=-(e.clientY-r.top-r.height/2)}bzClamp(z,r.width,r.height);bzSave(g.id);apply()});
   apply()}
 /* ---------- real-app shell (Nov 1): settings, splash, slide transitions, swipe back, connection banner, profile cards, achievements, holiday looks ---------- */
-const GN_VER='102';
+const GN_VER='103';
 /* --- achievements, worked out from finished games (nothing extra stored) --- */
 const ACH=[
  ['first','🏆','First win','Win any game',(w,all,p)=>w.length>=1],
