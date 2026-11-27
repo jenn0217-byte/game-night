@@ -4443,6 +4443,133 @@ html.dark .hboard{background:#1E2030;color:#E7E8EE}
 .tdots{display:flex;gap:6px}.tdots i{width:7px;height:7px;border-radius:4px;background:var(--hair,#D9DAE1)}.tdots i.on{width:20px;background:var(--ink,#111114)}
 .tgames{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;width:100%}
 .t3>.ico{width:54px;height:54px;filter:drop-shadow(0 3px 4px rgba(20,24,40,.18))}.gcard>.ico{width:44px;height:44px}
+/* GN_HOME_NIGHT (Nov 27): phone home + shell redesign. Palette lives in these tokens only. */
+:root{--gn-ink:#111114;--gn-card:#111114;--gn-card-ink:#FFFFFF;--gn-card-sub:rgba(255,255,255,.68);--gn-card-in:rgba(255,255,255,.08);--gn-acc:#111114;--gn-acc-ink:#FFFFFF;--gn-on:#FFFFFF;--gn-on-ink:#111114;--gn-tint:#F2F2F5;--gn-dot:#FFFFFF;--gn-row:#FFFFFF;--gn-line:#ECECF1;--gn-sub:#6E6F80}
+html.dark{--gn-ink:#F2F2F5;--gn-card:#1D1D24;--gn-acc:#F2F2F5;--gn-acc-ink:#111114;--gn-tint:#24242B;--gn-row:#17171C;--gn-line:#2A2A32;--gn-sub:#A3A4B2}
+body:not(.ingame){--pop:var(--gn-acc);--pop-ink:var(--gn-acc-ink);--pop-hl:rgba(17,17,20,.14)}
+#splash{background:var(--gn-card)!important}
+#splash .splbrand{color:#fff}
+#splash .splbrand .d{background:#fff}#splash .splbrand .d i{background:var(--gn-card)}
+.brand .d i{background:var(--gn-dot)}
+.gnli{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;flex:none;display:block}
+.gnli .f{fill:currentColor;stroke:none}
+/* header: one avatar button, menu behind it */
+.top .chips{position:relative}
+.gnme{width:44px;height:44px;border-radius:50%;border:0;padding:0;background:var(--gn-tint);position:relative;cursor:pointer;box-shadow:0 0 0 2.5px var(--bg,#fff),0 0 0 4.5px var(--gn-acc);transition:transform var(--t-tap,.12s) var(--e-move,ease)}
+.gnme:active{transform:scale(.94)}
+.gnme .chava,.gnme .chava>*{display:block;width:100%;height:100%;border-radius:50%;overflow:hidden}
+.gnme .gnprac{position:absolute;right:-3px;bottom:-3px;width:16px;height:16px;border-radius:50%;background:var(--good,#00B36B);box-shadow:0 0 0 2px var(--bg,#fff)}
+.gnmenu{position:absolute;right:0;top:54px;z-index:30;min-width:236px;background:var(--surface,#fff);border-radius:18px;padding:6px;box-shadow:0 2px 6px rgba(17,17,20,.08),0 18px 44px rgba(17,17,20,.18);display:flex;flex-direction:column;transform-origin:top right;animation:gnpop var(--duration-fast,250ms) cubic-bezier(.22,1,.36,1) both}
+.gnmenu[hidden]{display:none}
+@keyframes gnpop{from{opacity:0;transform:scale(.96)}to{opacity:1;transform:none}}
+.gnmenu .gnmh{padding:10px 12px 8px;font:800 .8rem var(--body);color:var(--gn-sub)}
+.gnmenu button{display:flex;align-items:center;gap:12px;min-height:48px;padding:0 12px;border:0;border-radius:12px;background:none;font:800 1rem var(--body);color:var(--ink);text-align:left;cursor:pointer}
+.gnmenu button:active{background:var(--gn-tint)}
+.gnmenu button .gnli{color:var(--gn-sub)}
+/* Your turn */
+.gnyt{font:800 1.7rem/1.1 var(--display);letter-spacing:-.02em;margin:2px 0 -2px;display:flex;align-items:center;gap:10px;color:var(--ink)}
+.gnyt .ct{font:900 .95rem var(--body);background:var(--gn-acc);color:var(--gn-acc-ink);min-width:28px;height:28px;border-radius:14px;display:grid;place-items:center;padding:0 8px}
+.gnup{background:var(--gn-card);color:var(--gn-card-ink);border-radius:24px;padding:14px;display:flex;flex-direction:column;gap:10px;box-shadow:0 10px 28px rgba(10,10,30,.18)}
+.gnuph{display:flex;align-items:center;gap:12px;min-width:0}
+.gnuph .ico{width:48px;height:48px;flex:none}
+.gnuph .chava{width:48px;height:48px;flex:none;display:block}
+.gnuph b{font:800 1.25rem/1.15 var(--display);display:block}
+.gnuph small{font:700 .875rem var(--body);color:var(--gn-card-sub)}
+.gnupb{background:var(--gn-card-in);border:0;border-radius:18px;padding:12px;display:grid;place-items:center;cursor:pointer;color:inherit;font:inherit}
+.gnupb .ico{width:132px;height:132px;filter:drop-shadow(0 4px 10px rgba(0,0,0,.3))}
+.gnupb .hline{font:700 .875rem var(--body);color:var(--gn-card-sub);margin-top:6px}
+.gncta{display:flex;align-items:center;justify-content:center;gap:8px;min-height:52px;border:0;border-radius:26px;background:var(--gn-on);color:var(--gn-on-ink);font:900 1.1rem var(--body);cursor:pointer;width:100%;transition:transform var(--t-tap,.12s) var(--e-move,ease)}
+.gncta:active{transform:scale(.97)}
+.gncta .gnli{width:20px;height:20px}
+.gnlist{display:flex;flex-direction:column;background:var(--gn-row);border-radius:20px;border:1px solid var(--gn-line);overflow:hidden}
+.gnrow{display:flex;align-items:center;gap:12px;padding:8px 8px 8px 12px;min-height:60px;border:0;background:none;width:100%;text-align:left;color:var(--ink);font:inherit;cursor:pointer}
+.gnrow+.gnrow,.gnrow+.gnrw,.gnrw+.gnrow,.gnrw+.gnrw{border-top:1px solid var(--gn-line)}
+.gnrow .ico{width:42px;height:42px;flex:none}
+.gnrow .rt{flex:1;min-width:0}
+.gnrow .rt b{font:800 1rem var(--body);display:flex;align-items:center;gap:6px}
+.gnrow .rt small{font:700 .84rem var(--body);color:var(--gn-sub);display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gnrow .go{min-height:40px;padding:0 18px;border-radius:20px;background:var(--gn-acc);color:var(--gn-acc-ink);font:900 .95rem var(--body);display:grid;place-items:center;flex:none}
+.gnrow .wt{color:#A0A1B0;flex:none;padding-right:6px}
+.gnrw{display:flex;align-items:center}
+.gnrw>.gnrow{flex:1;min-width:0}
+.gnrw .rb2{min-height:40px;padding:0 16px;border:0;border-radius:20px;background:var(--gn-acc);color:var(--gn-acc-ink);font:900 .9rem var(--body);flex:none;cursor:pointer}
+.gnrw .rb2.ghost{background:var(--gn-tint);color:var(--ink)}
+.gnrw .rx2{width:44px;height:44px;border:0;background:none;color:#A0A1B0;font-size:1.3rem;flex:none;cursor:pointer}
+.gnrow .won{font-weight:900}.gnrow .won.me{color:var(--good,#00B36B)}
+.gnrow .chwon{width:22px;height:22px;display:inline-block;vertical-align:-5px}
+.gnrow .chwon>*{width:100%;height:100%}
+/* first time */
+.gnfirst{background:var(--gn-card);color:var(--gn-card-ink);border-radius:24px;padding:18px 0 0 18px;display:flex;align-items:flex-end;gap:4px;overflow:hidden;box-shadow:0 10px 28px rgba(10,10,30,.18)}
+.gnfirst .hsay{flex:1;min-width:0;display:flex;flex-direction:column;gap:8px;padding-bottom:16px}
+.gnfirst .hsay>b{font:800 1.55rem/1.1 var(--display);letter-spacing:-.02em;text-wrap:balance}
+.gnfirst .hsay>span{font:700 .9rem/1.4 var(--body);color:var(--gn-card-sub)}
+.gnfirst .hb2{display:flex;flex-direction:column;align-items:flex-start;gap:4px;margin-top:6px}
+.gnfirst .gncta{width:auto;padding:0 22px;min-height:48px;font-size:1rem}
+.gnfirst .gnsur{display:flex;align-items:center;gap:8px;min-height:44px;padding:0 4px;border:0;background:none;color:var(--gn-card-ink);font:800 .95rem var(--body);cursor:pointer;opacity:.92}
+.gnfirst .gnsur .gnli{width:20px;height:20px}
+.gnfirst .hlavi{height:132px;width:auto;flex:none;margin:0 -6px -2px 0}
+.chprompt{border:1px solid var(--gn-line,#ECECF1)!important;border-style:solid!important}
+.surp .gnli{display:inline-block;vertical-align:-5px;width:20px;height:20px;margin-right:4px}
+.tabb.on{color:var(--ink,#111114)}
+.tabb.on::before{background:var(--gn-acc)!important}
+/* welcome + saved (new players) */
+
+.gnwel{min-height:calc(100dvh - 40px);display:flex;flex-direction:column;align-items:center;text-align:center;gap:10px;padding:18px 12px 12px}
+.gnwel .wl{width:148px;height:auto;margin-bottom:2px}
+.gnwel h1{font:800 2.1rem/1.05 var(--display);letter-spacing:-.03em;margin:0;text-wrap:balance}
+.gnwel .ws{font:700 1rem/1.45 var(--body);color:var(--gn-sub);max-width:300px;margin:0}
+.gnwel ul{list-style:none;margin:14px 0 0;padding:0;display:flex;flex-direction:column;gap:14px;text-align:left;width:100%}
+.gnwel li{display:flex;gap:14px;align-items:flex-start}
+.gnwel .si{width:40px;height:40px;border-radius:12px;background:var(--gn-tint);color:var(--gn-ink);display:grid;place-items:center;flex:none}
+.gnwel li b{font:800 1rem var(--body);display:block}
+.gnwel li small{display:block;font:700 .875rem/1.35 var(--body);color:var(--gn-sub)}
+.gnwel .wb{margin-top:auto;width:100%;display:flex;flex-direction:column;gap:6px;padding-top:18px}
+.gnwel .wb .gncta{background:var(--gn-acc);color:var(--gn-acc-ink)}
+.gnwel .wb small{font:700 .84rem var(--body);color:var(--gn-sub)}
+.gnwel .wskip{border:0;background:none;color:var(--gn-sub);font:800 .9rem var(--body);min-height:44px;cursor:pointer}
+.gnsaved{position:fixed;inset:0;z-index:9000;background:var(--bg,#fff);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:24px;text-align:center;animation:gnfade var(--duration-fast,250ms) ease-out both}
+.gnsaved.out{animation:gnfadeo var(--duration-quick,150ms) ease-in both}
+@keyframes gnfade{from{opacity:0}to{opacity:1}}@keyframes gnfadeo{to{opacity:0}}
+.gnsaved .sc{width:150px;height:260px;border-radius:28px;overflow:hidden;animation:gnhop .6s cubic-bezier(.34,1.36,.64,1) .1s both}
+.gnsaved .sc svg{width:100%;height:100%}
+@keyframes gnhop{0%{transform:translateY(16px) scale(.92);opacity:0}100%{transform:none;opacity:1}}
+.gnsaved h1{font:800 2rem/1.1 var(--display);letter-spacing:-.02em;margin:0}
+.gnsaved p{font:700 1rem var(--body);color:var(--gn-sub);margin:0}
+.gnsaved .ck{width:60px;height:60px;margin-top:6px}
+.gnsaved .ck circle{fill:var(--gn-acc)}
+.gnsaved .ck path{fill:none;stroke:var(--gn-acc-ink);stroke-width:4.5;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:40;stroke-dashoffset:40;animation:gnck .4s cubic-bezier(.22,1,.36,1) .45s forwards}
+@keyframes gnck{to{stroke-dashoffset:0}}
+@media (prefers-reduced-motion:reduce){.gnmenu,.gnsaved,.gnsaved .sc,.gnsaved .ck path{animation:none!important;stroke-dashoffset:0!important}}
+/* New game tab: the category chips row was squashed to 16px by the flex column (pre-existing bug) */
+#view>.cats{flex-shrink:0}
+/* short phones: keep the main button in view */
+@media (max-height:640px){.gnupb .ico{width:92px;height:92px}.gnupb{padding:8px}.gnwel .wl{width:96px}.gnwel h1{font-size:1.75rem}.gnwel ul{gap:10px;margin-top:8px}.gnwel li small{display:none}.gnwel li{align-items:center}.gnwel .wb{padding-top:10px}.gnfirst .hlavi{height:110px}}
+
+/* landing + splash logo: ink, not yellow */
+.biglogo{background:var(--gn-acc)!important;box-shadow:0 6px 0 rgba(0,0,0,.28)!important}.biglogo i{background:var(--gn-acc-ink)!important}
+.gnlandq{margin:6px 0 0;font-size:14px;color:var(--gn-sub,#6B6B73);max-width:300px}
+/* first open: name + colour */
+#modal>.sheet.shhello{max-height:none;height:100%;width:100%;max-width:none;border-radius:0;overflow-y:auto;padding:max(20px,env(safe-area-inset-top)) 20px max(20px,env(safe-area-inset-bottom))}
+.gnhello{display:flex;flex-direction:column;align-items:stretch;max-width:420px;margin:0 auto;width:100%}
+.gnhello .wl{width:104px;height:auto;align-self:center;margin:4px 0 6px}
+.gnhello h1{font:900 28px/1.1 var(--display,system-ui);text-align:center;margin:0 0 6px;color:var(--gn-ink);text-wrap:balance}
+.gnhello .ws{text-align:center;color:var(--gn-sub);margin:0 0 18px;font-size:16px}
+.gnhl{font:800 13px var(--body,system-ui);letter-spacing:.04em;color:var(--gn-sub);margin:14px 0 8px}
+.gnhin{font:800 20px var(--display,system-ui);padding:12px 14px;min-height:52px;border-radius:14px;border:2px solid var(--gn-line);background:var(--gn-row);color:var(--gn-ink);caret-color:var(--gn-ink)}
+.gnhin:focus{outline:none;border-color:var(--gn-ink)}
+.gnhsws{display:grid;grid-template-columns:repeat(4,52px);justify-content:space-between;gap:6px 0}
+.gnhsw,.gnhsw:disabled{position:relative;width:52px!important;height:52px!important;min-width:52px;border:0;border-radius:50%;background:none;padding:0!important;cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+.gnhsw::before{content:'';position:absolute;left:50%;top:50%;width:40px;height:40px;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle at 35% 30%,rgba(255,255,255,.45),transparent 55%),var(--c);box-shadow:inset 0 -3px 0 rgba(0,0,0,.18),0 2px 4px rgba(0,0,0,.18);transition:transform var(--duration-quick,150ms) var(--ease-bounce,ease)}
+.gnhsw:active::before{transform:translate(-50%,-50%) scale(.88)}
+.gnhsw.on::before{box-shadow:0 0 0 3px var(--gn-row,#fff),0 0 0 6px var(--c),inset 0 -3px 0 rgba(0,0,0,.18);transform:translate(-50%,-50%) scale(.9)}
+.gnhsw.tk{cursor:default}.gnhsw.tk::before{opacity:.3}
+.gnhsw i{position:absolute;inset:0;display:grid;place-items:center;font:900 15px/1 var(--display,system-ui);font-style:normal;color:var(--gn-ink);z-index:1;pointer-events:none}
+.gnhsw:focus-visible{outline:3px solid var(--gn-ink);outline-offset:2px}
+.gnhnote{font-size:14px;color:var(--gn-sub);margin:10px 0 20px;line-height:1.4}
+.gnhgo{margin-top:auto}.gnhgo:disabled{opacity:.4}
+.gnhwait{text-align:center;color:var(--gn-sub)}
+.gnhello .gnhgo{background:var(--gn-acc);color:var(--gn-acc-ink)}
+
 </style>
 
 <div id="splash"><div class="splin"><p class="splbrand"><span class="d" aria-hidden="true"><i></i><i></i><i></i><i></i></span>Game Night</p></div></div><script>setTimeout(()=>{const s=document.getElementById('splash');if(s)s.remove()},6000)</script>
@@ -4524,7 +4651,7 @@ function gnFx(k,o){window.__gnSndT=performance.now();if(GN_SND.muted)return;try{
 
 (function(){
 const P=['p1','p2'],other=p=>p==='p1'?'p2':'p1';
-let names={p1:'Jen',p2:'Krystal'};
+/* GN_EVERYONE default names */let names=(window.GN_DEFN=(()=>{let L=null;try{L=localStorage.getItem('gn-legacy-names');if(L===null){L=localStorage.getItem('gn2-me')?'1':'0';localStorage.setItem('gn-legacy-names',L)}}catch(_){}return L==='1'?{p1:'Jen',p2:'Krystal'}:{p1:'Player 1',p2:'Player 2'}})(),{...window.GN_DEFN});
 let me=null;try{me=localStorage.getItem('gn2-me')}catch(e){}
 if(!P.includes(me))me=null;
 let games=[],route={screen:'home',id:null},shared=false,drag=null;
@@ -4560,7 +4687,7 @@ async function fbDb(rk){rk=rk||window.GN_ROOM||'main';if(FBC[rk])return FBC[rk];
   window.__gnEnc=enc;window.__gnDec=dec;
   return FBC[rk]={collection:n=>{const c=ref(n);return {doc:id=>wrapDoc(c.doc(id)),onSnapshot:(f,e)=>c.onSnapshot(s=>f({docs:s.docs.map(wrapSnap)}),e)}},doc:p=>wrapDoc(ref(p))}}catch(e){return null}}
 /* ---------- characters (Mii-style, per player) ---------- */
-var GCOLS=['#FF2D87','#1F6BFF','#E5322B','#FF7A00','#F2B705','#12A150','#0FA3A3','#7B3FE4'],GCOLN=['Pink','Blue','Red','Orange','Yellow','Green','Teal','Purple'];
+var GCOLS=['#FF2D87','#1F6BFF','#5D2C14','#1C1C22','#FFE81A','#138613','#66F5FF','#560891'],GCOLN=['Pink','Blue','Brown','Black','Yellow','Green','Sky','Purple'];
 const CH=(()=>{
 const SKIN=['#FFEFE4','#FDE2CF','#F7D2B3','#F0C29C','#EDB98A','#DFA676','#D09060','#BC7B4F','#A06640','#8E5A39','#6A3E26','#472A19'];
 const HAIRC=['#1F1A17','#3A2418','#4A2E1F','#7B4A2A','#9B5B32','#B5763C','#E0B46A','#F3DD9A','#C2452D','#E2683A','#A3A3A8','#F4F4F4','#EE73AC','#B04A8C','#7064E0','#36A7C9','#2DBE8C'];
@@ -4862,6 +4989,7 @@ const MOODS=[['happy','Happy'],['cheer','Cheer'],['angry','Angry'],['pout','Pout
 
 const T=(k,n,names,o={})=>({k,n,names,...o});
 const TABS={
+ color:{n:'Color',parts:[{gcolpick:1}]},
  hair:{n:'Hair',parts:[T('hb','Length and shape',HB_N,{hairOnly:1}),T('hf','Bangs',HF_N,{hairOnly:1}),{sw:'hc',n:'Color',cols:HAIRC},{sw:'streak',n:'Streak',cols:STREAK},{tog:[['flip','Flip part']]},T('hacc','Hair accessory',HACC_N,{none:0}),{sw:'haccc',n:'Accessory color',cols:ACC}]},
  face:{n:'Face',parts:[T('face','Shape',FACE_N,{bald:1}),{sw:'skin',n:'Skin',cols:SKIN},{sl:[['fw','Width',.88,1.12,.01]]},{tog:[['blush','Blush'],['freck','Freckles'],['mole','Beauty mark'],['dimp','Dimples']]},{sw:'blc',n:'Blush color',cols:BLUSHC},T('paint','Face paint',PAINT_N,{none:0,zoomCheek:1})]},
  eyes:{n:'Eyes',parts:[T('eye','Style',EYE_N,{zoom:1}),{sw:'ec',n:'Color',cols:EYEC},{sw:'shadow',n:'Eyeshadow',cols:SHADOW},{sl:[['es','Size',.75,1.3,.01],['ey','Height',-12,12,1],['eg','Spacing',16,32,1],['et','Tilt',-14,14,1]]}]},
@@ -4871,19 +4999,19 @@ const TABS={
  extras:{n:'Glasses',parts:[T('gl','Glasses',GL_N,{zoom:1,none:0}),{sw:'gc',n:'Frame color',cols:GLC},T('ear','Earrings',EAR_N,{none:0})]},
  outfit:{n:'Outfit',parts:[{sw:'gcol',n:'Game color (your pieces in every game)',cols:GCOLS},{chips:'top',n:'Top',opts:TOP_N},{sw:'tc',n:'Main color',cols:CLOTH},{sw:'tc2',n:'Second color',cols:CLOTH},{chips:'bot',n:'Bottoms',opts:BOT_N},{sw:'pc',n:'Bottoms color',cols:PANTS},{sw:'shoe',n:'Shoes',cols:CLOTH},{sl:[['h','Height',.85,1.15,.01],['b','Build',.8,1.25,.01]]}]},
  hat:{n:'Hat',parts:[T('hat','Hat',HAT_N,{none:0}),{sw:'hatc',n:'Color',cols:CLOTH}]},
- moods:{n:'Moods',parts:[{moodpick:'win',n:'Your face when you win',opts:['cheer','smug','happy','shocked']},{moodpick:'lose',n:'Your face when you lose',opts:['angry','pout','cry','shocked','smug']},{note:'Games show these on the win screen, and your losing face pops up when she takes the lead.'}]}
+ moods:{n:'Moods',parts:[{moodpick:'win',n:'Your face when you win',opts:['cheer','smug','happy','shocked']},{moodpick:'lose',n:'Your face when you lose',opts:['angry','pout','cry','shocked','smug']},{note:'Games show these on the win screen, and your losing face pops up when the other player takes the lead.'}]}
 };
 
 function tileVB(pt,p){if(pt.zoom)return `${100-p.eg-28} ${70+p.ey} ${2*p.eg+56} ${112}`;if(pt.zoomCheek)return '60 110 100 70';if(pt.k==='hb')return '-4 -6 208 260';return '14 2 172 194'}
 
 /* ---- app glue: saved characters, editor screen, result moment ---- */
-const ROSTER={p1:JEN,p2:KRY};
+const ROSTER={p1:JEN,p2:(()=>{try{return localStorage.getItem('gn-legacy-names')==='0'||(localStorage.getItem('gn-legacy-names')===null&&!localStorage.getItem('gn2-me'))}catch(_){return false}})()?{...BASE,skin:7,hb:5,hf:2,hc:0,top:1,tc:9,pc:1}:KRY};
 const get=p=>Object.assign({},BASE,ROSTER[p]||BASE,(window.chars&&window.chars[p])||{});
 const seas=c=>{try{if(typeof holiday==='function'&&holiday()==='xmas'&&!c.hat){c.hat=3}}catch(_){}return c};
 const mini=(p,mood)=>svgBustImg(seas(get(p)),mood||'');
 const full=(p,mood)=>svgFull(seas(get(p)),mood||'happy');
 const E={who:'p1',d:null,tab:'hair',mood:'happy',hist:[],dirty:false,drag:false,snap:''};
-function open(p){E.who=p;E.d=get(p);E.tab='hair';E.mood='happy';E.hist=[];E.dirty=false}
+function open(p){E.who=p;E.d=get(p);E.tab=(window.chars&&window.chars[p])?'hair':'color';E.mood='happy';E.hist=[];E.dirty=!(window.chars&&window.chars[p])}
 function setv(k,v){E.hist.push(JSON.stringify(E.d));if(E.hist.length>80)E.hist.shift();E.d[k]=v;E.dirty=true;repaint()}
 function panel(){const p=E.d,t=TABS[E.tab];let h='';
  for(const pt of t.parts){
@@ -4896,6 +5024,7 @@ function panel(){const p=E.d,t=TABS[E.tab];let h='';
   if(pt.tog){h+='<div class="chtogs">'+pt.tog.map(([k,n])=>`<button type="button" class="chchip ${p[k]?'on':''}" data-chtog="${k}">${n}</button>`).join('')+'</div>'}
   if(pt.chips){h+=`<div><p class="chlbl">${pt.n}</p><div class="chtogs">`+pt.opts.map((n,i)=>`<button type="button" class="chchip ${p[pt.chips]===i?'on':''}" data-chk="${pt.chips}" data-chv="${i}">${n}</button>`).join('')+'</div></div>'}
   if(pt.moodpick){h+=`<div><p class="chlbl">${pt.n}</p><div class="chtiles">`+pt.opts.map(m=>`<button type="button" class="chtile ${p[pt.moodpick]===m?'on':''}" data-chmp="${pt.moodpick}" data-chv="${m}" aria-label="${m}">${svgHead({...p,hat:0},m,'-6 0 212 200')}</button>`).join('')+'</div></div>'}
+  if(pt.gcolpick)h+=gcEd(E);
   if(pt.note)h+=`<p class="chnote">${pt.note}</p>`;
  }return h}
 function stage(){const fz=/^(face|eyes|brows|nose|mouth|extras)$/.test(E.tab);return (fz?svgHead(E.d,E.mood==='happy'?'':E.mood,'16 6 168 190'):svgFull(E.d,E.mood)).replace('<svg ',`<svg class="chbig chm-${E.mood}${fz?' chzoom':''}" `)}
@@ -4957,11 +5086,11 @@ return {vb,img,drawHead,preload,get,mini,full,svgHead,svgFull,svgBust,view,paint
 const store={db:null,local:{games:{},meta:null},remote:[],key(){return practice?'gn2-practice':'gn2-local'},
   loadLocal(){this.local={games:{},meta:null};try{const s=localStorage.getItem(this.key());if(s){const d=JSON.parse(s);this.local.games=d.games||{};this.local.meta=d.meta||null}}catch(e){}},
   saveLocal(){try{localStorage.setItem(this.key(),JSON.stringify(this.local))}catch(e){}},
-  pushLocal(){games=Object.entries(this.local.games).map(([id,d])=>({id,...clone(d)}));if(this.local.meta&&this.local.meta.names)names={...names,...this.local.meta.names};if(this.local.meta&&this.local.meta.chars&&!this.db)window.chars=this.local.meta.chars;render()},
+  pushLocal(){games=Object.entries(this.local.games).map(([id,d])=>({id,...clone(d)}));if(this.local.meta&&this.local.meta.names)names={...names,...this.local.meta.names};if(this.local.meta&&this.local.meta.chars&&!this.db)window.chars=this.local.meta.chars;if(!this.db)window.__gnCharsLoaded=1;render()},
   async start(){
     try{CH.preload();if(!practice)splashOn();else splashOff()}catch(_){}
     this.loadLocal();this.pushLocal();
-    const landing=msg=>{const v=$('#view');if(v)v.innerHTML=`<div class="land"><span class="biglogo"><i></i><i></i><i></i><i></i></span><h2>Game Night</h2><p class="sub">${msg||'Open Game Night with the link someone sent you. It signs you in.'}</p><div class="landc"><b>Have a code from your other phone?</b><input id="codein" inputmode="numeric" maxlength="7" placeholder="123 456" autocomplete="one-time-code"><button class="btn" data-act="code-go">Sign in</button></div></div>`};
+    const landing=msg=>{const v=$('#view');if(v)v.innerHTML=`<div class="land"><span class="biglogo"><i></i><i></i><i></i><i></i></span><h2>Game Night</h2><p class="sub">${msg||'Game Night is invite only. Open the link from the person who invited you and you are in, no account needed.'}</p><div class="landc"><b>Have a code from your other phone?</b><input id="codein" inputmode="numeric" maxlength="7" placeholder="123 456" autocomplete="one-time-code"><button class="btn" data-act="code-go">Sign in</button></div><p class="gnlandq">No link yet? Ask the person who invited you to send it again.</p></div>`;if(!document.getElementById('gnlandst'))document.head.insertAdjacentHTML('beforeend','<style id="gnlandst">.tabbar{display:none!important}</style>')};
     let db=null;if(window.GN_FB){/* hosted copy: the room key arrives once in the link (#k=...), then lives on this phone */
       let k=null,hp=null,hk=null;pplLoad();try{const m1=/[#&]p=([A-Za-z0-9_-]{24,})/.exec(location.hash||'');if(m1)hp=m1[1];const m=/[#&]k=([A-Za-z0-9_-]{8,})/.exec(location.hash||'');if(m)hk=m[1]}catch(e){}
       if(hp){const pdb=await fbDb(hp),P=pdb&&await docOnce(pdb,'meta/me');if(P&&P.rooms&&P.rooms.length){PPL.pkey=hp;PPL.person=P;PPL.reg=P.reg||null;P.rooms.forEach(r=>pplAddRoom(r.k,r.seat,r.with?{with:r.with,pl:1}:{pl:1}));pplSave();try{if(P.by&&!localStorage.getItem('gn-tour-'+hp))ui.tourPending={by:P.by,pk:hp}}catch(_){}}else if(P&&P.gone&&!PPL.rooms.length){splashOff();landing('This link was replaced with a new one. Ask for the new link, or use a code.');return}}
@@ -4977,7 +5106,7 @@ const store={db:null,local:{games:{},meta:null},remote:[],key(){return practice?
     db.doc('meta/players').onSnapshot(s=>{const d=s.exists?s.data():null;if(d&&d.names){names={...names,...d.names};if(d.reg&&!PPL.reg)PPL.reg=d.reg;render()}},()=>{});
     if(window.GN_FB){setTimeout(()=>{try{pplWatch();pplThen();if(ui.tourPending&&me){ui.tour={by:ui.tourPending.by,pk:ui.tourPending.pk,step:0};ui.tourPending=null;tourPaint()}}catch(_){}},300)}
     db.doc('meta/push').onSnapshot(s=>{const d=s.exists?s.data():null;if(d){PUSH.t=d;if(route&&route.screen==='settings')render()}},()=>{});
-    db.doc('meta/chars').onSnapshot(s=>{const d=s.exists?s.data():null;if(d){window.chars=d;CH.preload();render()}},()=>{});
+    db.doc('meta/chars').onSnapshot(s=>{window.__gnCharsLoaded=1;const d=s.exists?s.data():null;if(d){window.chars=d;CH.preload();render()}},()=>{});
     hereStart();
   },
   setPractice(on){practice=on;try{localStorage.setItem('gn2-practice-on',on?'1':'0')}catch(e){}
@@ -4985,7 +5114,7 @@ const store={db:null,local:{games:{},meta:null},remote:[],key(){return practice?
     this.loadLocal();route={screen:'home',id:null};ui.g={};if(!on&&this.db){games=this.remote;render()}else this.pushLocal();
     if(!on)toast('Back to real games with '+nameOf(other(me||'p1'))+'.')},
   async run(fn,localFn){
-    if(this.db&&!practice){try{await fn(this.db)}catch(e){toast(window.GN_FB?(e&&e.code==='permission-denied'?'This link’s key is wrong. Open the link Jen sent again.':'Couldn’t save that move. Try again.'):e&&e.code==='invalid_argument'?'Couldn’t save: Claude only lets invited Editors save while the game’s link sharing is off.':'Couldn’t save that move. Try again.')}return}
+    if(this.db&&!practice){try{await fn(this.db)}catch(e){toast(window.GN_FB?(e&&e.code==='permission-denied'?'This link’s key is wrong. Open your invite link again.':'Couldn’t save that move. Try again.'):e&&e.code==='invalid_argument'?'Couldn’t save: Claude only lets invited Editors save while the game’s link sharing is off.':'Couldn’t save that move. Try again.')}return}
     localFn();this.saveLocal();this.pushLocal();
   },
   create(id,data){return this.run(db=>db.collection('games').doc(id).set(data),()=>{this.local.games[id]=clone(data)})},
@@ -5075,7 +5204,7 @@ function gnSpeed(){try{return localStorage.getItem('gn-fast')==='1'?2.2:1}catch(
 /* a tiny live picture of the board for the game list (falls back to the game's icon) */
 function miniBoard(g){try{const C={p1:PCOL.p1,p2:PCOL.p2},wrap=(bg,inner)=>`<svg class="ico mini" viewBox="0 0 38 38" aria-hidden="true"><rect x="1" y="1" width="36" height="36" rx="9" fill="${bg}"/>${inner}</svg>`;
   if(g.type==='ttt'&&g.b){const own=c=>c==='X'?g.x:other(g.x);let h='<path d="M15 7v24M23 7v24M7 15h24M7 23h24" stroke="rgba(255,255,255,.55)" stroke-width="1.2"/>';[...g.b].forEach((c,i)=>{if(c==='.')return;const x=11+(i%3)*8,y=11+Math.floor(i/3)*8,col=C[own(c)];h+=c==='X'?`<path d="M${x-2.4} ${y-2.4}l4.8 4.8M${x+2.4} ${y-2.4}l-4.8 4.8" stroke="${col}" stroke-width="1.8" stroke-linecap="round"/>`:`<circle cx="${x}" cy="${y}" r="2.6" fill="none" stroke="${col}" stroke-width="1.6"/>`});return wrap('#1F5F78',h)}
-  if(g.type==='c4'&&g.board){let h='';[...g.board].forEach((c,i)=>{const x=7.6+(i%7)*3.8,y=9+Math.floor(i/7)*3.9;h+=`<circle cx="${x}" cy="${y}" r="1.55" fill="${c==='1'?C.p1:c==='2'?C.p2:'rgba(0,0,0,.35)'}"/>`});return wrap('#FFC400',h)}
+  if(g.type==='c4'&&g.board){let h='';[...g.board].forEach((c,i)=>{const x=7.6+(i%7)*3.8,y=9+Math.floor(i/7)*3.9;h+=`<circle cx="${x}" cy="${y}" r="1.55" fill="${c==='1'?C.p1:c==='2'?C.p2:'rgba(255,255,255,.16)'}"/>`});return wrap('#1B2552',h)}
   if(g.type==='uttt'&&g.W){let h='';for(let k=0;k<9;k++){const x=5+(k%3)*9.6,y=5+Math.floor(k/3)*9.6,w=g.W[k];h+=`<rect x="${x}" y="${y}" width="8.4" height="8.4" rx="1.8" fill="${w==='X'?C[g.x]:w==='O'?C[other(g.x)]:'rgba(255,255,255,.18)'}"/>`;if(w==='.')for(let c=0;c<9;c++){const ch=g.b[k*9+c];if(ch!=='.')h+=`<rect x="${x+.6+(c%3)*2.6}" y="${y+.6+Math.floor(c/3)*2.6}" width="2" height="2" rx=".5" fill="${C[ch==='X'?g.x:other(g.x)]}"/>`}}return wrap('#3B4CB8',h)}
   if(g.type==='dots'&&g.n){const n=g.n,cs=24/n;let h='';for(let r=0;r<n;r++)for(let c=0;c<n;c++){const o=(g.boxes||{})[r+'-'+c];h+=`<rect x="${7+c*cs+.5}" y="${7+r*cs+.5}" width="${cs-1}" height="${cs-1}" rx="1" fill="${o?C[o]:'rgba(255,255,255,.12)'}"/>`}return wrap('#2A2F42',h)}
   if(g.type==='bingo'&&g.cards){const card=g.cards[me],cl=new Set(g.balls||[]),dd=g['d'+me]||'';let h='';for(let i=0;i<25;i++){const on=i===12||(dd[i]==='1'&&cl.has(card[i]));h+=`<rect x="${6.5+(i%5)*5.2}" y="${6.5+Math.floor(i/5)*5.2}" width="4.4" height="4.4" rx="1" fill="${on?'#FF4F8B':'rgba(255,255,255,.85)'}"/>`}return wrap('#7B3FE4',h)}
@@ -5107,7 +5236,7 @@ function pushWatch(){if(!pushOn()||!me)return;const op=other(me);
         if(gg.status==='done')pushSend(op,t,gg.winner===op?`You won ${t}! 🎉`:gg.winner===me?`${nm1} won ${t}. Rematch?`:`${t} is over.`);
         else if(PUSH.ch[gg.id]){delete PUSH.ch[gg.id];pushSend(op,`${nm1} challenged you!`,`${t}: ${nm1} went first, now it's your turn.`).then(ok=>{if(ok)toast(`Sent! ${nameOf(op)} gets a notification.`)})}else pushSend(op,`Your turn: ${t}`,`${nm1} made a move. Tap to play.`)},3600)}}}
 
-const startRow=k=>gcRow()+`<div class="row"><button class="btn" data-act="${k}-start">Start game</button><button class="btn ghost" data-act="close">Cancel</button></div>`;
+const startRow=k=>`<div class="row"><button class="btn" data-act="${k}-start">Start game</button><button class="btn ghost" data-act="close">Cancel</button></div>`;
 function kbd(act,state,extra){const rows=['QWERTYUIOP','ASDFGHJKL','ZXCVBNM'];
   return `<div class="kb">${rows.map((r,i)=>`<div class="kr">${i===2&&extra?`<button class="key wide" data-act="${extra.enter}">ENTER</button>`:''}${[...r].map(L=>{const s=state(L);return `<button class="key ${s.cls||''}" data-act="${act}" data-l="${L}" ${s.off?'disabled':''}>${L}</button>`}).join('')}${i===2&&extra?`<button class="key wide" data-act="${extra.del}">DEL</button>`:''}</div>`).join('')}</div>`}
 
@@ -6966,12 +7095,31 @@ function rrect(c,x,y,w,h,r){c.beginPath();c.moveTo(x+r,y);c.arcTo(x+w,y,x+w,y+h,
 function circ(c,x,y,r,fill){c.beginPath();c.arc(x,y,r,0,Math.PI*2);if(fill){c.fillStyle=fill;c.fill()}}
 const PCOL={p1:'#FF2D87',p2:'#1F6BFF'};
 function gcKry(p){try{return /^krystal/i.test(String(nameOf(p)).trim())}catch(_){return p==='p2'}}
-function gcIdx(p){const c=(window.chars||{})[p]||{};if(typeof c.gcol==='number'&&GCOLS[c.gcol])return c.gcol;return gcKry(p)?0:1}
+function gcIdx(p){const c=(window.chars||{})[p]||{};if(typeof c.gcol==='number'&&GCOLS[c.gcol])return c.gcol;return (gcKry(p)||(p==='p2'&&!gcKry('p1')))?0:1}
 function gcApply(){try{let a=gcIdx('p1'),b=gcIdx('p2');
   if(a===b){const kp=gcKry('p2')?'p2':gcKry('p1')?'p1':'p1',ot=kp==='p1'?'p2':'p1',alt=a===1?0:1;const fb=GCOLS.findIndex((_,i)=>i!==a&&i===alt);if(ot==='p1')a=fb;else b=fb}
   PCOL.p1=GCOLS[a];PCOL.p2=GCOLS[b];const R=document.documentElement.style;for(const k of ['p1','p2']){const c=PCOL[k];R.setProperty('--'+k+'c',c);R.setProperty('--'+k,c);R.setProperty('--'+k+'-soft',`color-mix(in srgb,${c} 14%,var(--bg,#fff))`);R.setProperty('--'+k+'-hl',`color-mix(in srgb,${c} 24%,transparent)`)}}catch(_){}}
 function gcRow(){const p=me||'p1',mine=gcIdx(p),th=gcIdx(other(p));
   return `<div class="gcrow"><p class="chlbl">Your color</p><div class="gcsws">${GCOLS.map((c,i)=>`<button type="button" class="gcsw${i===mine?' on':''}${i===th&&i!==mine?' theirs':''}" style="background:${c}" data-act="gcol" data-v="${i}" aria-label="${GCOLN[i]}${i===th?' ('+nm(other(p))+')':''}"></button>`).join('')}</div></div>`}
+/* GN_COLOUR_TAB: colour is picked in the character maker and saved with the character */
+function gcEd(E){const p=E.who,o=other(p),cur=typeof E.d.gcol==='number'&&GCOLS[E.d.gcol]?E.d.gcol:gcIdx(p),th=gcIdx(o),ok=gcKry(o),on=String(nameOf(o)||'').trim(),oi=(on[0]||'?').toUpperCase();
+ const h=x=>String(x).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+ const sw=GCOLS.map((c,i)=>{const sel=i===cur,t=i===th,lock=t;return `<button type="button" class="gcesw${sel?' on':''}${lock?' tk':''}" style="--c:${c}" data-gced="${i}" aria-label="${GCOLN[i]}${t?', taken by '+h(on):''}" aria-pressed="${sel}"${lock?' disabled':''}>${t?`<i>${h(oi)}</i>`:''}</button>`}).join('');
+ return `<div class="gced"><p class="chlbl">Your color</p><div class="gcesws">${sw}</div><p class="chnote">${GCOLN[cur]} shows on your pieces, scores and turns in every game. It stays until you change it here. ${h(on)} has ${GCOLN[th]}, so it is taken.</p></div>`}
+document.addEventListener('click',e=>{const t=e.target.closest&&e.target.closest('#chx [data-gced]');if(!t)return;e.stopPropagation();e.preventDefault();if(t.disabled)return;
+ const E=CH.editing();if(!E||!E.d)return;E.hist.push(JSON.stringify(E.d));E.d.gcol=+t.dataset.gced;E.dirty=true;try{gnSfx('tap')}catch(_){}try{navigator.vibrate&&navigator.vibrate(8)}catch(_){}CH.paint()},true);
+(function(){const st=document.createElement('style');st.textContent=`
+.gced{margin:2px 0 4px}
+.gcesws{display:grid;grid-template-columns:repeat(4,52px);gap:4px 12px}
+.gcesw{position:relative;width:52px;height:52px;border:0;border-radius:50%;background:none;padding:0;cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+.gcesw::before{content:'';position:absolute;left:50%;top:50%;width:40px;height:40px;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle at 35% 30%,rgba(255,255,255,.45),transparent 55%),var(--c);box-shadow:inset 0 -3px 0 rgba(0,0,0,.18),0 2px 4px rgba(0,0,0,.18);transition:transform .16s cubic-bezier(.34,1.36,.64,1)}
+.gcesw:active::before{transform:translate(-50%,-50%) scale(.88)}
+.gcesw.on::before{box-shadow:0 0 0 3px var(--surface,#fff),0 0 0 6px var(--c),inset 0 -3px 0 rgba(0,0,0,.18);transform:translate(-50%,-50%) scale(.9)}
+.gcesw,.gcesw:disabled{width:52px!important;height:52px!important;min-width:52px;flex:none;padding:0!important}
+.gcesw.tk{cursor:default}.gcesw.tk::before{opacity:.35}
+.gcesw i{position:absolute;inset:0;display:grid;place-items:center;font:900 15px/1 var(--display,system-ui);font-style:normal;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.45);z-index:1;pointer-events:none}
+.gcesw:focus-visible{outline:3px solid var(--ink,#111);outline-offset:2px}
+`;document.head.appendChild(st)})();
 async function gcSet(v){const p=me||'p1';const cur=(window.chars||{})[p]||{};await store.setChar(p,{...cur,gcol:+v});gcApply();render();try{renderModal()}catch(_){}}
 
 const shotId=()=>Math.random().toString(36).slice(2,10);
@@ -14500,7 +14648,7 @@ window.dnPop=(S,s,x,y,col,big)=>{(S.dp=S.dp||[]).push({s,x,y,col,big,t:performan
 const geo=S=>{if(innerWidth>innerHeight){const Wf=100*innerWidth/innerHeight,W=Math.min(Wf,(window.__dnHasBg&&window.__dnHasBg(S))?192:Wf);if(Wf<176)return {rot:0,full:1,W:176,ox:0,k:Wf/176};return {rot:0,full:1,W,ox:(Wf-W)/2,k:1}}return {rot:1,W:S.H,ox:0,k:1}};
 const toL=(S,p)=>{const G=geo(S);return G.rot?{x:p.y,y:100-p.x}:{x:p.x/100*(G.W+2*G.ox)-G.ox,y:p.y/S.H*100/(G.k||1)}};
 D.how='Turn your phone sideways. Seat each group, take their order to the ticket wheel, bring the food, collect the tip and clear the table. Do the same job back to back for chain bonuses. 2 minutes.';
-D.rules=['Most points wins','Turn your phone sideways.','Drag a group from the line onto a free table, or tap the group and then the table.','When they wave, tap their table to take the order. Then tap the ticket wheel on the counter.','When their dome is up on the counter, tap it, then tap their table.','When they finish, tap the table for the tip, then again to clear the dishes.','Chain: do the same job at table after table (order, order, order) and each one is worth more.','Color match: every person who lands on a chair the color of their clothes pays a bonus. Keep the same color on a chair and it grows a x2, x3, x4 flag that pays more each time. While you drag a group over a table, slide your finger around it to turn them. If you tap instead, they pick the best chairs themselves. Chairs keep the color of whoever sat there last, so plan who goes where.','Regulars are easy going. Teens in caps hate waiting in line and take ages to eat. Seniors are very patient, slow, and tip small. The business crowd is in a hurry and tips big.','A walk-out costs you 50 and is a strike. Three strikes and the doors shut early.','The stars under the chalkboard are your rating for the level. They light up as your score passes each goal.','Tap the podium to chat up the line and win back hearts. Tap the coffee maker, then a table, to cheer a table up.','Out of hearts and they walk out. That costs you 50.','At closing time the doors shut. Finish the tables you still have.','On my own: 5 restaurants with 10 levels each. Earn up to 3 stars a level. One star opens the next level.','New things arrive as you go: dessert and big eaters order twice. A thief runs for the door after eating: tap them to make them pay double. Keep phone talkers away from bookworms. Serve the critic fast to clear a strike. Families need a high chair first: tap the high chair, then their table. Tap a spill to mop it.','Every level adds to your tip jar. Spend it on upgrades on the level screen.','Together: you both tap Together and serve the same diner at the same time. One score, and your own tips on the side. A dashed box in her color means she has that table.'];RULES.diner=D.rules;
+D.rules=['Most points wins','Turn your phone sideways.','Drag a group from the line onto a free table, or tap the group and then the table.','When they wave, tap their table to take the order. Then tap the ticket wheel on the counter.','When their dome is up on the counter, tap it, then tap their table.','When they finish, tap the table for the tip, then again to clear the dishes.','Chain: do the same job at table after table (order, order, order) and each one is worth more.','Color match: every person who lands on a chair the color of their clothes pays a bonus. Keep the same color on a chair and it grows a x2, x3, x4 flag that pays more each time. While you drag a group over a table, slide your finger around it to turn them. If you tap instead, they pick the best chairs themselves. Chairs keep the color of whoever sat there last, so plan who goes where.','Regulars are easy going. Teens in caps hate waiting in line and take ages to eat. Seniors are very patient, slow, and tip small. The business crowd is in a hurry and tips big.','A walk-out costs you 50 and is a strike. Three strikes and the doors shut early.','The stars under the chalkboard are your rating for the level. They light up as your score passes each goal.','Tap the podium to chat up the line and win back hearts. Tap the coffee maker, then a table, to cheer a table up.','Out of hearts and they walk out. That costs you 50.','At closing time the doors shut. Finish the tables you still have.','On my own: 5 restaurants with 10 levels each. Earn up to 3 stars a level. One star opens the next level.','New things arrive as you go: dessert and big eaters order twice. A thief runs for the door after eating: tap them to make them pay double. Keep phone talkers away from bookworms. Serve the critic fast to clear a strike. Families need a high chair first: tap the high chair, then their table. Tap a spill to mop it.','Every level adds to your tip jar. Spend it on upgrades on the level screen.','Together: you both tap Together and serve the same diner at the same time. One score, and your own tips on the side. A dashed box in the other player’s color means they have that table.'];RULES.diner=D.rules;
 
 /* v12: how many tables, where, how big, and which are 2-seaters */
 const dnTabN=n=>{const r=Math.floor(n/10),k=n%10;if(r===0)return k<2?4:k<4?5:k<6?6:k<8?7:8;return k<3?6:k<6?7:8};
@@ -15868,7 +16016,7 @@ const ACH=[['td1','Score a touchdown',1],['run5','Make a 5 yard running play',1]
 const ACHN=Object.fromEntries(ACH.map(a=>[a[0],a]));
 /* ---------- rules text ---------- */
 Q.how='Retro Bowl. Turn your phone sideways. Offense: drag back and hold to aim, let go to throw, or tap the blue circle to hand off; swipe to dodge, slow or dive; two taps to kick. Defense: tap a defender to control him, drag to move, touch the runner to tackle, tap to jump for passes. Play a season against computer teams, or take turns with drives against each other.';
-Q.rules=['Turn your phone sideways.','Coin toss: call heads or tails. The winner picks Receive or Kick.','Kicking: field goals, extra points, punts and your kickoffs are all two taps, first for direction, then for power. Stop the power bar in the green.','Kick returns: catch it and run. In the end zone you can tap to take a knee (ball at your 25).','Drag back and hold to aim, let go to throw. Or tap the blue circle to hand off to your running back.','Running: swipe up or down to side-step, back to slow up, forward to dive (diving stops fumbles).','Kicking: tap once for direction, again when the power bar is in the green.','4 downs to go 10 yards. Touchdown 6 + extra point, field goal 3.','Defense: when they have the ball, tap one of your defenders to control him. Drag to move him, touch the ball carrier to tackle, tap to jump when a pass is in the air (picks!).','Plays: before each snap the passer picks one of three plays at the top of the screen; on defense, guess RUN? or PASS? up top. Guess right and your defense is faster that play.','Weather: pick it on the QB Toss card (or random). Rain = wet ball, snow = slower players, night = dark field.','Big plays replay in slow motion.','Play live: you and Krystal on your own phones at the same time. One of you has the ball, the other plays defense, and you swap every drive.','Season: 14 games against computer teams, then the playoffs and the Retro Bowl.','Head to head: you take turns. Each turn you play one drive; the scoreboard is shared. 4 drives each, then overtime if tied.'];RULES.qb=Q.rules;
+Q.rules=['Turn your phone sideways.','Coin toss: call heads or tails. The winner picks Receive or Kick.','Kicking: field goals, extra points, punts and your kickoffs are all two taps, first for direction, then for power. Stop the power bar in the green.','Kick returns: catch it and run. In the end zone you can tap to take a knee (ball at your 25).','Drag back and hold to aim, let go to throw. Or tap the blue circle to hand off to your running back.','Running: swipe up or down to side-step, back to slow up, forward to dive (diving stops fumbles).','Kicking: tap once for direction, again when the power bar is in the green.','4 downs to go 10 yards. Touchdown 6 + extra point, field goal 3.','Defense: when they have the ball, tap one of your defenders to control him. Drag to move him, touch the ball carrier to tackle, tap to jump when a pass is in the air (picks!).','Plays: before each snap the passer picks one of three plays at the top of the screen; on defense, guess RUN? or PASS? up top. Guess right and your defense is faster that play.','Weather: pick it on the QB Toss card (or random). Rain = wet ball, snow = slower players, night = dark field.','Big plays replay in slow motion.','Play live: you and a friend on your own phones at the same time. One of you has the ball, the other plays defense, and you swap every drive.','Season: 14 games against computer teams, then the playoffs and the Retro Bowl.','Head to head: you take turns. Each turn you play one drive; the scoreboard is shared. 4 drives each, then overtime if tied.'];RULES.qb=Q.rules;
 Q.hud=undefined;
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 const ST=(S,k)=>S.dpos&&k!=='DEF'?((S.M&&S.M.op.off)||3):(S.ros&&S.ros[k]&&S.ros[k].s)||3;
@@ -16927,7 +17075,7 @@ Z.hudDraw=function(d,S,W,t,X,Y){const M=S.M,k0=KITS[M.my.kit],k1=KITS[M.op.kit];
   if(S.ph==='play'&&S.tip){tbar(d,W,S.tip.txt,BH-84,1)}
   if(S.pop&&S.t-S.pop.t<2.5){d.fillStyle='rgba(30,90,30,.9)';d.fillRect(W/2-80,22,160,16);T(d,S.pop.txt,W/2,30,6,'#fff','center')}};
 Z.lobbyDraw=function(d,S,W){d.fillStyle='#1F7A1F';d.fillRect(0,0,W,BH);for(let i=0;i<12;i++){d.fillStyle=i%2?'#2A8F2A':'#237F23';d.fillRect(0,i*20,W,20)}
-  const N=S.net,o=other(me);band(d,W,S.ph==='count'?`KICK OFF IN ${Math.max(1,Math.ceil((N&&N.goAt?N.goAt-performance.now():(S.goN||0))/1000))}`:`WAITING FOR ${String(nameOf(o)).toUpperCase()}`,S.ph==='count'?'Get ready':'Ask her to tap Play live on her phone')};
+  const N=S.net,o=other(me);band(d,W,S.ph==='count'?`KICK OFF IN ${Math.max(1,Math.ceil((N&&N.goAt?N.goAt-performance.now():(S.goN||0))/1000))}`:`WAITING FOR ${String(nameOf(o)).toUpperCase()}`,S.ph==='count'?'Get ready':'Ask them to tap Play live on their phone')};
 /* ---------- quit/forfeit + finish hook ---------- */
 window.__rs=Z;Z.goalXp=(S,t)=>goalX(S,t);
 /* for the TV pads */
@@ -16972,7 +17120,7 @@ function gStep(S,dt){const k=Math.min(1,dt*14);(S.P||[]).forEach(p=>{if(p._tx==n
 {const ai0=Z.aimInfo;Z.aimInfo=function(S,t){if(S.net&&S.net.role==='guest'){if(t!==S.me)return null;const N=S.net;if(!N.dn||!N.cur||!this.hasBall(S,t))return null;const I={d:N.dn,c:N.cur};const sv=S.in[t];S.in[t]=I;const r=ai0.call(this,S,t);S.in[t]=sv;return r}return ai0.call(this,S,t)}}
 function rsStop(S){const N=S&&S.net;if(!N)return;try{N.unsub&&N.unsub()}catch(_){}try{N.my&&N.my.set({rs:1,host:N.role==='host'?1:0,at:0,bye:1}).catch(()=>{})}catch(_){}S.net=null}
 /* lost connection */
-{const dr0=Z.draw;Z.draw=function(c,S,t){dr0.call(this,c,S,t);const N=S.net;if(!S.live||!N||S.final)return;const n=performance.now();if((N.gone||(N.ot&&n-N.ot>6000))&&S.ph!=='lobby'){const G=geo(S);c.save();if(G.rot){c.translate(100,0);c.rotate(Math.PI/2)}else c.scale(G.k,G.k);c.fillStyle='rgba(0,0,0,.6)';c.fillRect(0,40,G.W,20);c.fillStyle='#fff';c.font='4px PS2P';c.textAlign='center';c.textBaseline='middle';c.fillText(N.gone?'SHE LEFT THE GAME':'LOST CONNECTION...',G.W/2,48);c.font='2.6px PS2P';c.fillText(N.gone?'Tap the menu button to leave':'Waiting for her phone',G.W/2,54.5);c.restore()}}}
+{const dr0=Z.draw;Z.draw=function(c,S,t){dr0.call(this,c,S,t);const N=S.net;if(!S.live||!N||S.final)return;const n=performance.now();if((N.gone||(N.ot&&n-N.ot>6000))&&S.ph!=='lobby'){const G=geo(S);c.save();if(G.rot){c.translate(100,0);c.rotate(Math.PI/2)}else c.scale(G.k,G.k);c.fillStyle='rgba(0,0,0,.6)';c.fillRect(0,40,G.W,20);c.fillStyle='#fff';c.font='4px PS2P';c.textAlign='center';c.textBaseline='middle';c.fillText(N.gone?'SHE LEFT THE GAME':'LOST CONNECTION...',G.W/2,48);c.font='2.6px PS2P';c.fillText(N.gone?'Tap the menu button to leave':'Waiting for their phone',G.W/2,54.5);c.restore()}}}
 window.__rsLive={rsStop};
 /* ===================== season vs the computer + the game card ===================== */
 const TEAMS=[['Harbor Town',1,3],['Pine Hill',4,2],['Red Rock',6,3],['Kingsport',3,4],['Westfield',8,2],['Northgate',2,3],['Riverside',5,4],['Ashford',9,2],['Lakeview',7,5]];
@@ -19916,13 +20064,13 @@ async function pplWatch(){for(const r of PPL.rooms){if(r.k===window.GN_ROOM||PPL
   const db=await fbDb(r.k);if(!db)continue;
   db.collection('games').onSnapshot(s=>{S.games=s.docs.filter(d=>d.exists).map(d=>gnAx({id:d.id,...d.data(),_room:r.k},S.seat||r.seat));pplRender()},()=>{});
   db.doc('meta/players').onSnapshot(s=>{const d=s.exists?s.data():null;if(d&&d.names){S.names=d.names;if(d.invite)S.invite=d.invite;pplRender()}},()=>{});
-  db.doc('meta/chars').onSnapshot(s=>{const d=s.exists?s.data():null;if(d){S.chars=d;pplRender()}},()=>{})}}
+  db.doc('meta/chars').onSnapshot(s=>{window.__gnCharsLoaded=1;const d=s.exists?s.data():null;if(d){S.chars=d;pplRender()}},()=>{})}}
 let pplRT=0;function pplRender(){clearTimeout(pplRT);pplRT=setTimeout(()=>{if(route.screen==='home')render()},120)}
 /* run fn as if this phone were in another room (names, seat and characters swap for a moment) */
-function withRoom(k,fn){if(!k||k===window.GN_ROOM)return fn();const S=PPL.sum[k];if(!S)return '';const keep={names,me,chars:window.chars};try{names={p1:'Jen',p2:'Krystal',...S.names};me=S.seat||me;window.chars=S.chars||window.chars;return fn()}finally{names=keep.names;me=keep.me;window.chars=keep.chars}}
+function withRoom(k,fn){if(!k||k===window.GN_ROOM)return fn();const S=PPL.sum[k];if(!S)return '';const keep={names,me,chars:window.chars};try{names={...window.GN_DEFN,...S.names};me=S.seat||me;window.chars=S.chars||window.chars;return fn()}finally{names=keep.names;me=keep.me;window.chars=keep.chars}}
 function pplPeople(){/* one entry per room: who you play with there */const out=[];for(const r of PPL.rooms){const act=r.k===window.GN_ROOM,S=act?{games,names,chars:window.chars,seat:me}:PPL.sum[r.k];if(!S)continue;const seat=act?me:(S.seat||r.seat);if(!seat)continue;const o=seat==='p1'?'p2':'p1';
     const gs=(act?games:S.games).filter(g=>G[g.type]&&!g.archived);let turns=0;withRoom(act?null:r.k,()=>{turns=gs.filter(g=>g.status!=='done'&&(mmv(g)||livev(g))).length});
-    out.push({k:r.k,act,seat,o,name:(S.names&&S.names[o])||r.with||({p1:'Jen',p2:'Krystal'})[o],turns,games:gs})}return out}
+    out.push({k:r.k,act,seat,o,name:(S.names&&S.names[o])||r.with||(window.GN_DEFN||{})[o],turns,games:gs})}return out}
 function roomSwitch(k,then){const r=PPL.rooms.find(x=>x.k===k);if(!r)return;try{sessionStorage.setItem('gn-active',k);if(r.seat)localStorage.setItem('gn2-me',r.seat);localStorage.setItem('gn-room',k);if(then)sessionStorage.setItem('gn-then',JSON.stringify(then))}catch(_){}
   const sp=document.createElement('div');sp.id='splash';sp.innerHTML='<div class="splin"><p class="splbrand"><span class="d" aria-hidden="true"><i></i><i></i><i></i><i></i></span>Game Night</p></div>';document.body.appendChild(sp);setTimeout(()=>location.reload(),60)}
 function pplThen(){let t=null;try{t=JSON.parse(sessionStorage.getItem('gn-then')||'null');sessionStorage.removeItem('gn-then')}catch(_){}if(!t)return;
@@ -20023,7 +20171,87 @@ function heroCard(g,i,n,room){const dr=room?` data-room="${room}"`:'';const o=ot
     <div class="hgo">${n>1?`<span class="hpg">${i+1} of ${n}${i<n-1?' · swipe ›':''}</span>`:'<span></span>'}<button class="hplay" data-act="open" data-id="${g.id}"${dr}>Play</button></div></div>`}
 function homeTiles(keys,tile){return `<div class="tiles3">${keys.map(tile).join('')}</div>`}
 const GN_LAVI_WAVE='data:image/webp;base64,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';
+/* GN_HOME_NIGHT helpers (Nov 27): new home layout, avatar menu, new-player welcome. No partner names on home. */
+const GNI={play:'<svg class="gnli" viewBox="0 0 24 24" aria-hidden="true"><path class="f" d="M8 5.5v13l10.5-6.5z"/></svg>',
+ plus:'<svg class="gnli" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>',
+ dice:'<svg class="gnli" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="4"/><circle class="f" cx="9" cy="9" r="1.3"/><circle class="f" cx="15" cy="15" r="1.3"/><circle class="f" cx="15" cy="9" r="1.3"/><circle class="f" cx="9" cy="15" r="1.3"/></svg>',
+ clock:'<svg class="gnli" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 8v4.3l2.8 1.7"/></svg>',
+ gear:'<svg class="gnli" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 3.5v2.2M12 18.3v2.2M3.5 12h2.2M18.3 12h2.2M6 6l1.6 1.6M16.4 16.4L18 18M6 18l1.6-1.6M16.4 7.6L18 6"/></svg>',
+ snd:'<svg class="gnli" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11"/></svg>',
+ mute:'<svg class="gnli" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="M16 9.5l5 5M21 9.5l-5 5"/></svg>',
+ swap:'<svg class="gnli" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7h12l-3-3M17 17H5l3 3"/></svg>',
+ star:'<svg class="gnli" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4l2.3 4.8 5.2.7-3.8 3.6.9 5.2L12 15.8 7.4 18.3l.9-5.2-3.8-3.6 5.2-.7z"/></svg>',
+ people:'<svg class="gnli" viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="9" r="3.3"/><path d="M3.5 19c.8-3.2 3-5 5.5-5s4.7 1.8 5.5 5"/><circle cx="16.5" cy="8.5" r="2.6"/><path d="M16 13.6c2.4 0 4 1.5 4.6 4.4"/></svg>'};
+const gnAgo=ts=>{const a=agoS(ts);return a?(a==='just now'?a:a+' ago'):''};
+function gnRow(g,room,mine){const dr=room?` data-room="${room}"`:'';
+  return `<button class="gnrow" data-act="open" data-id="${g.id}"${dr}>${miniBoard(g)||ICON[g.type]||''}<span class="rt"><b>${titleOf(g.type)}</b><small>${mine?(livev(g)?'Live now':'Your move')+(g.updatedAt?' · '+gnAgo(g.updatedAt):''):'Sent'+(g.updatedAt?' '+gnAgo(g.updatedAt):'')}</small></span>${mine?'<span class="go">Play</span>':`<span class="wt">${GNI.clock}</span>`}</button>`}
+function gnUp(g,room){const dr=room?` data-room="${room}"`:'',mb=miniBoard(g),art=mb||ICON[g.type]||'';
+  return `<section class="gnup"><div class="gnuph">${ICON[g.type]||''}<span><b>${esc(titleOf(g.type))}</b><small>${livev(g)?'Live now':'Your move'}${g.updatedAt?' · '+gnAgo(g.updatedAt):''}</small></span></div>
+  <button class="gnupb" data-act="open" data-id="${g.id}"${dr} aria-label="Open ${esc(titleOf(g.type))}">${art}<span class="hline">${esc(gnLine(g))}</span></button>
+  <button class="gncta" data-act="open" data-id="${g.id}"${dr}>${GNI.play}Play</button></section>`}
+/* the game's status line without player names */
+function gnLine(g){let t='';try{t=String(lineOf(g)||'')}catch(_){}try{for(const p of ['p1','p2']){const n=String(nm(p)||'');if(n)t=t.split(n).join(p===me?'You':'Them')}}catch(_){}return t}
+function gnTurns(list){const n=list.length;let h=`<h1 class="gnyt">Your turn <span class="ct">${n}</span></h1>`;
+  h+=withRoom(list[0].k,()=>gnUp(list[0].g,list[0].k));
+  if(n>1)h+=`<div class="gnlist">${list.slice(1).map(x=>withRoom(x.k,()=>gnRow(x.g,x.k,true))).join('')}</div>`;return h}
+function gnResRow(g){const w=g.winner,pw=w==='p1'||w==='p2',r=g.rematchId&&games.find(x=>x.id===g.rematchId&&x.status!=='done'&&!x.archived);
+  const wt=w==='tie'?'Tie game':!pw?'Game over':practice?nm(w)+' won':w===me?'You won!':'You lost';
+  const rb=r?(r.by===me||seenGet().ids[r.id]?`<button class="rb2 ghost" data-act="open" data-id="${r.id}">Open rematch</button>`:`<button class="rb2" data-act="open" data-id="${r.id}">Join rematch</button>`):`<button class="rb2" data-act="rematch" data-id="${g.id}">Rematch</button>`;
+  return `<div class="gnrw"><button class="gnrow" data-act="open" data-id="${g.id}">${ICON[g.type]||''}<span class="rt"><b>${titleOf(g.type)}</b><small><span class="won${pw&&w===me?' me':''}">${pw&&w===me?`<i class="chwon">${CH.mini(me,CH.get(me).win||'cheer')}</i> `:''}${wt}</span>${g.updatedAt?' · '+gnAgo(g.updatedAt):''}</small></span></button>${rb}<button class="rx2" data-act="archive" data-id="${g.id}" aria-label="Clear from list">×</button></div>`}
+function gnFirst(again){return `<section class="gnfirst"><div class="hsay"><b>${again?'Another round?':'Pick your first game'}</b><span>${practice?'Practice: you play both sides.':again?'Start a new game and send it.':'Start a game and send it. You take turns whenever it suits you.'}</span>
+  <div class="hb2"><button class="gncta" data-act="tab" data-t="new">${GNI.plus}Browse games</button><button class="gnsur" data-act="surprise">${GNI.dice}Surprise me</button></div></div><img class="hlavi" src="${GN_LAVI_WAVE}" alt="Lavi"></section>`}
+/* new-player welcome: shows once, before the character exists */
+const gnWelKey=()=>'gn-welcomed-'+(me||'');
+function gnNeedWelcome(){try{if(!me||practice)return false;if(!window.__gnCharsLoaded)return false;if(window.chars&&window.chars[me])return false;return localStorage.getItem(gnWelKey())!=='1'}catch(_){return false}}
+function gnWelcome(){const st=[[GNI.play,'Pick a game','Over 50 board, card, sports and word games.'],[GNI.clock,'Play at your pace','Take your turn now or later. We let you know when it is your move.'],[GNI.star,'Rematch anytime','Every game keeps score, so there is always a next round.']];
+  return `<section class="gnwel"><img class="wl" src="${GN_LAVI_WAVE}" alt="Lavi"><h1>Welcome to Game Night</h1><p class="ws">Two-player games for you and anyone you invite, right on your phone.</p>
+  <ul>${st.map(([i,a,b])=>`<li><span class="si">${i}</span><span><b>${a}</b><small>${b}</small></span></li>`).join('')}</ul>
+  <div class="wb"><button class="gncta" data-act="chars" data-gnw="1">Make my player</button><small>Pick your color, look and name. Takes a minute.</small><button class="wskip" data-gnwskip="1">Not now</button></div></section>`}
+function gnSaved(){try{localStorage.setItem(gnWelKey(),'1')}catch(_){}const o=document.createElement('div');o.className='gnsaved';o.setAttribute('role','status');
+  o.innerHTML=`<div class="sc">${CH.full(me,'happy')}</div><h1>Looking good, ${esc(nm(me))}!</h1><p>You're all set. Taking you to Game Night…</p><svg class="ck" viewBox="0 0 52 52" aria-hidden="true"><circle cx="26" cy="26" r="24"/><path d="M15 27l7 7 15-16"/></svg>`;
+  document.body.appendChild(o);try{GN_SND&&GN_SND.play&&GN_SND.play('win')}catch(_){}
+  setTimeout(()=>{route={screen:'home',id:null};homeTab='play';render();scrollTo(0,0);o.classList.add('out');setTimeout(()=>o.remove(),200)},1700)}
+/* avatar menu in the header */
+function gnMenuHtml(){const open=!!window.__gnmOpen;return `<button class="gnme" data-gnm="1" aria-label="Menu" aria-expanded="${open}">${ava(me)}${practice?'<i class="gnprac" title="Practice"></i>':''}</button>
+  <div class="gnmenu" ${open?'':'hidden'}><div class="gnmh">${practice?'Practice mode · you play both sides':shared?'Playing as '+esc(nm(me)):'Playing as '+esc(nm(me))+' · this phone only'}</div>
+  <button data-act="chars">${GNI.people}Your character</button><button data-act="mute">${GN_SND.muted?GNI.mute+'Sound is off':GNI.snd+'Sound is on'}</button><button data-act="switch">${GNI.swap}${practice?'Switch player':'Switch who plays here'}</button><button data-act="settings">${GNI.gear}Settings</button></div>`}
+document.addEventListener('click',e=>{const m=e.target.closest('[data-gnm]');const inMenu=e.target.closest('.gnmenu');
+  if(m){window.__gnmOpen=!window.__gnmOpen;const mm=document.querySelector('.gnmenu');if(mm)mm.hidden=!window.__gnmOpen;m.setAttribute('aria-expanded',window.__gnmOpen);return}
+  if(window.__gnmOpen&&(!inMenu||e.target.closest('[data-act]'))){window.__gnmOpen=false;const mm=document.querySelector('.gnmenu');if(mm)mm.hidden=true}
+  if(e.target.closest('[data-gnw]'))window.__gnW=1;
+  if(e.target.closest('[data-gnwskip]')){try{localStorage.setItem(gnWelKey(),'1')}catch(_){}render();scrollTo(0,0)}},true);
+/* hide the header, tab bar and leaves while the welcome shows (html/body classes get rewritten by other code) */
+function gnWelStyle(on){{const l=document.getElementById('gnlandst');if(l&&me)l.remove()}let st=document.getElementById('gnwelst');if(on&&!st){st=document.createElement('style');st.id='gnwelst';st.textContent='.top,.tabbar,#holfx{display:none!important}';document.head.appendChild(st)}else if(!on&&st)st.remove()}
+
+/* GN_HELLO (Jen, Nov 27: "when first opened on a phone, app makes you put in your name and choose your color. then it should remember you and color and character next time").
+   A phone with no player yet gets this instead of the Player 1 / Player 2 picker: name + colour, then the character maker, then home.
+   The seat is the first one in this room without a character. If both already have characters (a player on a new phone), the normal picker shows their real names. */
+const GNH={seat:null,col:null};
+function gnHelloHtml(){window.__gnHelloOn=0;if(me||practice)return '';
+ if(!window.__gnCharsLoaded){clearTimeout(GNH.t);GNH.t=setTimeout(()=>{if(ui.modal==='who'&&!me)renderModal()},400);window.__gnHelloOn=1;return `<div class="gnhello"><img class="wl" src="${GN_LAVI_WAVE}" alt="Lavi"><p class="gnhwait">Getting things ready…</p></div>`}
+ const C=window.chars||{},f=['p1','p2'].find(p=>!C[p]);if(!f)return '';
+ const o=other(f),taken=C[o]?gcIdx(o):-1;
+ if(GNH.seat!==f||GNH.col===null||GNH.col===taken){GNH.seat=f;let d=gcIdx(f);if(d===taken)d=GCOLS.findIndex((_,i)=>i!==taken);GNH.col=d}
+ const on=esc(String(nameOf(o)||'')),oi=(on[0]||'?').toUpperCase(),v=esc(GNH.name||'');
+ const sw=GCOLS.map((c,i)=>{const t=i===taken,sel=i===GNH.col;return `<button type="button" class="gnhsw${sel?' on':''}${t?' tk':''}" style="--c:${c}" data-gnhc="${i}" aria-label="${GCOLN[i]}${t?', taken by '+on:''}" aria-pressed="${sel}"${t?' disabled':''}>${t?`<i>${oi}</i>`:''}</button>`}).join('');
+ window.__gnHelloOn=1;
+ return `<div class="gnhello"><img class="wl" src="${GN_LAVI_WAVE}" alt="Lavi"><h1>Welcome to Game Night</h1><p class="ws">Two-player games for you and anyone you invite.</p>
+ <label class="gnhl" for="gnhn">Your name</label><input id="gnhn" class="gnhin" type="text" maxlength="16" autocomplete="given-name" autocapitalize="words" enterkeyhint="next" placeholder="Type your name" value="${v}">
+ <p class="gnhl">Your color</p><div class="gnhsws">${sw}</div><p class="gnhnote">${GCOLN[GNH.col]} shows on your pieces and scores in every game.${taken>=0?` ${GCOLN[taken]} is taken by ${on}.`:''}</p>
+ <button type="button" class="gncta gnhgo" data-gnhgo="1"${(GNH.name||'').trim()?'':' disabled'}>Next: make your character</button></div>`}
+document.addEventListener('input',e=>{if(e.target&&e.target.id==='gnhn'){GNH.name=e.target.value;const b=document.querySelector('[data-gnhgo]');if(b)b.disabled=!GNH.name.trim()}},true);
+document.addEventListener('keydown',e=>{if(e.target&&e.target.id==='gnhn'&&e.key==='Enter'){e.preventDefault();const b=document.querySelector('[data-gnhgo]');if(b&&!b.disabled)b.click()}},true);
+document.addEventListener('click',async e=>{const t=e.target.closest&&e.target.closest('[data-gnhc],[data-gnhgo]');if(!t)return;e.stopPropagation();e.preventDefault();if(t.disabled)return;
+ if(t.dataset.gnhc!=null){GNH.col=+t.dataset.gnhc;try{gnSfx('tap')}catch(_){}renderModal();const i=document.getElementById('gnhn');if(i&&!GNH.name)i.focus();return}
+ const nmv=(GNH.name||'').trim().slice(0,16);if(!nmv||!GNH.seat)return;
+ me=GNH.seat;try{localStorage.setItem('gn2-me',me);localStorage.setItem('gn-welcomed-'+me,'1');const rr=PPL.rooms.find(x=>x.k===window.GN_ROOM);if(rr){rr.seat=me;pplSave()}}catch(_){}
+ names={...names,[me]:nmv};try{await store.setNames(names)}catch(_){}
+ closeModal();ui.g={};try{cvDestroy()}catch(_){}
+ window.__gnW=1;CH.open(me);const E=CH.editing();if(E&&E.d){E.d.gcol=GNH.col;E.tab='hair';E.dirty=true}
+ route={screen:'chars',id:null};$('#view').innerHTML='';render();scrollTo(0,0)},true);
+
 function viewHome(){
+  {const w=gnNeedWelcome();gnWelStyle(w);if(w){homeTab='play';return gnWelcome()}}
   const known=games.filter(g=>G[g.type]);const o=nm(other(me||'p1'));
   const byT=(a,b)=>(b.updatedAt||0)-(a.updatedAt||0);
   const act=known.filter(g=>g.status!=='done'&&!g.archived);
@@ -20043,23 +20271,23 @@ function viewHome(){
     :`<button class="t3" data-act="new" data-k="${k}">${ICON[k]||''}<b>${hl(titleOf(k))}</b><em class="t3m">${(m=>m[0]+' · '+m[1]+' min')(gMeta(k))}</em>${rec(k)}</button>`;
   let h='';const tab=homeTab;
   if(tab==='play'&&!ui.tstOn){
-    h+=pplFaces();const ev=multi()&&!ui.roomF&&PPL.rooms.length>1,xm=[],xw=[];
+    const ev=multi()&&!ui.roomF&&PPL.rooms.length>1,xm=[],xw=[];
     if(ev)for(const r of PPL.rooms){if(r.k===window.GN_ROOM)continue;const S=PPL.sum[r.k];if(!S||!S.seat)continue;withRoom(r.k,()=>{for(const g of S.games){if(!G[g.type]||g.archived||g.status==='done')continue;const my=mmv(g)||livev(g),it={g,k:r.k,t:g.updatedAt||0};(my?xm:xw).push(it)}})}
-    if(me&&hereNow()){const og=HERE.opp.gid&&games.find(x=>x.id===HERE.opp.gid);h+=`<div class="herebar"><i></i><b>${o} is on now</b>${og&&G[og.type]?`<button class="link" data-act="open" data-id="${og.id}">in ${titleOf(og.type)} · join</button>`:''}</div>`}
+    if(me&&hereNow()){const og=HERE.opp.gid&&games.find(x=>x.id===HERE.opp.gid);h+=`<div class="herebar"><i></i><b>On now</b>${og&&G[og.type]?`<button class="link" data-act="open" data-id="${og.id}">in ${titleOf(og.type)} · join</button>`:''}</div>`}
     if(practice)h+=`<div class="prac on"><div><b>Practice mode</b><span>You play both sides and the phone hands you each turn. These games stay on this phone.</span></div><button class="btn ghost" data-act="practice-off">Done practicing</button></div>`;
-    const lv=gnLive();if(lv)h+=`<div class="away live"><span class="awi" aria-hidden="true">🏁</span><span><b>Just now:</b> ${lv}</span><button class="awx" data-act="live-x" aria-label="Dismiss">×</button></div>`;const aw=awayEvents();if(aw)h+=`<div class="away"><span class="awi" aria-hidden="true">☾</span><span><b>While you were away:</b> ${aw}</span><button class="awx" data-act="away-x" aria-label="Dismiss">×</button></div>`;
-    if(me&&!(window.chars&&window.chars[me]))h+=`<button class="chprompt" data-act="chars"><span class="chpf">${CH.full(me,'happy')}</span><span><b>Make your character</b><small>It plays in every game. Takes a minute.</small></span><i>›</i></button>`;
+    const lv=gnLive();if(lv&&false)h+=`<div class="away live"><span class="awi" aria-hidden="true">🏁</span><span><b>Just now:</b> ${lv}</span><button class="awx" data-act="live-x" aria-label="Dismiss">×</button></div>`;const aw=awayEvents();if(aw&&false)h+=`<div class="away"><span class="awi" aria-hidden="true">☾</span><span><b>While you were away:</b> ${aw}</span><button class="awx" data-act="away-x" aria-label="Dismiss">×</button></div>`;
+    if(me&&!(window.chars&&window.chars[me]))h+=`<button class="chprompt" data-act="chars"><span class="chpf">${CH.full(me,'happy')}</span><span><b>Make your character</b><small>Pick your color and look. It plays in every game.</small></span><i>›</i></button>`;
     const allMine=[...mine.map(g=>({g,k:null,t:g.updatedAt||0})),...xm].sort((a,b)=>a.t-b.t);
-    if(allMine.length)h+=`<div class="heros" id="heros">${allMine.map((x,i)=>withRoom(x.k,()=>heroCard(x.g,i,allMine.length,x.k))).join('')}</div>`;
-    else if(act.length||xw.length)h+=`<div class="caught"><b>You're all caught up</b><span>Waiting on ${o}. Start something new while you wait?</span><div class="cbtn"><button class="btn" data-act="tab" data-t="new">New game</button><button class="btn ghost" data-act="surprise">🎲 Surprise me</button></div></div>`;
+    if(allMine.length)h+=gnTurns(allMine);
+    else if(act.length||xw.length)h+=`<div class="caught"><b>You're all caught up</b><span>Waiting on their move. Start something new while you wait?</span><div class="cbtn"><button class="btn" data-act="tab" data-t="new">New game</button><button class="btn ghost" data-act="surprise">${GNI.dice} Surprise me</button></div></div>`;
     const allWait=[...wait.map(g=>({g,k:null,t:g.updatedAt||0})),...xw].sort((a,b)=>b.t-a.t);
-    if(allWait.length)h+=`<h2 class="hs">${practice?o+'’s move':ev?'Their turn':'Waiting on '+o} <span class="ct">${allWait.length}</span></h2><div class="list">${allWait.map(x=>withRoom(x.k,()=>{let c=card(x.g,practice?`<span class="tag p-${other(me)}">${o}’s move</span>`:`<span class="tag wait">${ev?esc(nameOf(other(me))):'Waiting'}</span>`);if(x.k)c=c.replace('data-act="open"',`data-act="open" data-room="${x.k}"`);return c})).join('')}</div>`;
-    if(!act.length&&!xw.length&&!xm.length){const QP=(FV.fav.length?FV.fav:['cup','pool','golf','battle','bb','hoops','archery','bowl','kart']).filter(k=>G[k]&&!FV.hide.includes(k)).slice(0,9);h+=`<div class="hero2"><div class="hsay"><b>${res.length?'Another round?':'What are we playing?'}</b><span>${practice?'Practice: you play both sides.':'Pick a game and '+o+' gets it on their phone.'}</span><div class="cbtn"><button class="btn" data-act="tab" data-t="new">All games</button><button class="btn ghost" data-act="surprise">🎲 Surprise me</button></div></div><img class="hlavi" src="${GN_LAVI_WAVE}" alt="Lavi"></div>`+(QP.length?`<div class="qph"><h2 class="hs">${FV.fav.length?'Your favorites':'Quick picks'}</h2><button class="link" data-act="tab" data-t="new">See all ›</button></div><div class="tiles3 qp">${QP.map(tile).join('')}</div>`:'')}
-    if(res.length)h+=`<div class="hrow"><h2 class="hs">Results</h2><button class="link" data-act="tab" data-t="stats">All stats ›</button></div><div class="list">${res.slice(0,3).map(rcard).join('')}</div>`;
-    if(!practice&&!act.length&&!res.length)h+=`<button class="prac" data-act="practice-on"><div><b>Practice solo</b><span>Try any game by playing both sides. Nothing is sent to ${o}.</span></div><i>→</i></button>`;
+    if(allWait.length)h+=`<h2 class="hs">Their turn <span class="ct">${allWait.length}</span></h2><div class="gnlist">${allWait.map(x=>withRoom(x.k,()=>gnRow(x.g,x.k,false))).join('')}</div>`;
+    if(!act.length&&!xw.length&&!xm.length){const QP=(FV.fav.length?FV.fav:['c4','ttt','cup','golf','mancala','ws','pool','hoops','bowl']).filter(k=>G[k]&&!FV.hide.includes(k)).slice(0,res.length?9:6);h+=gnFirst(res.length)+(QP.length?`<div class="qph"><h2 class="hs">${FV.fav.length?'Your favorites':res.length?'Quick picks':'Great first games'}</h2><button class="link" data-act="tab" data-t="new">See all ›</button></div><div class="tiles3 qp">${QP.map(tile).join('')}</div>`:'')}
+    if(res.length)h+=`<div class="hrow"><h2 class="hs">Results</h2><button class="link" data-act="tab" data-t="stats">All stats ›</button></div><div class="gnlist">${res.slice(0,3).map(gnResRow).join('')}</div>`;
+    if(!practice&&!act.length&&!res.length)h+=`<button class="prac" data-act="practice-on"><div><b>Practice solo</b><span>Try any game by playing both sides. Nothing is sent.</span></div><i>→</i></button>`;
   }
   else if(tab==='new'){
-    h+=`<div class="srow"><label class="sfield"><span aria-hidden="true">⌕</span><input id="hsearch" type="search" placeholder="Search ${CATS.reduce((a,c)=>a+c[1].length,0)} games" value="${esc(ui.q||'')}" autocomplete="off" enterkeyhint="search"></label><button class="surp" data-act="surprise">🎲 Surprise me</button></div>`;
+    h+=`<div class="srow"><label class="sfield"><span aria-hidden="true">⌕</span><input id="hsearch" type="search" placeholder="Search ${CATS.reduce((a,c)=>a+c[1].length,0)} games" value="${esc(ui.q||'')}" autocomplete="off" enterkeyhint="search"></label><button class="surp" data-act="surprise">${GNI.dice}Surprise me</button></div>`;
     const sel=ui.cat2||'all';
     if(!q)h+=`<div class="cats" role="group" aria-label="Game type">${CAT2.map(([c,l])=>`<button class="catc" data-act="cat2" data-c="${c}" aria-pressed="${sel===c}">${l}</button>`).join('')}</div>`;
     const ALL=CATS.flatMap(c=>c[1]).filter(k=>G[k]);
@@ -20072,7 +20300,7 @@ function viewHome(){
         h+=CAT2.slice(1).map(([c,l])=>[l,cat2Keys(c).filter(vis)]).filter(x=>x[1].length).map(([l,k])=>`<h3 class="cat">${l}</h3>`+homeTiles(k,tile)).join('')}
       else h+=homeTiles(cat2Keys(sel).filter(vis),tile);
       if(!ed&&FV.hide.length)h+=`<button class="link more" data-act="home-edit">${FV.hide.length} hidden game${FV.hide.length===1?'':'s'} · Edit list</button>`;
-      if(!practice)h+=`<button class="prac" data-act="practice-on"><div><b>Practice solo</b><span>Try any game by playing both sides. Nothing is sent to ${o}.</span></div><i>→</i></button>`}
+      if(!practice)h+=`<button class="prac" data-act="practice-on"><div><b>Practice solo</b><span>Try any game by playing both sides. Nothing is sent.</span></div><i>→</i></button>`}
   }
   else if(tab==='people'||ui.tstOn){h+=ui.tstOn?viewTesters():viewPeople()}
   else{
@@ -20100,15 +20328,15 @@ function closeModal(){ui.modal=null;const m=$('#modal');m.hidden=true;m.innerHTM
 function renderModal(){
   const m=$('#modal');if(!ui.modal){closeModal();return}let h='';
   if(ui.modal==='me'&&me)h=`<h2>This phone plays as ${nm(me)}</h2><p class="mnote">Moves made here count as ${nm(me)}’s. Only switch if ${nm(other(me))} is using this phone.</p><div class="row"><button class="btn ghost" data-act="who" data-p="${other(me)}">Switch to ${nm(other(me))}</button><button class="btn ghost" data-act="names">Change names</button></div><p class="phoneinfo">Screen ${innerWidth}×${innerHeight} · ${Math.round((window.visualViewport?visualViewport.height:innerHeight))}vv · ${devicePixelRatio}x · ${(navigator.userAgent.match(/iPhone OS [0-9_]+|Android [0-9.]+|Mac OS X [0-9_]+|Windows NT [0-9.]+/)||['?'])[0].replace(/_/g,'.')} · v15</p><button class="btn" data-act="close">Done</button>`;
-  else if(ui.modal==='who')h=`<h2>Who’s playing on this phone?</h2><div class="who"><button class="p1" data-act="who" data-p="p1">${nm('p1')}</button><button class="p2" data-act="who" data-p="p2">${nm('p2')}</button></div><button class="link" data-act="names" style="align-self:flex-start">Change names</button>`;
+  else if(ui.modal==='who'&&!me&&(h=gnHelloHtml()));else if(ui.modal==='who')h=`<h2>Who’s playing on this phone?</h2><div class="who"><button class="p1" data-act="who" data-p="p1">${nm('p1')}</button><button class="p2" data-act="who" data-p="p2">${nm('p2')}</button></div><button class="link" data-act="names" style="align-self:flex-start">Change names</button>`;
   else if(ui.modal==='names')h=`<h2>Player names</h2><label class="f"><span>Player 1 (${gnColN('p1')})</span><input type="text" id="n1" value="${nm('p1')}" maxlength="16"></label><label class="f"><span>Player 2 (${gnColN('p2')})</span><input type="text" id="n2" value="${nm('p2')}" maxlength="16"></label><div class="row"><button class="btn" data-act="names-save">Save</button><button class="btn ghost" data-act="${me?'close':'back-who'}">Cancel</button></div>`;
   else if(ui.modal==='invite')h=ui.invRes?`<h2>Send ${esc(ui.invRes.name)} the link</h2><div class="invcard"><span class="biglogo sm"><i></i><i></i><i></i><i></i></span><div><b>${nm(me)} invited you to Game Night</b><small>Tap to play. No sign-up.</small></div></div><p class="mnote">The link is only for ${esc(ui.invRes.name)}. It opens straight in as them, and they can add it to their Home Screen.</p><div class="row"><button class="btn" data-act="inv-share">Send the link</button><button class="btn ghost" data-act="close">Later</button></div>`
     :`<h2>Invite someone</h2><p class="mnote">You get your own games with them. Your games with ${multi()&&PPL.rooms[0]?esc(withRoom(PPL.rooms[0].k===window.GN_ROOM?null:PPL.rooms[0].k,()=>nameOf(other(me)))):'others'} stay private.</p><label class="f"><span>Their name</span><input type="text" id="inv-name" maxlength="16" placeholder="Mom" autocomplete="off"></label><div class="row"><button class="btn" data-act="inv-go">Make their link</button><button class="btn ghost" data-act="close">Cancel</button></div>`;
   else if(ui.modal==='with')h=`<h2>Play ${esc(titleOf(ui.pendingNew||''))} with?</h2><div class="withl">${pplPeople().map(p=>`<button class="prow wp" data-act="with-pick" data-k="${p.k}"><span class="pc">${withRoom(p.act?null:p.k,()=>ava(p.o))}</span><div class="ptx"><b>${esc(p.name)}</b></div><i>›</i></button>`).join('')}</div><button class="link" data-act="close">Cancel</button>`;
   else if(ui.modal.startsWith('new-')&&G[ui.modal.slice(4)])h=G[ui.modal.slice(4)].modal();
-  else if(ui.modal.startsWith('rules-'))h=`<div class="gcrules">${gcRow()}</div>`+rulesHtml(ui.modal.slice(6));
+  else if(ui.modal.startsWith('rules-'))h=rulesHtml(ui.modal.slice(6));
   const ae=document.activeElement,fid=ae&&m.contains(ae)?ae.id:null;
-  {const HH=`<div class="sheet${ui.modal.startsWith('rules-')?' shrules':ui.modal.startsWith('new-')?' shnew':''}" role="dialog" aria-modal="true">${h}</div>`;if(!(window.GNPRE&&GNPRE.show&&GNPRE.show(m,HH)))m.innerHTML=HH}m.hidden=false;
+  {const HH=`<div class="sheet${ui.modal==='who'&&!me&&window.__gnHelloOn?' shhello':''}${ui.modal.startsWith('rules-')?' shrules':ui.modal.startsWith('new-')?' shnew':''}" role="dialog" aria-modal="true">${h}</div>`;if(!(window.GNPRE&&GNPRE.show&&GNPRE.show(m,HH)))m.innerHTML=HH}m.hidden=false;
   if(fid){const el=document.getElementById(fid);if(el)el.focus()}
 }
 
@@ -20143,7 +20371,7 @@ function boardZoom(g){const sel=BZ_SEL[g.type];if(!sel)return;const el=document.
   box.addEventListener('dblclick',e=>{if(e.target.closest('.bzbtns'))return;if(e.target.closest('[data-act$="-tap"]'))return;if(performance.now()-(window.__bzAct||0)<700)return;const r=box.getBoundingClientRect();if(z.s>1.05){z.s=1;z.x=0;z.y=0}else{z.s=2;z.x=-(e.clientX-r.left-r.width/2);z.y=-(e.clientY-r.top-r.height/2)}bzClamp(z,r.width,r.height);bzSave(g.id);ease()});
   apply()}
 /* ---------- real-app shell (Nov 1): settings, splash, slide transitions, swipe back, connection banner, profile cards, achievements, holiday looks ---------- */
-const GN_VER='117';
+const GN_VER='118';
 /* --- achievements, worked out from finished games (nothing extra stored) --- */
 const ACH=[
  ['first','🏆','First win','Win any game',(w,all,p)=>w.length>=1],
@@ -20228,7 +20456,7 @@ function viewSettings(){const F=homePrefs(),dk=(()=>{try{return localStorage.get
   ${pushOn()?`<h3 class="sethd">Notifications</h3><div class="setcard">${pushMyTopic()?`<div class="pushset"><p>Get a lock-screen alert when ${esc(nameOf(other(me)))} challenges you or it's your turn.</p><ol><li>Get the free <a href="https://apps.apple.com/us/app/ntfy/id1625396347" target="_blank" rel="noopener">ntfy app</a> (no account).</li><li>In ntfy tap <b>+</b>, paste your code, tap Subscribe. Allow notifications.</li></ol><div class="pushcode"><code>${esc(pushMyTopic())}</code><button class="btn ghost" data-act="push-copy">Copy</button></div><button class="btn" data-act="push-test">Send me a test</button><small class="pushnote">Keep your code private: anyone with it can see your game alerts.</small></div>`:row('Lock-screen alerts',`Know when ${esc(nameOf(other(me)))} challenges you`,'<button class="btn" data-act="push-setup">Set up</button>')}</div>`:''}
   <h3 class="sethd">Sound and look</h3><div class="setcard">${row('Sound','Clicks, turn chime, win and lose tunes',seg('set-snd',GN_SND.muted?'off':'on',[['on','On'],['off','Off']]))}${row('Vibration','Taps on big moments (sinks, strikes, wins)',seg('set-buzz',window.GN_BUZZ?'on':'off',[['on','On'],['off','Off']]))}${row('Appearance','Auto follows your phone',seg('set-dark',dk,[['auto','Auto'],['off','Light'],['on','Dark']]))}${row('Holiday looks','Decorations on holidays',seg('set-hol',hl,[['auto','On'],['off','Off']]))}${row('Color-blind colors','Word Duel uses orange and blue instead of green and yellow',seg('set-hc',document.documentElement.classList.contains('hc')?'on':'off',[['off','Off'],['on','On']]))}${row('Fast moves','Pawns hop faster in Sorry!, Candy Land and Chutes',seg('set-fast',gnSpeed()>1?'on':'off',[['off','Normal'],['on','Fast']]))}</div>
   <h3 class="sethd">Games list</h3><div class="setcard">${row('Favorites',F.fav.length?F.fav.filter(k=>G[k]).map(k=>titleOf(k)).join(', '):'None yet','<button class="btn ghost" data-act="set-editlist">Edit list</button>')}${F.hide.length?F.hide.filter(k=>G[k]).map(k=>row(titleOf(k),'Hidden',`<button class="btn ghost" data-act="hide" data-k="${k}">Show</button>`)).join(''):row('Hidden games','None','')}</div>
-  <h3 class="sethd">Notifications</h3><div class="setcard">${row('Lock-screen alerts','Needs a one-time setup on Jen’s PC (coming soon)',`<span class="setpill">Soon</span>`)}</div>
+  <h3 class="sethd">Notifications</h3><div class="setcard">${row('Lock-screen alerts','Coming soon',`<span class="setpill">Soon</span>`)}</div>
   <h3 class="sethd">About</h3><div class="setcard">${row('Game Night','Version '+GN_VER+' · '+(window.GN_FB?'online copy':'Claude copy')+' · '+(shared?'synced':'this phone only'),'')}${row('Practice solo','Play both sides, nothing is sent',`<button class="btn ghost" data-act="${practice?'practice-off':'practice-on'}">${practice?'Stop':'Start'}</button>`)}</div></div>`}
 
 /* hosted copy only: the app saves itself on the phone so it opens instantly; a new version shows a small reload bar */
@@ -20236,7 +20464,7 @@ if(window.GN_FB&&'serviceWorker' in navigator&&location.protocol==='https:'){nav
 function gnBadge(){try{if(!navigator.setAppBadge||!me||practice)return;const n=games.filter(g=>G[g.type]&&g.status!=='done'&&!g.archived&&mmv(g)).length;if(n!==gnBadge.n){gnBadge.n=n;n?navigator.setAppBadge(n):navigator.clearAppBadge()}}catch(_){}}
 function homePrefs(){let f={fav:[],hide:[]};try{f=JSON.parse(localStorage.getItem('gn-home-prefs')||'null')||f}catch(_){}f.fav=f.fav||[];f.hide=f.hide||[];return f}
 function homePrefsSet(f){try{localStorage.setItem('gn-home-prefs',JSON.stringify(f))}catch(_){}}
-function renderChips(){const c=$('#chips'),h=`<button class="pill sndbtn" data-act="settings" aria-label="Settings">⚙️</button><button class="pill sndbtn" data-act="mute" aria-label="${GN_SND.muted?'Turn sound on':'Mute sound and vibration'}">${GN_SND.muted?'🔇':'🔊'}</button>${practice?'<span class="pill practice"><span class="dot"></span>Practice</span>':shared?'':`<span class="pill"><span class="dot"></span>This phone only</span>`}${me?`<button class="pill me-${me}${practice?' swap':''}" data-act="switch" aria-label="${practice?'Switch player':'This phone plays as '+nm(me)}">${practice?'⇄ ':shared?'<span class="dot sh"></span>':''}<span class="pnmx">${nm(me)}</span>${practice?'':' ▾'}</button>`:''}`;if(c.__h===h&&c.firstChild)return;c.__h=h;c.innerHTML=h}
+function renderChips(){const c=$('#chips'),h=me?gnMenuHtml():'';if(c.__h===h&&c.firstChild)return;c.__h=h;c.innerHTML=h}
 let pracT=null;
 function practiceHandoff(){clearTimeout(pracT);if(!practice)return;pracT=setTimeout(()=>{const g=cur();if(!g||g.status==='done'||ui.modal||!me)return;if(drag){practiceHandoff();return}const T=G[g.type];if(!T||!T.myMove)return;
   if(T.busy&&T.busy(g)){practiceHandoff();return}let mine=false,theirs=false;try{mine=!!T.myMove(g)}catch(e){}if(mine)return;const keep=me;me=other(keep);try{theirs=!!T.myMove(g)}catch(e){}me=keep;
@@ -20284,8 +20512,8 @@ document.addEventListener('click',async e=>{
   if(/-again$/.test(a)&&g&&g.status==='done'&&g.rematchId){const r=games.find(x=>x.id===g.rematchId&&x.status!=='done'&&!x.archived);if(r){go(r.id);return}}
   switch(a){
     case 'chars':ui.prof=null;CH.open(me);route={screen:'chars',id:null};$('#view').innerHTML='';render();scrollTo(0,0);return;
-    case 'ch-back':{const E=CH.editing();if(E.dirty){const d=CH.save();store.setChar(me,d);toast('Saved your character')}route={screen:'home',id:null};render();scrollTo(0,0);return}
-    case 'ch-save':{const d=CH.save();await store.setChar(me,d);toast('Saved. '+nameOf(other(me))+' will see it.');const sv=document.querySelector('[data-act=ch-save]');if(sv){sv.disabled=true;sv.textContent='Saved ✓'}return}
+    case 'ch-back':{const E=CH.editing();if(E.dirty){const d=CH.save();store.setChar(me,d);if(window.__gnW){window.__gnW=0;gnSaved();return}toast('Saved your character')}route={screen:'home',id:null};render();scrollTo(0,0);return}
+    case 'ch-save':{const d=CH.save();await store.setChar(me,d);if(window.__gnW){window.__gnW=0;gnSaved();return}toast('Saved. '+nameOf(other(me))+' will see it.');const sv=document.querySelector('[data-act=ch-save]');if(sv){sv.disabled=true;sv.textContent='Saved ✓'}return}
     case 'dark':{const on=!document.documentElement.classList.contains('dark');try{localStorage.setItem('gn-dark',on?'on':'off')}catch(_){}gnDark();render();return}
     case 'settings':route={screen:'settings',id:null};ui.navDir=1;render();scrollTo(0,0);return;
     case 'set-back':route={screen:'home',id:null};ui.navDir=-1;render();scrollTo(0,0);return;
