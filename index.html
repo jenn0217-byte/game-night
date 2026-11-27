@@ -5042,7 +5042,7 @@ const RULES={
  ttt:['Get three in a row','Tap an empty square to place your mark.','Three across, down or diagonal wins.','Best of 5: first to 3 games takes the match.'],
  c4:['Line up four','Tap a column to drop your disc.','Four in a row across, down or diagonal wins.'],
  dots:['Claim the most boxes','Tap between two dots to draw a line.','Close the fourth side of a box to claim it and go again.','Try not to draw the third side of a box.'],
- hang:['Guess their word','One of you picks a word or phrase, the other guesses letters.','Six wrong letters and the guesser loses.','Tap Guess to solve the whole thing early.'],
+ hang:['Guess their word','One of you picks a word or phrase, the other guesses letters.','Six wrong letters and the guesser loses.','Spaces, hyphens and apostrophes are shown for you.'],
  wordle:['Solve their word first','You each pick a secret 5-letter word for the other.','Green: right letter, right spot. Yellow: in the word, wrong spot.','Fewest guesses wins.'],
  ws:['Find the most words','Drag across a word to circle it, any direction your level allows.','Race: same grid, live, most words wins.','Speed: your own copy, any time, fastest wins.'],
  know:['Know each other','Answer each question about yourself.','Then guess what they answered.','Most right guesses wins.'],
@@ -20034,7 +20034,7 @@ function boardZoom(g){const sel=BZ_SEL[g.type];if(!sel)return;const el=document.
   box.addEventListener('dblclick',e=>{if(e.target.closest('.bzbtns'))return;if(e.target.closest('[data-act$="-tap"]'))return;if(performance.now()-(window.__bzAct||0)<700)return;const r=box.getBoundingClientRect();if(z.s>1.05){z.s=1;z.x=0;z.y=0}else{z.s=2;z.x=-(e.clientX-r.left-r.width/2);z.y=-(e.clientY-r.top-r.height/2)}bzClamp(z,r.width,r.height);bzSave(g.id);ease()});
   apply()}
 /* ---------- real-app shell (Nov 1): settings, splash, slide transitions, swipe back, connection banner, profile cards, achievements, holiday looks ---------- */
-const GN_VER='115';
+const GN_VER='116';
 /* --- achievements, worked out from finished games (nothing extra stored) --- */
 const ACH=[
  ['first','🏆','First win','Win any game',(w,all,p)=>w.length>=1],
@@ -23035,6 +23035,174 @@ window.__c4domCls=function(){const v=document.getElementById('view');if(!v||v.__
 };
 setTimeout(()=>{try{window.__c4domCls()}catch(e){console.error('c4cls',e)}},0);
 
+/* ===== HG10: Hangman rework (Nov 27). Sounds, juice, ending beat, card hold, one Play again, small-text and title fixes.
+   Lives inside the main closure (G, ui, me, practice, CH, store are in scope). Rules and data shape unchanged. ===== */
+const HG10={end:{},live:{},snd:0,vis:{}};document.addEventListener('visibilitychange',()=>{if(document.hidden)HG10.vis={}});
+/* --- sound: own tiny voices on the app's audio context (muted with the app) --- */
+function hgSnd(k,v){try{if(GN_SND.muted)return;const A=window.__gnAC||(window.__gnAC=new (window.AudioContext||window.webkitAudioContext)());if(A.state==='suspended')A.resume();
+  const t=A.currentTime,vol=typeof v==='number'?v:1,out=A.createGain();out.gain.value=vol;out.connect(A.destination);
+  const tone=(f,f2,d,type,g0,at)=>{at=at||0;const o=A.createOscillator(),g=A.createGain();o.type=type||'sine';o.frequency.setValueAtTime(f,t+at);if(f2)o.frequency.exponentialRampToValueAtTime(f2,t+at+d);g.gain.setValueAtTime(.0001,t+at);g.gain.linearRampToValueAtTime(g0||.1,t+at+.006);g.gain.exponentialRampToValueAtTime(.0006,t+at+d);o.connect(g).connect(out);o.start(t+at);o.stop(t+at+d+.03)};
+  HG10.nb=HG10.nb||(()=>{const n=Math.floor(A.sampleRate*.5),b=A.createBuffer(1,n,A.sampleRate),c=b.getChannelData(0);for(let i=0;i<n;i++)c[i]=Math.random()*2-1;return b})();
+  const noise=(d,f,q,g0,at,type)=>{at=at||0;const s=A.createBufferSource();s.buffer=HG10.nb;const fl=A.createBiquadFilter();fl.type=type||'bandpass';fl.frequency.value=f;fl.Q.value=q||1;const g=A.createGain();g.gain.setValueAtTime(g0||.2,t+at);g.gain.exponentialRampToValueAtTime(.0006,t+at+d);s.connect(fl).connect(g).connect(out);s.start(t+at);s.stop(t+at+d+.02)};
+  const NOTE=[659,784,988,1175,1319,1568];
+  switch(k){
+   case 'key':tone(1500,1100,.03,'triangle',.05);noise(.02,3200,3,.05);break;
+   case 'hit':{const n=Math.min(6,v&&v.n||1);for(let i=0;i<n;i++)tone(NOTE[i],0,.16,'triangle',.11,i*.06);if(n>=3)tone(NOTE[n-1]*2,0,.22,'sine',.05,n*.06);break}
+   case 'pop':noise(.07,1800,.7,.5,0,'highpass');tone(240,110,.09,'sine',.14);tone(900,1700,.05,'sine',.03,.02);break;
+   case 'chalk':noise(.16,3600,1.4,.16);noise(.1,5200,2,.08,.12);tone(170,90,.1,'sine',.1);break;
+   case 'solve':[784,988,1175,1568].forEach((f,i)=>tone(f,0,.2,'triangle',.1,i*.07));tone(2093,0,.35,'sine',.05,.3);break;
+   case 'fall':tone(880,180,.5,'sine',.07);noise(.12,400,1,.3,.5);tone(110,55,.18,'sine',.2,.5);break;
+   case 'thud':noise(.1,500,1,.3);tone(120,60,.14,'sine',.18);break;
+  }}catch(_){}}
+const hgBuzz=p=>{try{navigator.vibrate&&navigator.vibrate(p)}catch(_){}};
+/* --- Balloons scene, reworked: the figure sinks a little with every pop (spring), hops on a hit, and drops on the last pop --- */
+hangBalloons=function(g,m,prev,state){prev=prev==null?m:prev;const gs=other(g.setter),c=CH.get(gs),lost=state==='lost',won=state==='won';
+  const mood=won?(c.win||'cheer'):lost?(c.lose||'pout'):m>=5?(c.lose||'shocked'):m>=3?'shocked':'happy';
+  const pose=lost?mood:'cheer';const [top,H]=CH.vb(c,mood,pose),W=56,sc=W/200,h=H*sc;
+  const y0=136-h-(lost?0:3),x0=52,hl=[x0+40*sc,y0+(132-top)*sc],hr=[x0+160*sc,y0+(132-top)*sc];
+  const B=[[60,20],[76,10],[94,16],[110,26],[46,34],[114,40]],COL=['#FF4F8B','#FFC93C','#3D7BFF','#2DBE8C','#8B5CF6','#FF7A3D'];
+  /* sink: 0 at 0 misses, ~3.2 units per pop; on the ground when lost */
+  const sk=n=>lost?0:-Math.round((6-Math.min(5,n))*2.6*10)/10,E0=HG10.end[g.id],fr=!!(E0&&E0.fresh&&E0.live),y1=won?sk(0):sk(m),yp=sk(prev),moved=!lost&&(prev<m||(won&&fr));
+  let bl='';B.forEach(([bx,by],i)=>{if(i<m&&!won){if(i>=prev)bl+=`<g class="hgpop" transform="translate(${bx} ${by})"><path d="M-10 0h-5M10 0h5M0 -12v-5M-7 -8l-4 -4M7 -8l4 -4M-7 8l-4 4M7 8l4 4" stroke="${COL[i]}" stroke-width="2" stroke-linecap="round"/><text y="3" text-anchor="middle" font-size="8" font-weight="900" fill="#fff" font-family="Fredoka,Nunito,sans-serif">POP!</text></g>`;return}
+    if(lost)return;const hx=i%2?hr:hl;
+    bl+=`<g class="hgb${won&&fr&&i<m?' hgback':''}" style="--bi:${won&&fr&&i<m?i:0}"><path d="M${bx} ${by+11} Q${(bx+hx[0])/2+(i%2?4:-4)} ${(by+hx[1])/2} ${hx[0]} ${hx[1]}" stroke="#F6EFE0" stroke-opacity=".75" stroke-width=".7" fill="none"/><ellipse cx="${bx}" cy="${by}" rx="8.5" ry="10.5" fill="${COL[i]}"/><path d="M${bx-1.5} ${by+10} l1.5 2.2 l1.5 -2.2z" fill="${COL[i]}"/><ellipse cx="${bx-3}" cy="${by-4}" rx="2" ry="3.4" fill="#fff" opacity=".45"/></g>`});
+  const fig=CH.svgFull(c,mood,pose).replace('<svg ',`<svg x="${x0}" y="${y0}" width="${W}" height="${h}" class="hgfig chm-${mood}" `);
+  const fall=lost&&prev<m;
+  const dust=lost?`<g class="hgdust${fall?' late':''}" fill="#F6EFE0" opacity=".6"><circle cx="108" cy="134" r="4"/><circle cx="150" cy="134" r="5"/><circle cx="100" cy="132" r="2.5"/><circle cx="158" cy="131" r="3"/></g>`:'';
+  return `<svg class="hang-svg hgscene hgbal${lost?' lost':''}${won?' won':''}${fall?' hgfall':''}" viewBox="-34 -22 226 166" preserveAspectRatio="xMaxYMid meet" role="img" aria-label="${6-m} balloons left">
+  <path d="M60 137q50 -4 120 0" stroke="#F6EFE0" stroke-opacity=".5" stroke-width="2" fill="none" stroke-linecap="round"/>
+  <g class="hgsink${moved?' mv':''}" style="--y0:${yp}px;--y1:${y1}px"><g class="${lost||won?'':'hgfloat'}">${bl}<g class="hgfigw">${fig}</g></g></g>${dust}</svg>`};
+/* --- body classes from two observers (no CSS :has(), it slows style recalcs in this app) --- */
+(()=>{const sync=()=>{const on=!!document.querySelector('#view .wgw.hang');if(!on)HG10.vis={};document.body.classList.toggle('hgon',on);const cd=document.querySelector('body>.chres');document.body.classList.toggle('hgcard',on&&!!cd);
+  /* the card's Rematch says what it does in Hangman: the one who taps it picks the next word */
+  if(on&&cd&&!cd.dataset.hg){cd.dataset.hg=1;const b=cd.querySelector('[data-act=rematch]'),g=cur();if(b&&g&&g.type==='hang'&&!g.solo){const lab=g.setter===me?'Pick another word':'Your turn to pick',fix=()=>{if(b.textContent.trim()==='Rematch')b.textContent=lab};fix();new MutationObserver(fix).observe(b,{childList:true,characterData:true,subtree:true})}}};
+  const go=()=>{const v=document.getElementById('view');if(!v){setTimeout(go,200);return}new MutationObserver(sync).observe(v,{childList:true});new MutationObserver(sync).observe(document.body,{childList:true});sync()};go()})();
+/* --- header title: shrink to fit instead of "Hangm..." --- */
+function hgFitTitle(){const h=document.querySelector('#view .gbar h1');if(!h)return;h.style.fontSize='';let fs=parseFloat(getComputedStyle(h).fontSize),n=0;
+  while(h.scrollWidth>h.clientWidth+1&&fs>14&&n++<12){fs-=1;h.style.fontSize=fs+'px'}}
+/* --- the card waits for the ending beat; Play again row waits too --- */
+const hgBeat=g=>{const e=HG10.end[g.id];if(!e)return 0;return e.ms};
+G.hang.fastRes=true;G.hang.resBeat=0;
+setTimeout(()=>{const prev=window.__resHold;window.__resHold=g=>{if(g&&g.type==='hang'){const e=HG10.end[g.id];if(!e)return route.screen==='game'&&route.id===g.id;return performance.now()-e.t<e.ms-450}return prev?prev(g):false}},0);
+/* --- new-game sheet: no system emoji (an inline balloon instead) --- */
+const _hgModal=G.hang.modal;
+G.hang.modal=function(){return _hgModal.call(this).replace('🎈 Balloons','<svg class="hgchipb" viewBox="0 0 12 16" aria-hidden="true"><path d="M6 11.5c-1 2 1 2.5 0 4.5" stroke="currentColor" stroke-width=".9" fill="none"/><ellipse cx="6" cy="6" rx="5" ry="5.8" fill="#FF4F8B"/><path d="M5 11.6h2l-1-1.2z" fill="#FF4F8B"/><ellipse cx="4.2" cy="3.8" rx="1.2" ry="1.9" fill="#fff" opacity=".5"/></svg>Balloons')};
+/* --- view: done row waits for the beat; blank tiles get a chalk line --- */
+const _hgView=G.hang.view;
+G.hang.view=function(g){const k=g.id,gs=g.guesses||'',was=ui.g.hgK===k?ui.g.hgLen:null;
+  if(g.status!=='done')HG10.live[k]=1;
+  else if(!HG10.end[k]){const won=g.winner!==g.setter,live=!!HG10.live[k]||(was!=null&&gs.length>was);
+    const miss=[...new Set(g.word.replace(/[^A-Z]/g,''))].filter(L=>!gs.includes(L)).length;
+    HG10.end[k]={t:performance.now(),ms:!live?900:won?1500:1950,won,live,fresh:1}}
+  let s=_hgView.call(this,g);
+  if(g.status==='done'){const e=HG10.end[k],left=e?Math.max(0,e.ms+(practice||!e.live?0:900)-(performance.now()-e.t)):0;
+    if(left>0)s=s.replace('<div class="row wgrow">',`<div class="row wgrow hgrowin" style="animation-delay:${Math.round(left)}ms">`)}
+  if(g.status==='done'&&(g.winner==='p1'||g.winner==='p2'))s=s.replace(/<div class="wgav (p[12])/g,(x,p)=>x+(p===g.winner?' hgw':' hgl'));
+  /* one phone, mystery phrase: nobody else "won"; say what happened */
+  if(g.status==='done'){const n=(s.match(/ rv"/g)||[]).length;if(n)s=s.replace('<div class="slots hgslots" style="',`<div class="slots hgslots" style="--rvs:${Math.min(.14,.6/n).toFixed(3)}s;`)}
+  /* the setter watching live: no "since you last looked" line, the keyboard already shows it */
+  if(g.setter===me&&HG10.vis[k]!=null&&gs.length>HG10.vis[k]&&!document.hidden)s=s.replace(/<p class="hgnote hgsince">[\s\S]*?<\/p>/,`<p class="hgnote">${nm(other(g.setter))}’s guesses show here as they tap.</p>`);
+  s=s.replace(/<span class="hghelp">[^<]*<\/span>/,'');
+  if(g.solo){s=s.replace(/<span class="wgcap res lose">[^<]*<\/span>/,`<span class="wgcap res lose">${g.chm?'OUT OF BALLOONS!':'OUT OF TRIES!'}</span>`).replace(/<span class="hghelp">[^<]*<\/span>/,'<span class="hghelp">Tap a letter. Six misses and you lose.</span>').replace(/<small><u>WORD<\/u><\/small>/g,'')}
+  return s};
+/* --- fit, second pass: the scene is the heart of the game, so it gets at least ~30% of the screen;
+   tappable keys give up height first (never under 42px), read-only keys down to 34px, then the word tiles (never under 24px) --- */
+function hgFit2(){const w=document.querySelector('.wgw.hang');if(!w)return;const bd=w.querySelector('.hgboard'),sl=w.querySelector('.hgslots'),kb=w.querySelector('.kb');if(!bd)return;
+  const target=Math.min(200,Math.max(118,Math.round(w.clientHeight*.3)));let d=target-bd.getBoundingClientRect().height;if(d<=1)return;
+  if(kb){const ro=kb.classList.contains('ro'),rows=kb.querySelectorAll('.kr').length||3,kh0=parseFloat(w.style.getPropertyValue('--kh'))||parseFloat(getComputedStyle(kb.querySelector('.key')).height)||52,min=ro?34:42;
+    const kh=Math.max(min,Math.floor(kh0-d/rows));if(kh<kh0){w.style.setProperty('--kh',kh+'px');d-=(kh0-kh)*rows}}
+  if(sl&&d>1){const tops=new Set([...sl.querySelectorAll('.slot')].map(e=>Math.round(e.offsetTop))),rows=tops.size||1,s0=sl.querySelector('.slot:not(.sym)')?.offsetWidth||30;
+    let s=Math.max(24,Math.floor(s0-d/(1.18*rows)));if(s<s0){sl.style.setProperty('--fs',s+'px');
+      /* fewer rows after the shrink can leave room: give it back, a few px at a time */
+      for(let i=0;i<4&&s<s0;i++){const room=bd.getBoundingClientRect().height-target;if(room<14)break;const s2=Math.min(Math.floor(s0),s+Math.max(2,Math.floor(room/(1.18*Math.max(1,rows-1))/2)));sl.style.setProperty('--fs',s2+'px');if(bd.getBoundingClientRect().height<target-2){sl.style.setProperty('--fs',s+'px');break}s=s2}}}}
+/* --- fit cache: the measured fit (height, key height, tile size, title size) is remembered per screen size and layout,
+   so opening a game or a re-render writes styles without reading layout (the open was laid out 3-4 times: ~100 ms at 4x) --- */
+HG10.fit={};const _hangFit=hangFit;
+const hgKey=()=>{const g=cur(),q=s=>document.querySelector(s)?1:0;if(!g)return '';return [innerWidth,innerHeight,g.word.replace(/[A-Z]/g,'x'),g.setter===me?1:0,g.status,q('.hgsince'),q('.hghelp'),q('.hghint'),q('#view .herepill'),q('#view .nudge')].join('|')};
+hangFit=function(){const w=document.querySelector('.wgw.hang');if(!w)return;const k=hgKey(),c=HG10.fit[k];HG10.fk=k;
+  if(c){HG10.hit=1;w.style.height=c.h;if(c.kh)w.style.setProperty('--kh',c.kh);const sl=w.querySelector('.hgslots');if(sl&&c.fs)sl.style.setProperty('--fs',c.fs);const h1=document.querySelector('#view .gbar h1');if(h1&&c.t)h1.style.fontSize=c.t;return}
+  /* a game just opened with no fit known yet: paint it at the full height now, measure in the next task after the first paint
+     (layout is clean then, so the reads are free; the open's own long task no longer carries the fit) */
+  const gid=(cur()||{}).id;if(HG10.openId!==gid){HG10.openId=gid;const sk=innerWidth+'x'+innerHeight,T=HG10.top[sk];
+    w.style.height=Math.max(240,Math.floor((T?T.vh:innerHeight)-(T?T.top:62)-(T?T.pb:0)))+'px';HG10.hit=1;
+    requestAnimationFrame(()=>setTimeout(()=>{if(!document.querySelector('.wgw.hang')||HG10.fk!==k)return;HG10.hit=0;hgFitAll();hgFitSave()},0));return}
+  HG10.hit=0;hgFitAll()};
+/* the original fit, minus the first forced layout: the header height and page padding are remembered per screen size */
+HG10.top={};
+function hgFitCore(){const w=document.querySelector('.wgw.hang');if(!w)return;const sk=innerWidth+'x'+innerHeight;let T=HG10.top[sk];
+  if(!T){const vv=window.visualViewport;T=HG10.top[sk]={vh:vv?vv.height:innerHeight,top:w.getBoundingClientRect().top,pb:parseFloat(getComputedStyle(document.documentElement).paddingBottom)||0}}
+  w.style.height=Math.max(240,Math.floor(T.vh-T.top-T.pb))+'px';
+  const sl=w.querySelector('.hgslots'),bd=w.querySelector('.hgboard'),kb=w.querySelector('.kb');
+  w.style.removeProperty('--kh');if(sl)sl.style.removeProperty('--fs');if(bd)bd.style.minHeight='';
+  const over=()=>w.scrollHeight-w.clientHeight;if(over()<=0)return;
+  if(bd)bd.style.minHeight='64px';if(over()<=0)return;
+  if(kb){let kh=52;while(over()>0&&kh>40){kh-=2;w.style.setProperty('--kh',kh+'px')}}
+  if(over()<=0||!sl)return;
+  let s=Math.min(34,Math.floor(sl.querySelector('.slot')?.getBoundingClientRect().width||30));
+  while(over()>0&&s>15){s-=2;sl.style.setProperty('--fs',s+'px')}}
+addEventListener('resize',()=>{HG10.top={};HG10.fit={}});
+/* one measure pass (was 4-8 forced layouts on a first open): read everything once, work out keys and tiles, write, verify once.
+   The scene gets at least ~30% of the game height: tappable keys give up height first (>=42px), read-only keys (>=34px), then tiles (>=20px). */
+function hgFitAll(){const w=document.querySelector('.wgw.hang');if(!w)return;const sk=innerWidth+'x'+innerHeight;let T=HG10.top[sk];
+  if(!T){const vv=window.visualViewport;T=HG10.top[sk]={vh:vv?vv.height:innerHeight,top:w.getBoundingClientRect().top,pb:parseFloat(getComputedStyle(document.documentElement).paddingBottom)||0}}
+  w.style.height=Math.max(240,Math.floor(T.vh-T.top-T.pb))+'px';
+  const sl=w.querySelector('.hgslots'),bd=w.querySelector('.hgboard'),kb=w.querySelector('.kb'),h1=document.querySelector('#view .gbar h1');
+  w.style.removeProperty('--kh');if(sl)sl.style.removeProperty('--fs');if(bd)bd.style.minHeight='';if(h1)h1.style.fontSize='';
+  /* read (one layout) */
+  const H=w.clientHeight,over=w.scrollHeight-H,bh=bd?bd.offsetHeight:0,k0=kb?kb.querySelector('.key'):null,kh0=k0?k0.offsetHeight:0,krows=kb?(kb.querySelectorAll('.kr').length||3):0,ro=!!(kb&&kb.classList.contains('ro'));
+  const t0=sl?sl.querySelector('.slot:not(.sym)'):null,s0=t0?t0.offsetWidth:30,trows=sl?new Set([...sl.querySelectorAll('.slot')].map(e=>e.offsetTop)).size||1:1;
+  const hOver=h1?h1.scrollWidth-h1.clientWidth:0,hfs=h1&&hOver>1?parseFloat(getComputedStyle(h1).fontSize):0;
+  /* work out */
+  const target=Math.min(200,Math.max(118,Math.round(H*.3)));let d=Math.max(0,target-bh)+Math.max(0,over);
+  if(d>1&&kb&&kh0){const kh=Math.max(ro?34:42,Math.floor(kh0-d/krows));if(kh<kh0){w.style.setProperty('--kh',kh+'px');d-=(kh0-kh)*krows}}
+  let sNew=0;if(d>1&&sl){const s=Math.max(20,Math.floor(s0-d/(1.18*trows)));if(s<s0){sl.style.setProperty('--fs',s+'px');sNew=s}}
+  if(hfs&&h1)h1.style.fontSize=Math.max(14,Math.floor(hfs*h1.clientWidth/(h1.clientWidth+hOver)))+'px';
+  /* verify (second layout); rare: long phrases on the smallest phones */
+  if(w.scrollHeight>w.clientHeight+1){hgGuard();return}
+  /* smaller tiles can wrap into fewer rows and leave room: give some back once */
+  if(sNew&&bd){const room=bd.offsetHeight-target;if(room>20){const s2=Math.min(s0,sNew+Math.max(2,Math.floor(room/(1.18*Math.max(1,trows-1))/2)));sl.style.setProperty('--fs',s2+'px');if(w.scrollHeight>w.clientHeight+1||bd.offsetHeight<target-2)sl.style.setProperty('--fs',sNew+'px')}}}
+/* last guard: never let the game overflow the screen (long phrases on small phones) */
+function hgGuard(){const w=document.querySelector('.wgw.hang');if(!w)return;const sl=w.querySelector('.hgslots');let n=0;
+  while(w.scrollHeight>w.clientHeight+1&&sl&&n++<10){const t=sl.querySelector('.slot:not(.sym)');const cur=parseFloat(sl.style.getPropertyValue('--fs'))||(t?t.offsetWidth:30);if(cur<=20)break;sl.style.setProperty('--fs',Math.max(20,cur-2)+'px')}
+  if(w.scrollHeight>w.clientHeight+1){const nt=w.querySelector('.hgnote');if(nt)nt.style.display='none'}}
+function hgFitSave(){if(HG10.hit||!HG10.fk)return;const w=document.querySelector('.wgw.hang');if(!w)return;const sl=w.querySelector('.hgslots'),h1=document.querySelector('#view .gbar h1');
+  HG10.fit[HG10.fk]={h:w.style.height,kh:w.style.getPropertyValue('--kh'),fs:sl&&sl.style.getPropertyValue('--fs'),t:h1&&h1.style.fontSize}}
+/* --- after: sounds, reactions, ending beat --- */
+const _hgAfter=G.hang.after;
+G.hang.after=function(g){const k=g.id,gs=g.guesses||'',was=ui.g.hgK===k?ui.g.hgLen:null;
+  if(HG10.vis[k]==null)HG10.vis[k]=gs.length;
+  _hgAfter.call(this,g);if(!HG10.hit)hgFitSave();
+  /* warm the sound voices once, off the tap (the first hit built them inside the tap: 60-80 ms at 4x) */
+  if(!HG10.warm&&window.__gnAC){HG10.warm=1;(window.requestIdleCallback||setTimeout)(()=>{try{const A=window.__gnAC;if(!HG10.nb){const n=Math.floor(A.sampleRate*.5),b=A.createBuffer(1,n,A.sampleRate),c=b.getChannelData(0);for(let i=0;i<n;i++)c[i]=Math.random()*2-1;HG10.nb=b}}catch(_){}})}
+  const sc=document.querySelector('.wgw.hang .hgscene'),slate=document.querySelector('.wgw.hang .hgslate'),guesser=g.setter!==me,vol=guesser?1:.75;
+  if(was!=null&&gs.length>was){const L=gs[gs.length-1],n=[...g.word].filter(x=>x===L).length;
+    if(n){hgSnd('hit',{n});if(sc){sc.classList.add('hghit');}if(n>=3&&slate){slate.classList.remove('hgcheer');void slate.offsetWidth;slate.classList.add('hgcheer')}if(guesser)hgBuzz(n>=3?[10,30,10]:10)}
+    else{hgSnd(g.chm?'pop':'chalk',vol);if(slate){slate.classList.remove('hgshake');void slate.offsetWidth;slate.classList.add('hgshake')}if(guesser)hgBuzz(24)}}
+  const E=HG10.end[k];if(g.status==='done'&&E&&E.fresh){E.fresh=0;requestAnimationFrame(()=>{const won=E.won,live=E.live,ms=E.ms;
+    const wv=document.querySelector('.wgw.hang .hgslots');
+    if(won){if(wv&&live){wv.querySelectorAll('.slot:not(.sym)').forEach((el,i)=>{el.style.setProperty('--k',i)});setTimeout(()=>{const w2=document.querySelector('.wgw.hang .hgslots');if(w2)w2.classList.add('hgwave')},260)}
+      if(live){setTimeout(()=>hgSnd('solve',vol),180);if(slate){const b=document.createElement('i');b.className='hgburst';b.innerHTML='<b></b>'.repeat(10);slate.appendChild(b);setTimeout(()=>b.remove(),1400)}}}
+    else if(live){if(g.chm){setTimeout(()=>hgSnd('fall',vol),60);setTimeout(()=>{const s2=document.querySelector('.wgw.hang .hgslate');if(s2){s2.classList.remove('hgshake');void s2.offsetWidth;s2.classList.add('hgshake','big')}if(guesser)hgBuzz(40)},560)}else{hgSnd('thud',vol);if(guesser)hgBuzz(40)}}
+    /* one phone: no app card in practice, so the game plays its own ending */
+    if(practice&&live)setTimeout(()=>{try{const mine=g.winner===me;gnSfx(mine?'win':'lose');if(mine)gnConfetti()}catch(_){}},ms-300);
+    const pre=()=>{try{window.__chresSync&&window.__chresSync()}catch(_){}};setTimeout(pre,ms-430)})}
+};
+/* --- the card's Rematch opens the word sheet with the field focused inside the tap (iPhone shows the keyboard) --- */
+document.addEventListener('click',e=>{const t=e.target.closest&&e.target.closest('body>.chres [data-act=rematch]');if(!t||!me)return;const g=games.find(x=>x.id===t.dataset.id);
+  if(!g||g.type!=='hang'||g.solo||wgRematchOf(g)||(g.rematchId&&games.some(x=>x.id===g.rematchId&&x.status!=='done'&&!x.archived)))return;
+  ui.rematchFrom=g.id;ui.wgFrom=g.id;openModal('new-hang');const el=document.getElementById('hang-word');if(el)try{el.focus({preventScroll:true})}catch(_){}},true);
+/* --- the guesser's key: answers on touch (squash + tick), no generic tap beep on the save --- */
+document.addEventListener('pointerdown',e=>{const t=e.target.closest&&e.target.closest('.wgw.hang [data-act=hang-key]');if(!t||t.disabled)return;t.classList.add('prs');hgSnd('key',.8);setTimeout(()=>t.classList.remove('prs'),160)},true);
+const _hgAct=G.hang.act;
+G.hang.act=async function(a,t,g){if(a==='hang-key'&&g&&g.status==='active'&&g.setter!==me){const L=t.dataset.l;if((g.guesses||'').includes(L))return;
+    const ng={...g,guesses:(g.guesses||'')+L};const p={guesses:ng.guesses};
+    if(hangSolved(ng)){p.status='done';p.winner=me}else if(hangMiss(ng).length>=6){p.status='done';p.winner=g.setter}
+    return store.update(g.id,p)}
+  if(a==='hang-solo'){const [w,h]=HANG_BANK[rnd(HANG_BANK.length)];await create(base('hang',{setter:other(me),word:w,hint:h,guesses:'',solo:true,chm:ui.opt.hang.chm===0?0:1}));return}
+  return _hgAct.call(this,a,t,g)};
+/* the word field's red error border clears as soon as they type again */
+document.addEventListener('input',e=>{if(e.target&&e.target.id==='hang-word')e.target.classList.remove('shake')});
+
 render();
 if(!me){if(practice){me='p1'}else if(!window.GN_FB)openModal('who')}
 store.start();
@@ -24246,4 +24414,73 @@ body.ingame.gn-c4 #toast{top:var(--c4Top,64px)!important;white-space:nowrap;over
 .c4scene .c4-cap.c4wait{visibility:hidden}
 .c4scene .c4-cap.c4show{animation:c4capin .32s cubic-bezier(.3,1.4,.5,1) both}
 @keyframes c4capin{from{transform:scale(.6);opacity:0}}
+/* ===== HG10 Hangman rework (Nov 27) ===== */
+/* balloons: spring sink per pop, hop on a hit, drop on the last pop */
+.hgsink{transform:translateY(var(--y1))}
+.hgfigw,.hgb{transform-box:fill-box;transform-origin:50% 100%}
+@media (prefers-reduced-motion:no-preference){
+.hgsink.mv{animation:hgsink .7s cubic-bezier(.3,1.6,.5,1) both}
+.hgbal.hghit .hgfigw{animation:hghop .45s cubic-bezier(.3,1.5,.5,1)}
+.hgbal.hgfall .hgfigw{animation:hgdrop .55s cubic-bezier(.55,0,.9,.55) both,hgsquash .3s ease-out .55s}
+.hgbal .hgdust.late{animation:hgdust .5s ease-out .5s both}
+.hgbal.won .hgfigw{animation:hghop .5s cubic-bezier(.3,1.5,.5,1) .25s 3}
+.hgscene:not(.hgbal).hghit .fig{animation:hghop .4s cubic-bezier(.3,1.5,.5,1);transform-box:fill-box;transform-origin:50% 100%}
+.hgslate.hgshake{animation:hgshake .3s ease-out}
+.hgslate.hgshake.big{animation:hgshake .42s ease-out}
+.hgslate.hgcheer{animation:hgcheer .5s cubic-bezier(.3,1.5,.5,1)}
+.wgw .hgslots.hgwave .slot:not(.sym){animation:hgwave .5s cubic-bezier(.3,1.6,.5,1) calc(var(--k,0) * 45ms) both}
+.wgw.hang .wgrow.hgrowin{animation:hgrowin .35s cubic-bezier(.3,1.4,.5,1) both}
+}
+@keyframes hgsink{from{transform:translateY(var(--y0))}to{transform:translateY(var(--y1))}}
+@keyframes hghop{0%{transform:none}35%{transform:translateY(-7px) scale(.96,1.05)}70%{transform:translateY(0) scale(1.05,.95)}100%{transform:none}}
+@keyframes hgdrop{from{transform:translateY(-46px)}to{transform:none}}
+@keyframes hgsquash{0%{transform:scale(1.12,.86)}100%{transform:none}}
+@keyframes hgdust{from{opacity:0;transform:scale(.4)}to{opacity:.6;transform:none}}
+.hgdust{transform-box:fill-box;transform-origin:50% 100%}
+@keyframes hgshake{0%,100%{transform:none}20%{transform:translateX(-5px) rotate(-.6deg)}45%{transform:translateX(4px) rotate(.5deg)}70%{transform:translateX(-2px)}}
+@keyframes hgcheer{0%{transform:none}40%{transform:scale(1.025)}100%{transform:none}}
+@keyframes hgwave{0%{transform:none}40%{transform:translateY(-9px) scale(1.12);background:#FFE14D}100%{transform:none}}
+@keyframes hgrowin{from{opacity:0;transform:scale(.92)}}
+/* sparkle burst on a solve (inside the board, never over the word) */
+.hgburst{position:absolute;left:62%;top:46%;width:0;height:0;pointer-events:none;z-index:3}
+.hgburst b{position:absolute;left:-5px;top:-5px;width:10px;height:10px;background:#FFE14D;clip-path:polygon(50% 0,62% 38%,100% 50%,62% 62%,50% 100%,38% 62%,0 50%,38% 38%);animation:hgspark .9s cubic-bezier(.2,.8,.4,1) both}
+.hgburst b:nth-child(2n){background:#fff;width:8px;height:8px}
+.hgburst b:nth-child(1){--a:0deg}.hgburst b:nth-child(2){--a:36deg}.hgburst b:nth-child(3){--a:72deg}.hgburst b:nth-child(4){--a:108deg}.hgburst b:nth-child(5){--a:144deg}.hgburst b:nth-child(6){--a:180deg}.hgburst b:nth-child(7){--a:216deg}.hgburst b:nth-child(8){--a:252deg}.hgburst b:nth-child(9){--a:288deg}.hgburst b:nth-child(10){--a:324deg}
+@keyframes hgspark{0%{transform:rotate(var(--a)) translateY(0) scale(.3);opacity:1}70%{opacity:1}100%{transform:rotate(var(--a)) translateY(-70px) scale(1);opacity:0}}
+/* key: squash on touch, before the save comes back */
+.wgw.hang .key.prs{transform:translateY(2px) scale(.88,.92);box-shadow:0 1px 3px rgba(0,0,0,.25);transition:transform .05s}
+/* blanks: easy to count (chalk underline), never a dark ghost tile */
+.wgw .hgslots .slot:not(.on):not(.peek):not(.sym){background:rgba(255,255,255,.13);box-shadow:inset 0 -3px 0 rgba(246,239,224,.85)}
+/* small text up to 11px */
+.hgmiss small{font-size:11px}
+.wgw.hang .wgav small u{font-size:11px;padding:1px 7px}
+/* one Play again: the done row hides while the character card is up */
+body.hgon.hgcard .wgw.hang .wgrow{visibility:hidden}
+/* character card for Hangman: dim fades, card springs in solid, leaves by sliding (never see-through over the board) */
+body.hgon .chres{animation:hgdimin .25s ease-out both}
+body.hgon .chres .chrescard{animation:hgcardin .45s cubic-bezier(.3,1.45,.5,1) both}
+body.hgon .chres.out{opacity:1;transition:none;animation:hgdimout .3s ease-in both}
+body.hgon .chres.out .chrescard{animation:hgcardout .3s ease-in both}
+@keyframes hgdimin{from{background-color:rgba(20,22,35,0)}}
+@keyframes hgdimout{to{background-color:rgba(20,22,35,0)}}
+@keyframes hgcardin{from{transform:translateY(60px) scale(.8)}}
+@keyframes hgcardout{to{transform:translateY(110vh)}}
+.hgbal{overflow:visible}
+@media (prefers-reduced-motion:no-preference){.hgbal .hgb.hgback{animation:hgback .5s cubic-bezier(.3,1.7,.5,1) calc(.35s + var(--bi) * .09s) both}}
+@keyframes hgback{from{transform:scale(0)}}
+.hgb.hgback{transform-origin:50% 100%}
+/* loss: the letters they missed land in red, fully opaque (they were greyed by .peek) */
+.wgw .hgslots .slot.rv{opacity:1;background:#FFE1E1;color:#D7263D!important;box-shadow:0 4px 8px rgba(0,0,0,.25)}
+.hgchipb{width:12px;height:16px;vertical-align:-3px;margin-right:4px}
+.wgw .hgslots .slot.rv{animation-delay:calc(.25s + var(--i) * var(--rvs,.14s))}
+/* HUD avatars at the end: winner hops with a gold ring, loser droops */
+@media (prefers-reduced-motion:no-preference){.wgw.hang .wgav.hgw .ring{animation:hgavw .6s cubic-bezier(.3,1.6,.5,1) .3s 2 both}.wgw.hang .wgav.hgl .ring{animation:hgavl .5s ease-out .3s both}}
+.wgw.hang .wgav.hgw .ring{box-shadow:0 0 0 3px #FFD60A,0 0 14px rgba(255,214,10,.7),0 4px 10px rgba(0,0,0,.25)}
+.wgw.hang .wgav.hgl .ring{filter:saturate(.6);transform:translateY(2px) rotate(-6deg)}
+@keyframes hgavw{40%{transform:translateY(-8px) scale(1.08)}}
+@keyframes hgavl{from{transform:none}}
+.wgw .hgslots .w{flex-wrap:nowrap}
+/* loss reveal: the blank tile stays (count and shape of the word never drop out); only the letter and the tint come in */
+.wgw .hgslots .slot.rv{animation:hgrvin .4s cubic-bezier(.3,1.5,.5,1) both;animation-delay:calc(.25s + var(--i) * var(--rvs,.14s))}
+@keyframes hgrvin{0%{-webkit-text-fill-color:transparent;background:rgba(255,255,255,.13);box-shadow:inset 0 -3px 0 rgba(246,239,224,.85);transform:none}50%{transform:scale(1.14)}100%{-webkit-text-fill-color:#D7263D;transform:none}}
 </style></body></html>
