@@ -27,7 +27,7 @@ document.addEventListener('touchmove',e=>{if(!document.body.classList.contains('
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=Nunito:wght@600;700;800;900&family=Playfair+Display:wght@700;900&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=Fredoka:wght@500;600;700&family=Nunito:wght@600;700;800;900&family=Playfair+Display:wght@700;900&display=swap">
 <style>
 
 /* ---- mancala ---- */
@@ -4569,6 +4569,42 @@ body:not(.ingame){--pop:var(--gn-acc);--pop-ink:var(--gn-acc-ink);--pop-hl:rgba(
 .gnhgo{margin-top:auto}.gnhgo:disabled{opacity:.4}
 .gnhwait{text-align:center;color:var(--gn-sub)}
 .gnhello .gnhgo{background:var(--gn-acc);color:var(--gn-acc-ink)}
+
+/* GN_FUN (Nov 27): some of the stats "fun" style brought to home (Jen OK'd home-fun-mockup.png). Shell only, never in a game. */
+:root{--gn-fun:'Fredoka',var(--display,system-ui),sans-serif;--gn-ink:#1B2033;--gn-card:#1B2033;--gn-acc:#1B2033;--gn-line:#EEF1F6;--gn-sub:#5F6984;--gn-press:#C9CFDB;--gn-drop:#0B0E18;--gn-accsh:#0B0E18;--gn-tsh:rgba(27,32,51,.09)}
+html.dark{--gn-press:#9EA3B3;--gn-drop:#050507;--gn-accsh:#9A9BAA;--gn-tsh:rgba(0,0,0,.45)}
+/* sky glow at the top of the Play tab only */
+body:not(.ingame):has(#view .gnsky){background:linear-gradient(180deg,#9AD8FF 0,#D9F1FF 170px,var(--bg,#fff) 330px) no-repeat,var(--bg,#fff)}
+html.dark body:not(.ingame):has(#view .gnsky){background:linear-gradient(180deg,#1E3354 0,#16213A 170px,var(--bg) 330px) no-repeat,var(--bg)}
+.gnsky{display:none}
+/* rounder type: headings and buttons in Fredoka, body text stays Nunito */
+.brand,.gnhi,.gnyt,.gnuph b,.gnfirst .hsay>b,#view .hs,#view .cat,.caught b,.gnwel h1,.gnsaved h1,.gnhello h1{font-family:var(--gn-fun)!important;font-weight:700!important;letter-spacing:-.01em!important}
+.gncta,.gnrow .go,.gnrw .rb2,.gnsur,.surp,.caught .btn,.gnhgo,.t3>b,.gnrow .rt b,.prac b,.qph .link,.hrow .link{font-family:var(--gn-fun)!important;font-weight:600!important;letter-spacing:0!important}
+.gnhi{font-size:28px;line-height:1.1;margin:2px 0 0;color:var(--gn-ink);text-wrap:balance}
+.gnyt{font-size:1.25rem!important;margin-top:4px!important}
+.gnyt .ct{font-family:var(--gn-fun)!important;font-weight:600!important}
+/* chunky: solid bottom shadows that squash when pressed */
+.gnup,.gnfirst{border-radius:26px;box-shadow:0 6px 0 var(--gn-drop),0 14px 30px rgba(27,32,51,.14)}
+.gncta{border-radius:18px;box-shadow:0 5px 0 var(--gn-press);transition:transform var(--duration-quick,150ms) var(--ease-bounce,ease),box-shadow var(--duration-quick,150ms) ease}
+.gncta:active{transform:translateY(3px);box-shadow:0 2px 0 var(--gn-press)}
+.gnwel .wb .gncta,.gnhello .gnhgo,.caught .btn:not(.ghost),.surp{box-shadow:0 4px 0 var(--gn-accsh)}
+.gnwel .wb .gncta:active,.gnhello .gnhgo:active,.caught .btn:active,.surp:active{transform:translateY(3px);box-shadow:0 1px 0 var(--gn-accsh)}
+.gnhello .gnhgo:disabled{box-shadow:none}
+.gnrow .go,.gnrw .rb2{border-radius:14px;box-shadow:0 3px 0 var(--gn-accsh)}
+.gnrw .rb2.ghost{box-shadow:0 3px 0 var(--gn-line)}
+.gnrow:active .go,.gnrw .rb2:active{transform:translateY(2px);box-shadow:0 1px 0 var(--gn-accsh)}
+.caught .btn.ghost{box-shadow:0 4px 0 var(--gn-line)}
+.caught .btn{border-radius:18px}
+/* lists and cards */
+.gnlist{border:2px solid var(--gn-line);border-radius:20px}
+.gnrow+.gnrow,.gnrow+.gnrw,.gnrw+.gnrow,.gnrw+.gnrw{border-top:2px dashed var(--gn-line)}
+.caught{border:2px solid var(--gn-line)!important;border-radius:20px!important;box-shadow:0 5px 0 var(--gn-tsh)}
+.t3{border-radius:20px!important;border:2px solid var(--gn-line)!important;box-shadow:0 5px 0 var(--gn-tsh)!important;transition:transform var(--duration-quick,150ms) var(--ease-bounce,ease),box-shadow var(--duration-quick,150ms) ease}
+.t3:active{transform:translateY(3px)!important;box-shadow:0 2px 0 var(--gn-tsh)!important}
+.prac{border-radius:20px!important;border-width:2px!important}
+.qph .link,.hrow .link{background:none!important}
+@media (max-height:640px){.gnhi{display:none}}
+@media (prefers-reduced-motion:reduce){.gncta,.t3{transition:none}}
 
 </style>
 
@@ -20250,6 +20286,10 @@ document.addEventListener('click',async e=>{const t=e.target.closest&&e.target.c
  window.__gnW=1;CH.open(me);const E=CH.editing();if(E&&E.d){E.d.gcol=GNH.col;E.tab='hair';E.dirty=true}
  route={screen:'chars',id:null};$('#view').innerHTML='';render();scrollTo(0,0)},true);
 
+/* GN_FUN helpers (Nov 27): greeting on the Play tab; .gnsky turns on the sky glow. Level, crowns and the weekly race wait for the stats work. */
+function gnHi(){try{if(!me||practice)return '<i class="gnsky"></i>';const n=String(nm(me)||'').trim();
+  return '<i class="gnsky"></i><h1 class="gnhi">'+(!n||/^Player [12]$/.test(n)?'Hi there!':'Hi '+esc(n)+'!')+'</h1>'}catch(_){return ''}}
+
 function viewHome(){
   {const w=gnNeedWelcome();gnWelStyle(w);if(w){homeTab='play';return gnWelcome()}}
   const known=games.filter(g=>G[g.type]);const o=nm(other(me||'p1'));
@@ -20270,7 +20310,7 @@ function viewHome(){
   const tile=k=>ed?`<div class="t3 edit${FV.hide.includes(k)?' hid':''}">${ICON[k]||''}<b>${titleOf(k)}</b><span class="t3ed"><button data-act="fav" data-k="${k}" class="${FV.fav.includes(k)?'on':''}" aria-label="${FV.fav.includes(k)?'Unpin':'Pin to favorites'}">★</button><button data-act="hide" data-k="${k}" class="${FV.hide.includes(k)?'on':''}" aria-label="${FV.hide.includes(k)?'Show':'Hide'}">${FV.hide.includes(k)?'Show':'Hide'}</button></span></div>`
     :`<button class="t3" data-act="new" data-k="${k}">${ICON[k]||''}<b>${hl(titleOf(k))}</b><em class="t3m">${(m=>m[0]+' · '+m[1]+' min')(gMeta(k))}</em>${rec(k)}</button>`;
   let h='';const tab=homeTab;
-  if(tab==='play'&&!ui.tstOn){
+  if(tab==='play'&&!ui.tstOn){h+=gnHi();
     const ev=multi()&&!ui.roomF&&PPL.rooms.length>1,xm=[],xw=[];
     if(ev)for(const r of PPL.rooms){if(r.k===window.GN_ROOM)continue;const S=PPL.sum[r.k];if(!S||!S.seat)continue;withRoom(r.k,()=>{for(const g of S.games){if(!G[g.type]||g.archived||g.status==='done')continue;const my=mmv(g)||livev(g),it={g,k:r.k,t:g.updatedAt||0};(my?xm:xw).push(it)}})}
     if(me&&hereNow()){const og=HERE.opp.gid&&games.find(x=>x.id===HERE.opp.gid);h+=`<div class="herebar"><i></i><b>On now</b>${og&&G[og.type]?`<button class="link" data-act="open" data-id="${og.id}">in ${titleOf(og.type)} · join</button>`:''}</div>`}
@@ -20371,7 +20411,7 @@ function boardZoom(g){const sel=BZ_SEL[g.type];if(!sel)return;const el=document.
   box.addEventListener('dblclick',e=>{if(e.target.closest('.bzbtns'))return;if(e.target.closest('[data-act$="-tap"]'))return;if(performance.now()-(window.__bzAct||0)<700)return;const r=box.getBoundingClientRect();if(z.s>1.05){z.s=1;z.x=0;z.y=0}else{z.s=2;z.x=-(e.clientX-r.left-r.width/2);z.y=-(e.clientY-r.top-r.height/2)}bzClamp(z,r.width,r.height);bzSave(g.id);ease()});
   apply()}
 /* ---------- real-app shell (Nov 1): settings, splash, slide transitions, swipe back, connection banner, profile cards, achievements, holiday looks ---------- */
-const GN_VER='118';
+const GN_VER='119';
 /* --- achievements, worked out from finished games (nothing extra stored) --- */
 const ACH=[
  ['first','🏆','First win','Win any game',(w,all,p)=>w.length>=1],
