@@ -4606,6 +4606,7 @@ html.dark body:not(.ingame):has(#view .gnsky){background:linear-gradient(180deg,
 @media (max-height:640px){.gnhi{display:none}}
 @media (prefers-reduced-motion:reduce){.gncta,.t3{transition:none}}
 
+#updbar{top:auto!important;bottom:calc(84px + env(safe-area-inset-bottom,0px))!important;background:#1B2033!important;padding:6px 6px 6px 18px!important;font:600 15px var(--gn-fun,var(--body))!important;gap:14px!important;box-shadow:0 5px 0 #0B0E18,0 10px 24px rgba(0,0,0,.22)!important;border-radius:22px!important}#updbar span{white-space:nowrap}#updbar button{background:#fff!important;color:#1B2033!important;min-height:44px;padding:0 18px!important;border-radius:16px!important;font:600 15px var(--gn-fun,var(--body))!important}
 </style>
 
 <div id="splash"><div class="splin"><p class="splbrand"><span class="d" aria-hidden="true"><i></i><i></i><i></i><i></i></span>Game Night</p></div></div><script>setTimeout(()=>{const s=document.getElementById('splash');if(s)s.remove()},6000)</script>
@@ -22594,7 +22595,7 @@ function gnSaved(){try{localStorage.setItem(gnWelKey(),'1')}catch(_){}const o=do
 /* avatar menu in the header */
 function gnMenuHtml(){const open=!!window.__gnmOpen;return `<button class="gnme" data-gnm="1" aria-label="Menu" aria-expanded="${open}">${ava(me)}${practice?'<i class="gnprac" title="Practice"></i>':''}</button>
   <div class="gnmenu" ${open?'':'hidden'}><div class="gnmh">${practice?'Practice mode · you play both sides':shared?'Playing as '+esc(nm(me)):'Playing as '+esc(nm(me))+' · this phone only'}</div>
-  <button data-act="chars">${GNI.people}Your character</button><button data-act="mute">${GN_SND.muted?GNI.mute+'Sound is off':GNI.snd+'Sound is on'}</button><button data-act="switch">${GNI.swap}${practice?'Switch player':'Switch who plays here'}</button><button data-act="settings">${GNI.gear}Settings</button></div>`}
+  <button data-act="chars">${GNI.people}Your character</button><button data-act="mute">${GN_SND.muted?GNI.mute+'Sound is off':GNI.snd+'Sound is on'}</button>${practice?`<button data-act="switch">${GNI.swap}Switch player</button>`:''}<button data-act="settings">${GNI.gear}Settings</button></div>`}
 document.addEventListener('click',e=>{const m=e.target.closest('[data-gnm]');const inMenu=e.target.closest('.gnmenu');
   if(m){window.__gnmOpen=!window.__gnmOpen;const mm=document.querySelector('.gnmenu');if(mm)mm.hidden=!window.__gnmOpen;m.setAttribute('aria-expanded',window.__gnmOpen);return}
   if(window.__gnmOpen&&(!inMenu||e.target.closest('[data-act]'))){window.__gnmOpen=false;const mm=document.querySelector('.gnmenu');if(mm)mm.hidden=true}
@@ -22713,6 +22714,7 @@ function renderModal(){
   const m=$('#modal');if(!ui.modal){closeModal();return}let h='';
   if(ui.modal==='me'&&me)h=`<h2>This phone plays as ${nm(me)}</h2><p class="mnote">Moves made here count as ${nm(me)}’s.</p><div class="row"><button class="btn ghost" data-act="names">Change names</button></div><p class="phoneinfo">Screen ${innerWidth}×${innerHeight} · ${Math.round((window.visualViewport?visualViewport.height:innerHeight))}vv · ${devicePixelRatio}x · ${(navigator.userAgent.match(/iPhone OS [0-9_]+|Android [0-9.]+|Mac OS X [0-9_]+|Windows NT [0-9.]+/)||['?'])[0].replace(/_/g,'.')} · v15</p><button class="btn" data-act="close">Done</button>`;
   else if(ui.modal==='who'&&!me&&(h=gnHelloHtml()));else if(ui.modal==='who')h=`<h2>Who’s playing on this phone?</h2><div class="who"><button class="p1" data-act="who" data-p="p1">${nm('p1')}</button><button class="p2" data-act="who" data-p="p2">${nm('p2')}</button></div><button class="link" data-act="names" style="align-self:flex-start">Change names</button>`;
+  else if(ui.modal==='names'&&me&&!practice)h=`<h2>Your name</h2><label class="f"><span>Everyone you play sees this name</span><input type="text" id="nme" value="${esc(nm(me))}" maxlength="16" autocomplete="off"></label><div class="row"><button class="btn" data-act="myname-save">Save</button><button class="btn ghost" data-act="close">Cancel</button></div>`;
   else if(ui.modal==='names')h=`<h2>Player names</h2><label class="f"><span>Player 1 (${gnColN('p1')})</span><input type="text" id="n1" value="${nm('p1')}" maxlength="16"></label><label class="f"><span>Player 2 (${gnColN('p2')})</span><input type="text" id="n2" value="${nm('p2')}" maxlength="16"></label><div class="row"><button class="btn" data-act="names-save">Save</button><button class="btn ghost" data-act="${me?'close':'back-who'}">Cancel</button></div>`;
   else if(ui.modal==='invite')h=invHtml()||(ui.invRes?`<h2>Send ${esc(ui.invRes.name)} the link</h2><div class="invcard"><span class="biglogo sm"><i></i><i></i><i></i><i></i></span><div><b>${nm(me)} invited you to Game Night</b><small>Tap to play. No sign-up.</small></div></div><p class="mnote">The link is only for ${esc(ui.invRes.name)}. It opens straight in as them, and they can add it to their Home Screen.</p><div class="row"><button class="btn" data-act="inv-share">Send the link</button><button class="btn ghost" data-act="close">Later</button></div>`
     :`<h2>Invite someone</h2><p class="mnote">You get your own games with them. Your games with ${multi()&&PPL.rooms[0]?esc(withRoom(PPL.rooms[0].k===window.GN_ROOM?null:PPL.rooms[0].k,()=>nameOf(other(me)))):'others'} stay private.</p><label class="f"><span>Their name</span><input type="text" id="inv-name" maxlength="16" placeholder="Mom" autocomplete="off"></label><div class="row"><button class="btn" data-act="inv-go">Make their link</button><button class="btn ghost" data-act="close">Cancel</button></div>`);
@@ -22755,7 +22757,7 @@ function boardZoom(g){const sel=BZ_SEL[g.type];if(!sel)return;const el=document.
   box.addEventListener('dblclick',e=>{if(e.target.closest('.bzbtns'))return;if(e.target.closest('[data-act$="-tap"]'))return;if(performance.now()-(window.__bzAct||0)<700)return;const r=box.getBoundingClientRect();if(z.s>1.05){z.s=1;z.x=0;z.y=0}else{z.s=2;z.x=-(e.clientX-r.left-r.width/2);z.y=-(e.clientY-r.top-r.height/2)}bzClamp(z,r.width,r.height);bzSave(g.id);ease()});
   apply()}
 /* ---------- real-app shell (Nov 1): settings, splash, slide transitions, swipe back, connection banner, profile cards, achievements, holiday looks ---------- */
-const GN_VER='121';
+const GN_VER='122';
 /* --- achievements, worked out from finished games (nothing extra stored) --- */
 const ACH=[
  ['first','🏆','First win','Win any game',(w,all,p)=>w.length>=1],
@@ -22835,8 +22837,8 @@ function viewSettings(){const F=homePrefs(),dk=(()=>{try{return localStorage.get
   const seg=(act,cur,opts)=>`<div class="segc">${opts.map(([v,l])=>`<button data-act="${act}" data-v="${v}" aria-pressed="${cur===v}">${l}</button>`).join('')}</div>`;
   const row=(t,sub,ctl)=>`<div class="setrow"><div><b>${t}</b>${sub?`<small>${sub}</small>`:''}</div>${ctl}</div>`;
   return `<div class="bar"><button class="back" data-act="set-back">←</button><h1>Settings</h1></div><div class="setw">
-  <div class="setcard"><div class="setme"><span class="setfig">${CH.full(me,'happy')}</span><div><b>${esc(nameOf(me))}</b><small>This phone plays as ${esc(nameOf(me))}</small><div class="row"><button class="btn ghost" data-act="chars">Edit character</button><button class="btn ghost" data-act="prof" data-p="${me}">My profile</button></div></div></div></div>
-  <h3 class="sethd">Players</h3><div class="setcard">${row('Names',esc(nameOf('p1'))+' and '+esc(nameOf('p2')),'<button class="btn ghost" data-act="names">Change</button>')}</div>
+  <div class="setcard"><div class="setme"><span class="setfig">${CH.full(me,'happy')}</span><div><b>${esc(nameOf(me))}</b><small>${practice?'Practice: you play both sides':'Your player on this phone'}</small><div class="row"><button class="btn ghost" data-act="chars">Edit character</button><button class="btn ghost" data-act="prof" data-p="${me}">My profile</button></div></div></div></div>
+  <h3 class="sethd">You</h3><div class="setcard">${row('Your name',esc(nameOf(me)),'<button class="btn ghost" data-act="names">Change</button>')}</div>
   ${pushOn()?`<h3 class="sethd">Notifications</h3><div class="setcard">${pushMyTopic()?`<div class="pushset"><p>Get a lock-screen alert when ${esc(nameOf(other(me)))} challenges you or it's your turn.</p><ol><li>Get the free <a href="https://apps.apple.com/us/app/ntfy/id1625396347" target="_blank" rel="noopener">ntfy app</a> (no account).</li><li>In ntfy tap <b>+</b>, paste your code, tap Subscribe. Allow notifications.</li></ol><div class="pushcode"><code>${esc(pushMyTopic())}</code><button class="btn ghost" data-act="push-copy">Copy</button></div><button class="btn" data-act="push-test">Send me a test</button><small class="pushnote">Keep your code private: anyone with it can see your game alerts.</small></div>`:row('Lock-screen alerts',`Know when ${esc(nameOf(other(me)))} challenges you`,'<button class="btn" data-act="push-setup">Set up</button>')}</div>`:''}
   <h3 class="sethd">Sound and look</h3><div class="setcard">${row('Sound','Clicks, turn chime, win and lose tunes',seg('set-snd',GN_SND.muted?'off':'on',[['on','On'],['off','Off']]))}${row('Vibration','Taps on big moments (sinks, strikes, wins)',seg('set-buzz',window.GN_BUZZ?'on':'off',[['on','On'],['off','Off']]))}${row('Appearance','Auto follows your phone',seg('set-dark',dk,[['auto','Auto'],['off','Light'],['on','Dark']]))}${row('Holiday looks','Decorations on holidays',seg('set-hol',hl,[['auto','On'],['off','Off']]))}${row('Color-blind colors','Word Duel uses orange and blue instead of green and yellow',seg('set-hc',document.documentElement.classList.contains('hc')?'on':'off',[['off','Off'],['on','On']]))}${row('Fast moves','Pawns hop faster in Sorry!, Candy Land and Chutes',seg('set-fast',gnSpeed()>1?'on':'off',[['off','Normal'],['on','Fast']]))}</div>
   <h3 class="sethd">Games list</h3><div class="setcard">${row('Favorites',F.fav.length?F.fav.filter(k=>G[k]).map(k=>titleOf(k)).join(', '):'None yet','<button class="btn ghost" data-act="set-editlist">Edit list</button>')}${F.hide.length?F.hide.filter(k=>G[k]).map(k=>row(titleOf(k),'Hidden',`<button class="btn ghost" data-act="hide" data-k="${k}">Show</button>`)).join(''):row('Hidden games','None','')}</div>
@@ -22845,6 +22847,21 @@ function viewSettings(){const F=homePrefs(),dk=(()=>{try{return localStorage.get
 
 /* hosted copy only: the app saves itself on the phone so it opens instantly; a new version shows a small reload bar */
 if(window.GN_FB&&'serviceWorker' in navigator&&location.protocol==='https:'){navigator.serviceWorker.register('sw.js').catch(()=>{});navigator.serviceWorker.addEventListener('message',e=>{if(e.data==='gn-updated'&&!document.getElementById('updbar')){const b=document.createElement('div');b.id='updbar';b.innerHTML='<span>New version ready</span><button type="button">Reload</button>';b.querySelector('button').onclick=()=>{try{store.flushAll()}catch(_){}location.reload()};document.body.appendChild(b)}})}
+/* GN_ONEPLAYER update check (Nov 27): the phone's saved copy can be a version behind. When a newer copy has arrived,
+   switch to it by itself on the home screen; anywhere else show the "New version ready" bar. Also checks when the app comes back to the front. */
+(()=>{if(!('caches' in window)||!('serviceWorker' in navigator))return;let busy=false,tries=0,timer=0;
+  const verOf=t=>{const m=t.match(/GN_VER\s*=\s*'(\d+)'/);return m?+m[1]:0};
+  const safe=()=>document.visibilityState==='visible'&&route&&route.screen==='home'&&!ui.modal&&!document.querySelector('.gnsaved')&&!(document.activeElement&&/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName));
+  async function newest(){let v=0;try{for(const k of await caches.keys()){const r=await (await caches.open(k)).match('./');if(r)v=Math.max(v,verOf(await r.text()))}}catch(_){}return v}
+  function bar(){if(document.getElementById('updbar'))return;const b=document.createElement('div');b.id='updbar';b.innerHTML='<span>New version ready</span><button type="button">Reload</button>';b.querySelector('button').onclick=()=>{try{store.flushAll()}catch(_){}location.reload()};document.body.appendChild(b)}
+  async function check(){if(busy)return false;busy=true;try{const v=await newest();if(!(v>+GN_VER))return false;
+      let done=0;try{done=+sessionStorage.getItem('gn-upd')||0}catch(_){}
+      if(safe()&&done!==v){try{sessionStorage.setItem('gn-upd',String(v))}catch(_){}try{store.flushAll()}catch(_){}location.reload()}else bar();return true}finally{busy=false}}
+  function poll(){clearTimeout(timer);if(tries++>30)return;timer=setTimeout(async()=>{if(!(await check()))poll()},tries<10?3000:8000)}
+  window.addEventListener('load',()=>{tries=0;poll()});
+  document.addEventListener('visibilitychange',()=>{if(document.visibilityState!=='visible')return;try{fetch('./',{cache:'no-cache'}).catch(()=>{})}catch(_){}tries=0;poll()});
+})();
+
 function gnBadge(){try{if(!navigator.setAppBadge||!me||practice)return;const n=games.filter(g=>G[g.type]&&g.status!=='done'&&!g.archived&&mmv(g)).length;if(n!==gnBadge.n){gnBadge.n=n;n?navigator.setAppBadge(n):navigator.clearAppBadge()}}catch(_){}}
 function homePrefs(){let f={fav:[],hide:[]};try{f=JSON.parse(localStorage.getItem('gn-home-prefs')||'null')||f}catch(_){}f.fav=f.fav||[];f.hide=f.hide||[];return f}
 function homePrefsSet(f){try{localStorage.setItem('gn-home-prefs',JSON.stringify(f))}catch(_){}}
@@ -22953,12 +22970,13 @@ document.addEventListener('click',async e=>{
     case 'close':ui.rematchFrom=null;closeModal();return;
     case 'opt':{const {k,f,v}=t.dataset;ui.opt[k][f]=t.dataset.num?+v:v;renderModal();return}
     case 'archive':await store.update(t.dataset.id,{archived:true});if(route.id===t.dataset.id){route={screen:'home',id:null};render()}return;
-    case 'switch':if(practice){clearTimeout(pracT);me=other(me);ui.g={};cvDestroy();render();{const g0=cur();if(!(route.screen==='game'&&g0&&G[g0.type]&&G[g0.type].cv))toast('Now playing as '+nameOf(me))}return}openModal(me?'me':'who');return;
+    case 'switch':if(practice){clearTimeout(pracT);me=other(me);ui.g={};cvDestroy();render();{const g0=cur();if(!(route.screen==='game'&&g0&&G[g0.type]&&G[g0.type].cv))toast('Now playing as '+nameOf(me))}return}/* GN_ONEPLAYER: a phone never switches to the other player */if(!me)openModal('who');return;
     case 'practice-on':store.setPractice(true);return;
     case 'practice-off':store.setPractice(false);return;
     case 'nudge':nudgeSend();return;
     case 'who':if(me&&t.dataset.p!==me){closeModal();toast('This phone always plays as '+nm(me)+'.');return}/* GN_OPENPLAY 6 */me=t.dataset.p;try{localStorage.setItem('gn2-me',me);const rr=PPL.rooms.find(x=>x.k===window.GN_ROOM);if(rr){rr.seat=me;pplSave()}}catch(err){}closeModal();ui.g={};cvDestroy();if(route.screen==='settings')route={screen:'home',id:null};render();return;
     case 'names':openModal('names');return;
+    case 'myname-save':{if(!me)return;const v=(($('#nme')||{}).value||'').trim().slice(0,16)||nm(me);names={...names,[me]:v};await store.setNames(names);closeModal();render();return}
     case 'back-who':openModal('who');return;
     case 'names-save':{const n1=$('#n1').value.trim()||'Player 1',n2=$('#n2').value.trim()||'Player 2';names={p1:n1.slice(0,16),p2:n2.slice(0,16)};await store.setNames(names);if(me)closeModal();else openModal('who');render();return}
   }
