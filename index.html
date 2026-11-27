@@ -3944,7 +3944,7 @@ input.wdin.shake{animation:wdshake .4s;border-color:#E02525!important}
 .cpmenu i{display:block;width:17px;height:2.6px;background:#fff;border-radius:2px;box-shadow:0 -5.4px 0 #fff,0 5.4px 0 #fff}
 .cpmenu:active{transform:scale(.92)}
 .cpdim{position:fixed;inset:0;z-index:21;background:rgba(0,0,0,.3);animation:fade .2s ease both}
-.cpcols{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:2px 2px 6px} .cpcl{font:700 .95rem var(--display);margin-right:4px} .cpcol{width:34px;height:34px;border-radius:50%;border:3px solid #fff;box-shadow:0 0 0 1px rgba(0,0,0,.15);padding:0} .cpcol.on{box-shadow:0 0 0 3px #111}
+.cpcols{display:grid;grid-template-columns:auto repeat(4,44px);align-items:center;gap:10px;padding:2px 2px 6px}.cpcols .cpcl{grid-row:span 2}.cpcols .cpcl small{display:block;font-weight:600;font-size:.72rem;opacity:.7;max-width:92px;line-height:1.2}.gp-sheet.cpsheet{max-height:calc(100vh - 56px);max-height:calc(100dvh - 56px)} .cpcl{font:700 .95rem var(--display);margin-right:4px} body.chres-on .cpdone{visibility:hidden}.cpcol{width:44px;height:44px;border-radius:50%;border:3px solid #fff;box-shadow:0 0 0 1px rgba(0,0,0,.15);padding:0} .cpcol.on{box-shadow:0 0 0 3px #111}
 .cpsheet .btn{min-height:48px}
 
 /* --- archery fix --- */
@@ -4940,7 +4940,7 @@ function resultMoment(g){try{if(!g||g.status!=='done'||!(g.winner==='p1'||g.winn
   /* the moment: a beat on the final move, then the card; confetti and a win tap for the winner, a quiet card for the loser */
   setTimeout(()=>{try{if(route.screen==='game'&&route.id&&route.id!==g.id){try{if(pre)pre.remove();pre=null}catch(_){}return}}catch(_){}try{window.__chresSync&&window.__chresSync(o)}catch(_){}try{window.GNH86&&GNH86.figs&&GNH86.figs(o)}catch(_){}document.body.appendChild(o);nf(()=>{try{if(pre)pre.remove();pre=null}catch(_){}try{if(tie){gnSfx('ding');setTimeout(()=>{try{gnFx('coin',{pitch:.84})}catch(_){}},200)}else if(!gnResQuiet(g))gnSfx(mineWon?'win':'lose')}catch(_){}if((mineWon||tie)&&!gnResQuiet(g))nf(()=>{try{gnImpact(tie?'soft':'win')}catch(_){}nf(()=>{try{gnConfetti(tie?50:undefined)}catch(_){}})})});
     setTimeout(()=>{if(o.isConnected)o.classList.add('out');setTimeout(()=>o.remove(),400)},6500)},(G[g.type]&&G[g.type].resBeat!=null)?G[g.type].resBeat:400)}catch(_){}}
-function gnResQuiet(g){try{return !!(g&&G[g.type]&&G[g.type].resQuiet&&G[g.type].resQuiet(g))}catch(_){return false}}
+function gnResQuiet(g){try{const R=g&&window.__gnRQ&&window.__gnRQ[g.type];if(R)return !!R(g)}catch(_){}try{return !!(g&&G[g.type]&&G[g.type].resQuiet&&G[g.type].resQuiet(g))}catch(_){return false}}window.__gnRQok=1;
 const IMG={};function img(p,mood){const c=get(p),k=p+'|'+(mood||'')+'|'+JSON.stringify(c);let e=IMG[k];if(!e){e=IMG[k]=new Image();e.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svgBust(seas(c),mood||'').replace('<svg ','<svg width="264" height="264" '))}return e}
 function drawHead(cx,p,x,y,r,mood){const e=img(p,mood);if(!e.complete||!e.naturalWidth)return false;cx.save();cx.beginPath();cx.arc(x,y,r,0,7);cx.clip();cx.fillStyle='#fff';cx.fill();cx.drawImage(e,x-r,y-r,2*r,2*r);cx.restore();return true}
 function preload(){['p1','p2'].forEach(p=>img(p))}
@@ -5052,7 +5052,7 @@ const RULES={
  hoops:['Make the most baskets','Swipe the ball up at the hoop.','45 seconds a round, two rounds each.','Every basket is 1 point.'],
  tower:['Don’t topple it','On your turn, drag one block out of the tower.','Swipe up to see the higher layers.','If the tower falls on your pull, you lose.'],
  fish:['Collect sets of four','Tap a card to ask them for that rank.','They hand them over, or you Go Fish from the pond.','Four of a kind is a book. Most books wins.'],
- cup:['Sink all their cups','Swipe the ball up toward the cups.','Two throws a turn. Sink both and you get the balls back.','Clear every cup first to win.'],
+ cup:['Sink all their cups','Swipe the ball up toward the cups.','Two throws a turn. Sink both and you get the balls back.','At 6 and 3 cups left, the cups re-rack into a smaller triangle.','Sink their last cup and they get a redemption: they keep throwing until they miss. If they clear your cups too, it goes to overtime with 3 cups each.','Clear every cup first to win.'],
  archery:['Score the most set points','Hold to draw, drag to aim, let go to shoot.','Watch the wind and aim into it.','3 arrows each per set. First to 6 set points wins.'],
  bb:['Three hits knock a kid down','Tap one of your kids to pick them. Tap the snow to walk there.','Press and hold, slide your finger to where the snowball should land, then let go.','On my own: knock down every kid to reach the next level. Live: first to win 2 rounds.'],
  ice:['Don’t drop the penguin','Tap one ice block a turn to knock it out.','Blocks only hold while they touch the frame or each other.','Whoever drops the penguin loses.'],
@@ -10833,11 +10833,11 @@ function cpSim(cups,a,d,v){const P=cpPos(cups.length),nv=(v||0)>=4,n7=(v||0)>=8,
     if(this.nv&&this.land>=0){const a=this.t-this.land,a0=v>=5?.42:.55,a1=v>=5?.18:.25;if(a>a0){this.alpha=Math.max(0,1-(a-a0)/a1);if(this.alpha<=0)this.done=true}}
     if(b.y<-40||this.t>3.2)this.done=true}}}
 /* the swipe: direction aims (the ball comes down on the screen ray the finger drew), length plus release speed set the distance */
-function cpAim(path){if(!path||path.length<2)return null;const a=path[0],z=path[path.length-1],H=CP.H,dx=z.x-a.x,dy=a.y-z.y;if(dy<=.05*H)return null;
+function cpAim(path){if(!path||path.length<2)return null;const a=path[0],z=path[path.length-1],H=CP.H,dy=a.y-z.y;let dx=z.x-a.x;if(dy<=.05*H)return null;{const q6=path.find(p=>a.y-p.y>=.6*dy);if(q6&&a.y-q6.y>0)dx=(dx+(q6.x-a.x)/(a.y-q6.y)*dy)/2}
   /* release speed over the last ~90ms of movement (a finger that pauses before lifting keeps the speed it had) */
   let e=path.length-1;while(e>0&&Math.hypot(path[e].x-z.x,path[e].y-z.y)<.6)e--;const ze=path[Math.min(path.length-1,e+1)];
   let i=e;while(i>0&&ze.t-path[i-1].t<90)i--;const q=path[i],dt=Math.max(16,ze.t-q.t),sp=Math.hypot(ze.x-q.x,ze.y-q.y)/dt*1000/H;
-  const P=Math.hypot(dx,dy)/H+.08*Math.min(sp,4),Z=Math.max(CP.Z0+12,Math.min(CP.TL+16,CP.ZC+(P-CP.P0)*CP.GAIN));
+  const P=(Math.hypot(dx,dy)/H)*(.9+.1*Math.min(1,sp/.5))+.08*Math.min(sp,4),Z=Math.max(CP.Z0+12,Math.min(CP.TL+16,CP.ZC+(P-CP.P0)*CP.GAIN));
   const b=cpProj(0,CP.br,CP.Z0),sy=cpProj(0,CP.CH,Z)[1],k=cpK(Z,CP.CH),sx=b[0]+dx/dy*(b[1]-sy);
   return {X:Math.max(-60,Math.min(60,(sx-50)/k)),Z,P,sp}}
 /* a few px of finger error is a whole row in perspective: depth eases toward the live cups, the landing is drawn a little toward the nearest cup */
@@ -11022,7 +11022,7 @@ const CPK={a:.4,b:.57,c:.7,d:.83,e:1.03,f:1.1,end:1.25};
    hovers 0.13s; drifts left 0.68w in 0.2s leaning 4 degrees left; holds 0.07s; then flung right at ~1w per frame, leaning 11 degrees
    right, rising slightly, gone in 0.13s. The shadow stays on the table until the fling. */
 function cpSinkPose(t,w){const eo=u=>1-Math.pow(1-u,3),io=u=>u<.5?4*u*u*u:1-Math.pow(-2*u+2,3)/2,K=CPK;
-  if(t<K.a)return {up:0,dx:0,sh:1,sc:1,lean:0};
+  if(t<K.a)return {up:0,dx:0,sh:1,sc:t<.16?1-.07*Math.sin(Math.PI*t/.16):1,lean:0};
   if(t<K.b){const u=eo((t-K.a)/(K.b-K.a));return {up:1.4*w*u,dx:0,sh:1,sc:1+.08*u,lean:0}}
   if(t<K.c){const u=io((t-K.b)/(K.c-K.b));return {up:w*(1.4-.4*u),dx:0,sh:1,sc:1.08-.03*u,lean:0}}
   if(t<K.d)return {up:w,dx:0,sh:1,sc:1.05,lean:0};
@@ -11044,7 +11044,7 @@ function cpBan(txt){const W=CPBW[txt]||40;return cpLayer('ban|'+txt,W+4,13,c=>{l
 /* the black "SENT" box with its check mark, and GamePigeon's result box (black, red YOU LOST! / gold YOU WON!) */
 function cpSentBox(){return cpLayer('sentbox',25,7,c=>{rrect(c,0,0,25,7,1.2);c.fillStyle='rgba(0,0,0,.92)';c.fill();c.font='900 2.9px Nunito,"Arial Black",sans-serif';c.textAlign='right';c.textBaseline='middle';c.fillStyle='#fff';c.fillText('SENT',14.2,3.65)})}
 function cpResBox(txt,col){return cpLayer('res|'+txt,43.4,10.4,c=>{rrect(c,0,0,43.4,10.4,1.3);c.fillStyle='#010101';c.fill();let f=3.6;c.font=`900 ${f}px Nunito,"Arial Black",sans-serif`;const m=c.measureText('YOU LOST!').width;if(m>0){f*=20.3/m;c.font=`900 ${f}px Nunito,"Arial Black",sans-serif`}
-  c.textAlign='center';c.textBaseline='middle';c.fillStyle=col;c.fillText(txt,21.7,5.4)})}
+  {const tw=c.measureText(txt).width;if(tw>38){f*=38/tw;c.font=`900 ${f}px Nunito,"Arial Black",sans-serif`}}c.textAlign='center';c.textBaseline='middle';c.fillStyle=col;c.fillText(txt,21.7,5.4)})}
 /* fill every cache this size will need (both cameras, every row, the words) so no frame mid-animation pays for it */
 function cpWarm(cv,g){if(g){const opp=other(me);for(const t of [me,opp])cpHud({...g,turn:t,status:'active'},`hud|${nameOf(me)}|${nameOf(opp)}|${t}|active|${PCOL[me]}`,me,opp)}cpBallSprite();cpGraySprite();
   for(const t of Object.keys(CPBW))cpBan(t);cpCap('SWIPE UP TO THROW','rgba(0,0,0,.5)','#fff');cpSentBox();cpResBox('YOU LOST!','#F23654');cpResBox('YOU WON!','#FFD60A');cpBox('WAITING FOR OPPONENT...')}
@@ -11061,7 +11061,7 @@ function cpHud(g,hk,me,opp,noOpp,glow){return cpLayer(hk,100,25,cx=>{cx.textAlig
         const av=(x,p,lbl)=>{const y=10.2,r=5.5;
         const ag=cx.createRadialGradient(x-2,y-2.2,1,x,y,r);ag.addColorStop(0,'#fff');ag.addColorStop(1,PCOL[p]);cx.fillStyle=ag;cx.beginPath();cx.arc(x,y,r,0,7);cx.fill();
         if(!CH.drawHead(cx,p,x,y,r)){cx.save();cx.beginPath();cx.arc(x,y,r,0,7);cx.clip();cx.fillStyle='rgba(20,20,31,.82)';cx.beginPath();cx.arc(x,y-1.2,2.3,0,7);cx.fill();cx.beginPath();cx.ellipse(x,y+5.4,4.4,3.8,0,0,7);cx.fill();cx.restore()}
-        if(lbl){/* GamePigeon's You: 11 units wide with its outline, light green, dark green outline */cx.font='900 3.9px Nunito,"Arial Black",sans-serif';cx.lineJoin='round';cx.lineWidth=.75;cx.strokeStyle='rgba(30,52,18,.92)';cx.strokeText(lbl,x+.05,18.2);cx.fillStyle='#C2D9A6';cx.fillText(lbl,x+.05,18.2)}};
+        if(lbl){/* GamePigeon's You: 11 units wide with its outline, light green, dark green outline */cx.font='900 3.9px Nunito,"Arial Black",sans-serif';cx.lineJoin='round';cx.lineWidth=.75;cx.strokeStyle='rgba(30,52,18,.92)';cx.strokeText(lbl,x+.05,18.9);cx.fillStyle='#C2D9A6';cx.fillText(lbl,x+.05,18.9)}};
         av(7.92,me,'You');if(!noOpp)av(92.6,opp,'')})}
 function cpFit(g){const host=document.getElementById('cv-host'),wrap=document.querySelector('.wrap'),spec=G.cup.cv;if(!host||!wrap)return;host.style.maxWidth='';
   {const b=document.querySelector('.cpmenu'),s=(host.clientWidth||340)/100;if(b){const _sz=Math.max(44,Math.round(7.54*s));b.style.width=b.style.height=_sz+'px';b.style.left=Math.round(21.35*s-_sz/2)+'px';b.style.top=Math.round(10.0*s-_sz/2)+'px'}}
@@ -11070,9 +11070,12 @@ function cpFit(g){const host=document.getElementById('cv-host'),wrap=document.qu
   /* the table always runs to the very bottom of the screen (under the home indicator), like GamePigeon; Play again floats over it when the game is over */
   if(stage){const pad=(parseFloat(getComputedStyle(wrap).paddingBottom)||0)+(parseFloat(getComputedStyle(document.documentElement).paddingBottom)||0);stage.style.marginBottom=(-pad)+'px';avail=vh-host.getBoundingClientRect().top}
   else{if(stage)stage.style.marginBottom='';const oth=wrap.offsetHeight-host.offsetHeight;avail=vh-oth-1}
-  const H=Math.max(105,Math.min(212,Math.floor(avail/w*100*4)/4));
-  if(Math.abs(H-spec.H)>.2){spec.H=H;cpSetH(H);host.style.aspectRatio=`100 / ${H}`;if(CV.cur){CV.cur.st.bg=null;cvMount(g,spec)}}}
-G.cup={title:'Cup Pong',blurb:'Two throws a turn. Sink all their cups first.',
+  const H=Math.max(105,Math.min(212,Math.floor(avail/w*100*100)/100));
+  const vk=innerWidth+'x'+Math.round(vh);if(Math.abs(H-spec.H)<=.2){spec._pH=null;spec._vk=vk}
+  if(Math.abs(H-spec.H)>.2){const fresh=!(CV.cur&&CV.cur.st&&CV.cur.st.bgN)||spec._vk!==vk,now=performance.now();
+    if(!fresh&&!(spec._pH===H&&now-spec._pT>=350)){if(spec._pH!==H){spec._pH=H;spec._pT=now}clearTimeout(spec._pTm);spec._pTm=setTimeout(()=>{const g2=cur();if(g2&&g2.type==='cup')cpFit(g2)},380);return}
+    spec._vk=vk;spec._pH=null;spec.H=H;cpSetH(H);host.style.aspectRatio=`100 / ${H}`;if(CV.cur){CV.cur.st.bg=null;cvMount(g,spec)}}}
+G.cup={resQuiet:g=>!practice,_rq:(()=>{try{window.__gnRQ=Object.assign(window.__gnRQ||{},{cup:g=>!practice})}catch(_){}return 1})(),holdDing:nc=>route.screen==='game'&&route.id===nc.id,_cro:(()=>{try{const nv=navigator,v0=nv.vibrate&&nv.vibrate.bind(nv);if(v0&&!nv.__gnv){let lt=0;nv.vibrate=x=>{const t=performance.now();if(Array.isArray(x)&&t-lt<80)return true;if(Array.isArray(x))lt=t;return v0(x)};nv.__gnv=1}}catch(_){}try{const B=document.body,f=()=>B.classList.toggle('chres-on',!!B.querySelector(':scope>.chres'));new MutationObserver(f).observe(B,{childList:true});f()}catch(_){}return 1})(),ownSent:true,fastRes:true,resBeat:60,title:'Cup Pong',blurb:'Two throws a turn. Sink all their cups first.',
   /* GamePigeon ease of play: no setup sheet. The tile tap starts the game; the sheet only shows a line while the table is set up. */
   modal(){if(!this._auto){this._auto=true;setTimeout(async()=>{try{closeModal();await this.start()}finally{this._auto=false}},0)}return `<h2>Cup Pong</h2><p class="sub">Setting up the table…</p>`},
   async start(){await create(base('cup',{cups:{p1:cpRack(),p2:cpRack()},turn:me,throws:2,made:0,tn:1,redeem:null,replay:null,msg:''}))},
@@ -11081,22 +11084,23 @@ G.cup={title:'Cup Pong',blurb:'Two throws a turn. Sink all their cups first.',
   busy(){const cv=CV.cur,st=cv&&cv.st;return !!(st&&(st.sim||st.busy||st.sink||st.slide||st.play||st.pendingSim||(st.queue&&st.queue.length)||st.sent!=null||st.ban||st.trans))},
   sub(g){const c=g.cups||{},m=g.status==='active'&&g.turn===me&&g.msg&&g.msg.indexOf(nameOf(other(me)))===0?' · '+g.msg:'';return g.redeem===me&&g.turn===me?'Redemption! Clear their cups':`You ${cpLeft(c[me])} cups · ${nameOf(other(me))} ${cpLeft(c[other(me)])}${m}`},
   /* a finished game keeps the full table (GamePigeon shows the result over the table); Play again fades in at the bottom once the result box is up */
-  view(g){return `<div class="cpstage"><div class="cvwrap cupwrap" id="cv-host"></div><button class="cpmenu" data-act="cup-menu" aria-label="Menu"><i></i></button>${g.status==='done'?`<div class="cpdone">${doneRow(g)}</div>`:''}</div>`},
+  view(g){return `<div class="cpstage"><div class="cvwrap cupwrap" id="cv-host"></div><button class="cpmenu" data-act="cup-menu" aria-label="Menu"><i></i></button>${g.status==='done'?`<div class="cpdone"><div class="row"><button class="btn" data-act="cup-again">Play again</button></div></div>`:''}</div>`},
   after(g){cpFit(g);requestAnimationFrame(()=>{const g2=cur();if(g2&&g2.type==='cup')cpFit(g2)});setTimeout(()=>{const g2=cur();if(g2&&g2.type==='cup')cpFit(g2)},120);setTimeout(()=>{const g2=cur();if(g2&&g2.type==='cup')cpFit(g2)},450)},
   async resolve(g,shot,sim){const opp=other(me),before=(g.cups||{})[opp]||cpRack();let after=before.slice();if(sim.made>=0)after[sim.made]=0;
     const made=(g.made||0)+(sim.made>=0?1:0),th=(g.throws==null?2:g.throws)-1,tn=g.tn||1,red=g.redeem||null;
-    const prev=g.replay&&g.replay.by===me&&g.replay.tn===tn?g.replay.shots||[]:[];
+    const prev=(g.replay&&g.replay.by===me&&g.replay.tn===tn?g.replay.shots||[]:[]).filter(x=>x.id!==shot.id);
     const left=cpLeft(after);if(sim.made>=0&&left)after=cpRerack(after);
     const patch={cups:{[opp]:after},replay:{by:me,tn,shots:[...prev,shot].slice(-8)}};let ev=null;
     if(!left){if(red===me){patch.cups={p1:[1,1,1],p2:[1,1,1]};patch.redeem=null;patch.turn=opp;patch.throws=2;patch.made=0;patch.tn=tn+1;patch.msg='Redemption! Overtime, 3 cups each';ev='ot'}
       else{patch.redeem=opp;patch.turn=opp;patch.throws=2;patch.made=0;patch.tn=tn+1;patch.msg=`${nameOf(opp)} gets a redemption turn`;ev='sent'}}
+    else if(red===me&&sim.made<0){patch.status='done';patch.winner=opp;patch.redeem=null;patch.msg=`${nameOf(me)} missed the redemption`;ev='done'}
     else if(th<=0){if(made>=2){patch.throws=2;patch.made=0;patch.msg='Balls back';ev='bb'}
       else if(red===me){patch.status='done';patch.winner=opp;patch.redeem=null;patch.msg=`${nameOf(me)} missed the redemption`;ev='done'}
       else{patch.throws=2;patch.made=0;patch.turn=opp;patch.tn=tn+1;patch.msg=made?`${nameOf(me)} sank ${made===1?'a cup':made+' cups'}`:`${nameOf(me)} missed`;ev='sent'}}
     else{patch.throws=th;patch.made=made}
-    await upd(g,patch);return {ev,rerack:after.length!==before.length}},
+    await cpSave(g,patch);return {ev,rerack:after.length!==before.length}},
   cv:{W:100,H:175,
-    init(cv,g){cv.stMe=me;cpSetH(this.H);cpSeenLoad(g.id);cv.st={sim:null,queue:[],play:null,cups:null,sink:null,ban:null,path:null,rest:0,busy:false,gid:g.id,tnSeen:null,clock:0,slide:null,ripple:null,why:'',trans:null,near:null,nslide:null,over:g.status==='done'?9:0,ballT:9};
+    init(cv,g){cv.stMe=me;cpSetH(this.H);cpSeenLoad(g.id);cv.st={react:null,overFx:0,sim:null,queue:[],play:null,cups:null,sink:null,ban:null,path:null,rest:0,busy:false,gid:g.id,tnSeen:null,clock:0,slide:null,ripple:null,why:'',trans:null,near:null,nslide:null,over:g.status==='done'?9:0,ballT:9};{const o=this.__old||{};for(const k of ['bgN','bgW','bgH','bgR','bgRW','bgRH','warm','rC','rk','shL','shK'])if(o[k]!=null)cv.st[k]=o[k]}this.__old=cv.st;
       if(!cv.cpL){cv.cpL=true;const canvas=cv.canvas,self=this;
         canvas.addEventListener('pointerdown',e=>{const st=cv.st;if(!st||!st.path)return;st.pid=e.pointerId;st.rect=canvas.getBoundingClientRect()});
         const pt=(st,e)=>{const r=st.rect;return {x:(e.clientX-r.left)/cv.s,y:(e.clientY-r.top)/cv.s,t:performance.now()}};
@@ -11117,7 +11121,7 @@ G.cup={title:'Cup Pong',blurb:'Two throws a turn. Sink all their cups first.',
     setCups(st,arr){const old=st.cups;arr=arr.slice();const sl=this.mkSlide(old,arr);if(sl)st.slide=sl;else if(old&&old.length!==arr.length)st.slide=null;st.cups=arr},
     next(cv,g){const st=cv.st;
       /* the other player's throws replay on GamePigeon's replay camera (behind your cups): 0.4s before each ball */
-      if(st.queue.length){const s=st.queue.shift();st.play=s;st.keep=null;st.trans=null;st.near=null;cpSeenAdd(g.id,s.id);this.setCups(st,s.from||cpRack());st.rest=(st.play&&st.playN?.4:.42)+(st.slide?.35:0);st.playN=(st.playN||0)+1;st.pendingSim=cpSim(st.cups,s.a,s.d,s.v);st.seenTop=false;return}
+      if(st.queue.length){const s=st.queue.shift();st.play=s;st.keep=null;st.trans=null;st.near=null;cpSeenAdd(g.id,s.id);this.setCups(st,s.from||cpRack());st.rest=(st.queue.length?.22:st.play&&st.playN?.26:.42)+(st.slide?.35:0);st.playN=(st.playN||0)+1;st.pendingSim=cpSim(st.cups,s.a,s.d,s.v);st.seenTop=false;return}
       const was=st.play;if(st.play)st.why='';st.play=null;st.playN=0;
       if(was&&g.status==='active'&&g.turn===me){/* GamePigeon: 0.77s more on the replay view, then the camera glides forward into your throwing view in 0.8s */
         const mine=((g.cups||{})[me]||cpRack()).slice();st.nslide=this.mkSlide(st.cups,mine);st.near=mine;st.slide=null;st.cups=this.target(g).slice();st.trans={t:-.77,ban:null}}
@@ -11128,42 +11132,44 @@ G.cup={title:'Cup Pong',blurb:'Two throws a turn. Sink all their cups first.',
         else if(g.status==='active'&&g.msg&&/^Redemption! Overtime/.test(g.msg)&&!first)ban=['OVERTIME',1.4];
         if(ban){if(st.trans)st.trans.ban=ban;else this.banner(cv,ban[0],null,null,ban[1])}}},
     step(cv,dt){const st=cv.st;st.clock+=dt;
-      if(st.rest>0){st.rest-=dt;if(st.rest<=0&&st.pendingSim){st.sim=st.pendingSim;st.pendingSim=null}}
+      if(st.rest>0){st.rest-=dt;if(st.rest<=0&&st.pendingSim){st.sim=st.pendingSim;st.pendingSim=null;try{gnFx('whoosh',{vol:.3})}catch(_){}}}
       if(st.slide){st.slide.t+=dt;if(st.slide.t>.2)st.slide=null}
       if(st.nslide){st.nslide.t+=dt;if(st.nslide.t>.2)st.nslide=null}
-      if(st.trans){const t0=st.trans.t;st.trans.t+=dt;if(t0<0&&st.trans.t>=0&&st.trans.ban)this.banner(cv,st.trans.ban[0],null,null,st.trans.ban[1]);if(st.trans.t>=.8){st.trans=null;st.near=null}}
-      if(st.sink){st.sink.t+=dt;if(st.sink.t>CPK.end){if(st.cups&&st.sink.n===st.cups.length)st.cups[st.sink.i]=0;st.sink=null}}
+      if(st.trans){const t0=st.trans.t;st.trans.t+=dt;if(t0<0&&st.trans.t>=0&&!practice){try{gnSfx('ding')}catch(_){}}if(t0<0&&st.trans.t>=0&&st.trans.ban)this.banner(cv,st.trans.ban[0],null,null,st.trans.ban[1]);if(st.trans.t>=.8){st.trans=null;st.near=null}}
+      if(st.sink){const s0=st.sink.t;st.sink.t+=dt;if(s0<CPK.f&&st.sink.t>=CPK.f){try{gnFx('swish',{vol:.28})}catch(_){}}if(st.sink.t>CPK.end){if(st.cups&&st.sink.n===st.cups.length)st.cups[st.sink.i]=0;st.sink=null}}
       if(st.ban){st.ban.t+=dt;if(st.ban.t>st.ban.dur)st.ban=null}
+      if(st.react){st.react.t+=dt;if(st.react.t>1.5)st.react=null}
       st.ballT=(st.ballT||0)+dt;
       if(st.sent!=null){st.sent+=dt;if(st.sent>1.45)st.sent=null}
-      {const g=cur();if(g&&g.type==='cup'&&g.status==='done'){if(!st.sim&&!st.busy&&!st.play&&!st.queue.length&&!st.pendingSim&&!st.sink)st.over=(st.over||0)+dt}else st.over=0}
-      const sim=st.sim;if(!sim)return;const r0=sim.rims||0,bb0=sim.bounces||0;sim.step(dt);if((sim.rims||0)>r0){try{gnFx('tick',{pitch:1.3});gnFx('plip',{vol:.5})}catch(_){}}if((sim.bounces||0)>bb0){try{gnFx('tok',{pitch:.72,vol:.45})}catch(_){}}
+      {const g=cur();if(g&&g.type==='cup'&&g.status==='done'){if(!st.sim&&!st.busy&&!st.play&&!st.queue.length&&!st.pendingSim&&!st.sink){const o0=st.over||0;st.over=o0+dt;if(o0<.35&&st.over>=.35&&!st.overFx){st.overFx=1;GNR.winBeat(g);if(!practice&&window.__gnRQok&&g.winner&&g.winner!=='tie'){const w=g.winner===me;setTimeout(()=>{try{gnSfx(w?'win':'lose');if(w)gnConfetti(70)}catch(_){}},120)}}}}else{st.over=0;st.overFx=0}}
+      const sim=st.sim;if(!sim)return;const r0=sim.rims||0,bb0=sim.bounces||0;{sim._a=(sim._a||0)+dt*1.08;const n=Math.floor(sim._a*240+1e-6);sim._a-=n/240;if(n)sim.step(n/240)}if((sim.rims||0)>r0){try{gnFx('tick',{pitch:1.3});gnFx('plip',{vol:.5})}catch(_){}}if((sim.bounces||0)>bb0){try{gnFx('tok',{pitch:.72,vol:.45})}catch(_){}}
       if(sim.done){st.sim=null;const ok=sim.made>=0;
-        if(ok){st.sink={i:sim.made,t:0,n:sim.cups.length};try{navigator.vibrate&&navigator.vibrate(24);gnFx('splash')}catch(_){}}
+        if(!ok){try{gnFx('tok',{pitch:.55,vol:.3})}catch(_){}st.react={p:st.play&&st.play.by?st.play.by:me,t:0,miss:1}}if(ok){try{if(!GN_RM&&cv.canvas.animate)cv.canvas.animate([{transform:'translate(0,0)'},{transform:'translate(-2px,1.5px) scale(1.015)'},{transform:'translate(2px,-1px) scale(1.015)'},{transform:'translate(-1px,.5px) scale(1.01)'},{transform:'translate(0,0)'}],{duration:180,easing:'ease-out'});setTimeout(()=>{try{gnFx('coin',{pitch:1.25,vol:.28})}catch(_){}},60)}catch(_){}st.react={p:st.play&&st.play.by?st.play.by:me,t:0};st.sink={i:sim.made,t:0,n:sim.cups.length};try{if(!st.play)navigator.vibrate&&navigator.vibrate(24);gnFx('splash')}catch(_){}}
         /* a make: the cup is picked up and thrown off in ~1.2s (GamePigeon), then the turn moves on */
-        const wait=ok?1260:120;
-        if(st.play){st.busy=true;setTimeout(()=>{st.busy=false;const gg=cur();if(gg&&gg.id===st.gid&&CV.cur===cv){if(st.sink){st.cups[st.sink.i]=0;st.sink=null}this.next(cv,gg)}},wait);return}
+        const wait=ok?1230:(()=>{const gx=cur();return gx&&!st.play&&((gx.throws==null?2:gx.throws)<=1||gx.redeem===me)?500:120})();/* cup10 */if(ok&&!st.play){const gx=cur();if(gx&&gx.id===st.gid){const th=(gx.throws==null?2:gx.throws)-1,cs=((gx.cups||{})[other(me)]||cpRack()).map((v,i)=>i===sim.made?0:v);if(gx.redeem!==me&&((th<=0&&!(gx.made||0))||cpLeft(cs)===0)){st.sentE=1;setTimeout(()=>{if(CV.cur===cv&&st.sent==null&&st.sentE){st.sent=0;try{gnFx('pop',{pitch:1.15,vol:.35});navigator.vibrate&&navigator.vibrate(10)}catch(_){}}},500)}}}
+        if(st.play){st.busy=true;let bbR=false;try{const gx=cur(),sh=gx&&gx.replay&&gx.replay.shots||[],k=sh.findIndex(x=>x.id===st.play.id);if(ok&&k>0&&sh[k].n===1&&sh[k].mk&&sh[k-1].mk&&sh[k-1].n===2)bbR=cpLeft(st.cups.map((v,i)=>i===sim.made?0:v))>0}catch(_){}setTimeout(()=>{st.busy=false;const gg=cur();if(gg&&gg.id===st.gid&&CV.cur===cv){if(st.sink){st.cups[st.sink.i]=0;st.sink=null}this.next(cv,gg);if(bbR){this.banner(cv,'Balls Back',null,null,1.27)}}},st.queue.length?Math.max(120,wait-350):wait);return}
         const g=cur();if(!g||g.id!==st.gid)return;
         st.busy=true;const shot=st.myShot;st.myShot=null;
         setTimeout(async()=>{const gg=cur();let r=null;if(gg&&gg.id===st.gid)r=await G.cup.resolve(gg,shot,sim);st.busy=false;if(st.sink){st.cups[st.sink.i]=0;st.sink=null}
-          st.ballT=0;if(r){if(r.ev==='bb')this.banner(cv,'Balls Back',null,null,1.27);else if(r.ev==='ot')this.banner(cv,'OVERTIME',null,null,1.4);else if(r.ev==='sent'){st.sent=0;const g3=cur();st.keep=g3&&g3.cups?(g3.cups[other(me)]||null):null}}
+          st.ballT=0;if(r){if(r.ev==='bb')this.banner(cv,'Balls Back',null,null,1.27);else if(r.ev==='ot')this.banner(cv,'OVERTIME',null,null,1.4);else if(r.ev==='sent'){if(st.sentE&&st.sent!=null)st.sentE=0;else{st.sentE=0;st.sent=0;try{gnFx('pop',{pitch:1.15,vol:.35});navigator.vibrate&&navigator.vibrate(10)}catch(_){}}const g3=cur();st.keep=g3&&g3.cups?(g3.cups[other(me)]||null):null;if(!practice&&g3&&g3.status==='active'&&g3.redeem&&g3.redeem!==me){const id=g3.id;setTimeout(()=>{const g4=cur();if(g4&&g4.id===id&&g4.status==='active'&&g4.redeem&&g4.redeem!==me&&CV.cur===cv&&!st.play&&!st.queue.length)this.banner(cv,'REDEMPTION',null,null,1.6)},1450)}}}
           const g2=cur();if(g2&&g2.id===st.gid&&CV.cur===cv){st.tnSeen=g2.tn+'/'+g2.turn+'/'+g2.status;this.next(cv,g2)}},wait)}},
-    canThrow(cv,g){const st=cv.st;return g&&g.type==='cup'&&g.status==='active'&&g.turn===me&&!st.sim&&!st.busy&&!st.play&&!st.queue.length&&!st.pendingSim&&!st.sink&&!st.slide&&!st.trans&&st.ballT>=.47},
+    canThrow(cv,g){const st=cv.st;return g&&g.type==='cup'&&g.status==='active'&&g.turn===me&&!st.sim&&!st.busy&&!st.play&&!st.queue.length&&!st.pendingSim&&!st.sink&&!st.slide&&!st.trans&&st.ballT>=.3&&!(st.ban&&st.ban.txt==='REDEMPTION'&&st.ban.t<st.ban.dur-.15)},
     /* the gesture lives on window listeners (see init) so a re-render or a lost capture never drops it */
     down(cv,p,g){if(!this.canThrow(cv,g))return;if(p.y>.5*CP.H)cv.st.path=[p]},
     move(){},up(){},
     finish(cv,path,g){const st=cv.st;if(!path||path.length<2||!this.canThrow(cv,g))return;const r=cpAim(path);if(!r)return;
       const as=cpAssist(st.cups||this.target(g),r.X,r.Z);st.lastIn={raw:r,as};cpHintDone();this.throwAt(cv,as.X,Math.max(CP.Z0+12,Math.min(CP.TL+16,as.Z)))},
-    throwAt(cv,X,d){const st=cv.st;st.lastX=+X.toFixed(1);X=+Math.max(-60,Math.min(60,X)).toFixed(2);d=+d.toFixed(1);st.myShot={id:shotId(),a:X,d,v:9,from:st.cups.slice()};cpSeenAdd(st.gid,st.myShot.id);try{gnFx('whoosh',{vol:.3})}catch(_){}st.sim=cpSim(st.cups,X,d,9)},
+    throwAt(cv,X,d){const st=cv.st;st.lastX=+X.toFixed(1);X=+Math.max(-60,Math.min(60,X)).toFixed(2);d=+d.toFixed(1);st.myShot={id:shotId(),a:X,d,v:9,from:st.cups.slice()};try{const s2=cpSim(st.cups,X,d,9);let n=0;while(!s2.done&&n++<4000)s2.sub(1/240);st.preSk=s2.made>=0?s2.made:null;st.myShot.mk=st.preSk!=null?1:0;const gq=cur();st.myShot.n=gq&&gq.throws!=null?gq.throws:2}catch(_){st.preSk=null}st.rPdone=0;cpSeenAdd(st.gid,st.myShot.id);if(!practice&&store.db){const gq=cur();if(gq&&gq.id===st.gid){const tn=gq.tn||1,pv=gq.replay&&gq.replay.by===me&&gq.replay.tn===tn?(gq.replay.shots||[]):[];try{const pr=store.update(gq.id,{replay:{by:me,tn,shots:[...pv.filter(x=>x.id!==st.myShot.id),st.myShot].slice(-8)}});pr&&pr.catch&&pr.catch(()=>{})}catch(_){}}}try{gnFx('whoosh',{vol:.3});navigator.vibrate&&navigator.vibrate(6)}catch(_){}st.sim=cpSim(st.cups,X,d,9)},
     /* rack positions with a re-rack slide applied (slide.t below 0 is the wait before it starts) */
     slid(n,sl){return cpPos(n).map((q,i)=>{if(sl&&sl.from[i]){const u=Math.max(0,Math.min(1,sl.t/.2)),e=1-Math.pow(1-u,3),f=sl.from[i];return [f[0]+(q[0]-f[0])*e,f[1]+(q[1]-f[1])*e]}return q})},
     /* shadows of many cups as one layer, so overlaps do not double up */
-    shadows(cv,c,list){const st=cv.st,L=st.shL||(st.shL=document.createElement('canvas'));if(L.width!==cv.canvas.width||L.height!==cv.canvas.height){L.width=cv.canvas.width;L.height=cv.canvas.height;st.shK=null}
+    shadows(cv,c,list){if(cv.st&&cv.st.trans&&cv.st.trans.t>=0){c.save();c.globalAlpha=.3;c.fillStyle='#000';c.beginPath();for(const [X,Z] of list){const pts=cpCupShadow(X,Z);c.moveTo(pts[0][0],pts[0][1]);for(let i=1;i<pts.length;i++)c.lineTo(pts[i][0],pts[i][1]);c.closePath()}c.fill('nonzero');c.restore();return}const st=cv.st,L=st.shL||(st.shL=document.createElement('canvas'));if(L.width!==cv.canvas.width||L.height!==cv.canvas.height){L.width=cv.canvas.width;L.height=cv.canvas.height;st.shK=null}
       /* the blurred layer is only repainted when the cups move (a rack slide or a lifted cup); otherwise the cached layer is composited */
       const key=list.map(q=>q[0].toFixed(1)+','+q[1].toFixed(1)).join(';')+'|'+CP.Dc.toFixed(2)+'|'+CP.H;
+      if(st.shK!==key&&st.shP!==key){st.shP=key;c.save();c.globalAlpha=.3;c.fillStyle='#000';c.beginPath();for(const [X,Z] of list){const pts=cpCupShadow(X,Z);c.moveTo(pts[0][0],pts[0][1]);for(let i=1;i<pts.length;i++)c.lineTo(pts[i][0],pts[i][1]);c.closePath()}c.fill('nonzero');c.restore();return}
       if(st.shK!==key){const x=L.getContext('2d');if(!x)return;x.setTransform(1,0,0,1,0,0);x.clearRect(0,0,L.width,L.height);x.setTransform(cv.dpr*cv.s,0,0,cv.dpr*cv.s,0,0);
         /* GamePigeon's cup shadows have soft edges (~0.7 units): drawn far off-canvas with a blurred shadow pulled back on */
-        x.fillStyle='#000';x.shadowColor='#000';x.shadowBlur=.7*cv.dpr*cv.s;x.shadowOffsetX=4000*cv.dpr*cv.s;x.translate(-4000,0);for(const [X,Z] of list){cpPath(x,cpCupShadow(X,Z));x.fill()}x.translate(4000,0);x.shadowColor='rgba(0,0,0,0)';x.shadowBlur=0;x.shadowOffsetX=0;st.shK=key}
+        x.fillStyle='#000';x.shadowColor='#000';x.shadowBlur=.7*cv.dpr*cv.s;x.shadowOffsetX=4000*cv.dpr*cv.s;x.translate(-4000,0);x.beginPath();for(const [X,Z] of list){const pts=cpCupShadow(X,Z);x.moveTo(pts[0][0],pts[0][1]);for(let i=1;i<pts.length;i++)x.lineTo(pts[i][0],pts[i][1]);x.closePath()}x.fill('nonzero');x.translate(4000,0);x.shadowColor='rgba(0,0,0,0)';x.shadowBlur=0;x.shadowOffsetX=0;st.shK=key}
       c.save();c.setTransform(1,0,0,1,0,0);c.globalAlpha=.32;c.drawImage(L,0,0);c.restore();c.setTransform(cv.dpr*cv.s,0,0,cv.dpr*cv.s,0,0)},
     /* the replay view and the glide into the throwing view: one 3D scene in your own world, both racks */
     draw3(cv,c,g,rep){const st=cv.st,opp=other(me),cc=g.cups||{},H=this.H,bw=Math.round(100*cv.s*cv.dpr);
@@ -11210,10 +11216,16 @@ G.cup={title:'Cup Pong',blurb:'Two throws a turn. Sink all their cups first.',
         cups.map((v,i)=>i).filter(i=>cups[i]&&i!==skip).sort((p,q)=>P[q][1]-P[p][1]).forEach(i=>cpCup(ctx,P[i][0],P[i][1],0,null,true,col))};
       const live=cups.map((v,i)=>v?P[i][1]:1e9),minZ=Math.min(...live),sk=st.sink&&st.sink.n===cups.length?st.sink.i:-1;
       const fast=!st.slide&&(!b||(!inCup&&b.z<minZ-CP.R-CP.br-.5));
-      if(fast){const key=[cups.join(''),col,sk,cv.canvas.width,cv.canvas.height,CP.H].join('|');
-        if(st.rk!==key){const R2=st.rC||(st.rC=document.createElement('canvas'));R2.width=cv.canvas.width;R2.height=cv.canvas.height;const rx=R2.getContext('2d');if(rx){rx.setTransform(cv.dpr*cv.s,0,0,cv.dpr*cv.s,0,0);drawRack(rx,sk)}st.rk=key}
-        c.save();c.setTransform(1,0,0,1,0,0);c.drawImage(st.rC,0,0);c.restore();c.setTransform(cv.dpr*cv.s,0,0,cv.dpr*cv.s,0,0);
-        if(sk>=0)cpSinkDraw(c,P[sk][0],P[sk][1],st.sink.t,col);
+      if(fast){const key=[cups.map((v,i)=>v&&i!==sk?1:0).join(''),col,cv.canvas.width,cv.canvas.height,CP.H].join('|');
+        if(st.rk!==key&&st.rP&&st.rPk===key){const t0=st.rC;st.rC=st.rP;st.rP=t0;st.rPk=null;st.rk=key}
+        let liveR=false;if(st.rk!==key&&st.rkP!==key){st.rkP=key;liveR=true;drawRack(c,sk)}else if(st.rk!==key){const R2=st.rC||(st.rC=document.createElement('canvas'));R2.width=cv.canvas.width;R2.height=cv.canvas.height;const rx=R2.getContext('2d');if(rx){rx.setTransform(cv.dpr*cv.s,0,0,cv.dpr*cv.s,0,0);drawRack(rx,sk)}st.rk=key}
+        if(!liveR){c.save();c.setTransform(1,0,0,1,0,0);c.drawImage(st.rC,0,0);c.restore();}c.setTransform(cv.dpr*cv.s,0,0,cv.dpr*cv.s,0,0);
+        if(sk<0&&sim&&st.preSk!=null&&st.rPdone<99&&sim.t>.05&&cups[st.preSk]){/* a little per frame: shadows first, then two cups a frame, far to near */const ps=st.preSk;
+          if(!st.rPdone){st.rPdone=1;st.rPk=null;const R3=st.rP||(st.rP=document.createElement('canvas'));R3.width=cv.canvas.width;R3.height=cv.canvas.height;st.rJob={k2:[cups.map((v,i)=>v&&i!==ps?1:0).join(''),col,cv.canvas.width,cv.canvas.height,CP.H].join('|'),ord:cups.map((v,i)=>i).filter(i=>cups[i]&&i!==ps).sort((p,q)=>P[q][1]-P[p][1]),i:0}}
+          const J=st.rJob,rx=st.rP.getContext('2d');if(J&&rx){rx.setTransform(cv.dpr*cv.s,0,0,cv.dpr*cv.s,0,0);
+            if(st.rPdone===1){this.shadows(cv,rx,cups.map((v,i)=>v&&i!==ps?P[i]:null).filter(Boolean));st.rPdone=2}
+            else{for(let n=0;n<2&&J.i<J.ord.length;n++,J.i++){const i=J.ord[J.i];cpCup(rx,P[i][0],P[i][1],0,null,true,col)}if(J.i>=J.ord.length){st.rPk=J.k2;st.rPdone=99;st.rJob=null}}}}
+        if(sk>=0){cpSinkDraw(c,P[sk][0],P[sk][1],st.sink.t,col);/* 14. while the made cup sits and starts to rise it is behind the cups nearer the camera */if(st.sink.t<CPK.b)cups.map((v,i)=>i).filter(i=>cups[i]&&i!==sk&&P[i][1]<P[sk][1]-.01).sort((p,q)=>P[q][1]-P[p][1]).forEach(i=>cpCup(c,P[i][0],P[i][1],0,null,true,col))}
         if(b&&!inCup){if(Math.abs(b.x)<=CP.TW&&b.z>=CP.ZN&&b.z<=CP.TL&&b.y>-1)cpBallShadow(c,b.x,Math.max(0,b.y),b.z,.5*sim.alpha);if(!(b.z>CP.TL&&b.y<0))cpBall(c,b.x,b.y,b.z,sim.alpha)}}
       else{
         this.shadows(cv,c,cups.map((v,i)=>v&&i!==sk?P[i]:null).filter(Boolean));
@@ -11226,7 +11238,7 @@ G.cup={title:'Cup Pong',blurb:'Two throws a turn. Sink all their cups first.',
           if(inCup&&sim.made===i){c.save();c.beginPath();c.ellipse(rim.tx,rim.ty,rim.rx,rim.ry*1.05,0,0,Math.PI*2);c.clip();cpBall(c,b.x,b.y,b.z);c.restore()}}}
       myTurn=g.status==='active'&&g.turn===me;const th=g.throws==null?2:g.throws;idle=myTurn&&!sim&&!st.busy&&!st.sink&&!st.slide;
       /* GamePigeon: the next ball pops in at its spot 0.47s after the made cup is gone (or the miss has rolled off) */
-      if(idle&&st.ballT>=.47){const k=Math.min(1,(st.ballT-.47)/.07),p=cpProj(0,CP.br,CP.Z0);cpBallShadow(c,0,CP.br,CP.Z0,.5*k);c.save();c.translate(p[0],p[1]);c.scale(k,k);c.translate(-p[0],-p[1]);cpBall(c,0,CP.br,CP.Z0);c.restore()}
+      if(idle&&st.ballT>=.3){const k0=Math.min(1,(st.ballT-.3)/.07),p=cpProj(0,CP.br,CP.Z0);let k=k0,ox=0,oy=0;{const d=st.path&&st.path.length?st.path:null,tg=d?1:0;st.grab=(st.grab||0)+(tg-(st.grab||0))*Math.min(1,(st.clock-(st.grabT||st.clock))*25+.35);st.grabT=st.clock;const q=st.grab;if(d){const a=d[0],b=d[d.length-1],dx=b.x-a.x,dy=b.y-a.y,L=Math.hypot(dx,dy)||1,m=Math.min(7,L*.16);st.gox=dx/L*m;st.goy=dy/L*m}ox=(st.gox||0)*q;oy=(st.goy||0)*q;k=k0*(1+.12*q)}cpBallShadow(c,0,CP.br,CP.Z0,.5*k0);c.save();c.translate(p[0]+ox,p[1]+oy);c.scale(k,k);c.translate(-p[0],-p[1]);cpBall(c,0,CP.br,CP.Z0);c.restore()}
       if(myTurn&&th===2&&!(sim&&!st.busy)){/* the spare ball waits on the table at the left edge, grey (measured: centre 4.15,171.3) */cpBallShadow(c,-20.1,CP.br,-12.9,.5);cpBall(c,-20.1,CP.br,-12.9,null,true)}
       }
       const waitBox=watching&&!rep&&!glide&&!sim&&!st.busy&&!st.ban&&!(st.rest>0)&&!st.sink&&st.sent==null;
@@ -11236,10 +11248,10 @@ G.cup={title:'Cup Pong',blurb:'Two throws a turn. Sink all their cups first.',
       /* HUD: avatars, counts, capsules (all cached layers) */
       const glow=over&&g.winner&&g.winner!=='tie'?g.winner:null,hk=`hud|${nameOf(me)}|${nameOf(opp)}|${g.turn}|${g.status}|${PCOL[me]}|${glow||''}`;
       const hud=cpHud(g,hk+(waitBox?'|w':''),me,opp,waitBox,glow);
-      c.drawImage(hud.cv,0,0,hud.w,hud.h);
+      c.drawImage(hud.cv,0,0,hud.w,hud.h);cpFaces(c,st,g,me,opp,over,waitBox,cv.s*cv.dpr);if(!st.sim&&!st.sink&&!st.slide){GNR.warm(6.2,cv.s*cv.dpr);GNR.warm(6.2,cv.s*cv.dpr,['pout']);if(st.bw!==cv.s){st.bw=cv.s;try{['Balls Back','REDEMPTION','OVERTIME'].forEach(cpBan)}catch(_){}}}
       const cap=(txt,y,bg,fg,big)=>{const L=cpCap(txt,bg,fg,big);c.drawImage(L.cv,50-L.w/2,y-L.h/2,L.w,L.h)};
       const yW=101.8-CP.SH;
-      if(over){const w=g.winner,L=w==='tie'?cpCap('TIE GAME','#010101','#fff',1):cpResBox(w===me?'YOU WON!':'YOU LOST!',w===me?'#FFD60A':'#F23654'),k=Math.min(1,(st.over-.35)/.15),sc=.5+.5*(1-Math.pow(1-k,3));
+      if(over){const w=g.winner,L=w==='tie'?cpCap('TIE GAME','#010101','#fff',1):(practice?cpResBox(nameOf(w).toUpperCase()+' WON!','#FFD60A'):cpResBox(w===me?'YOU WON!':'YOU LOST!',w===me?'#FFD60A':'#F23654')),k=Math.min(1,(st.over-.35)/.15),sc=.5+.5*(1-Math.pow(1-k,3));
         c.save();c.translate(50,.52*H);c.scale(sc,sc);c.globalAlpha=Math.min(1,k*1.5);c.drawImage(L.cv,-L.w/2,-L.h/2,L.w,L.h);c.restore()}
       else if(false&&idle&&st.ballT>=.54&&cpHintOn())cap('SWIPE UP TO THROW',cpProj(0,CP.br,CP.Z0)[1]-11,'rgba(0,0,0,.5)','#fff');
       else if(st.sent!=null){/* GamePigeon: dim 15% in 0.1s, the black SENT box pops, its check mark draws, then it stretches into the waiting box */
@@ -11249,7 +11261,7 @@ G.cup={title:'Cup Pong',blurb:'Two throws a turn. Sink all their cups first.',
               if(d<=l1)c.lineTo(4.7+(p1[0]-4.7)*d/l1,.1+(p1[1]-.1)*d/l1);else{c.lineTo(p1[0],p1[1]);const e=(d-l1)/l2;c.lineTo(p1[0]+(p2[0]-p1[0])*e,p1[1]+(p2[1]-p1[1])*e)}
               c.strokeStyle='#fff';c.lineWidth=.55;c.lineCap='round';c.lineJoin='round';c.stroke()}c.restore()}
         else{const u=Math.min(1,(t-1.3)/.15),e=1-Math.pow(1-u,3),w=25+(64.2-25)*e,h=7+(10.6-7)*e;rrect(c,50-w/2,yW-h/2,w,h,1.2-.2*e);c.fillStyle=`rgba(0,0,0,${.92-.3*e})`;c.fill()}}
-      else if(waitBox){{const Q=cpLayer('qpill',14,11,x=>{rrect(x,.2,.2,13.1,9.8,4.9);x.fillStyle='#D9D9D9';x.fill();x.font='900 7.2px Nunito,"Arial Black",sans-serif';x.textAlign='center';x.textBaseline='middle';x.fillStyle='#8E8E8E';x.fillText('?',6.75,5.6)});c.drawImage(Q.cv,85.1,4.9,Q.w,Q.h)}/* GamePigeon dims the whole scene 15% while you wait */c.fillStyle='rgba(0,0,0,.15)';c.fillRect(0,0,100,H);const L=cpBox('WAITING FOR OPPONENT...');c.drawImage(L.cv,50-L.w/2,101.8-CP.SH-5.3,L.w,L.h)}
+      else if(waitBox){{const Q=cpLayer('qpill',14,11,x=>{rrect(x,.2,.2,13.1,9.8,4.9);x.fillStyle='#D9D9D9';x.fill();x.font='900 7.2px Nunito,"Arial Black",sans-serif';x.textAlign='center';x.textBaseline='middle';x.fillStyle='#8E8E8E';x.fillText('?',6.75,5.6)});c.drawImage(Q.cv,85.1,4.9,Q.w,Q.h)}/* GamePigeon dims the whole scene 15% while you wait */c.fillStyle='rgba(0,0,0,.15)';c.fillRect(0,0,100,H);const L=cpBox(practice?(nameOf(g.turn).toUpperCase()+'\'S TURN'):'WAITING FOR OPPONENT...');c.drawImage(L.cv,50-L.w/2,101.8-CP.SH-5.3,L.w,L.h)}
       /* Balls Back / REDEMPTION / OVERTIME: pop up from 30% in 0.25s, hold, then shrink away in 0.08s */
       if(st.ban){const t=st.ban.t,d=st.ban.dur,ein=Math.min(1,t/.25),eout=Math.max(0,Math.min(1,(d-t)/.08)),sc=(.3+.7*(1-Math.pow(1-ein,3)))*(.6+.4*eout),L=cpBan(st.ban.txt);
         c.save();c.globalAlpha=Math.min(1,t/.06)*eout;c.translate(50,.525*H);c.scale(sc,sc);c.drawImage(L.cv,-L.w/2,-L.h/2,L.w,L.h);c.restore()}}
@@ -11262,12 +11274,23 @@ G.cup={title:'Cup Pong',blurb:'Two throws a turn. Sink all their cups first.',
     if(a==='cup-menux'){document.querySelectorAll('.cpdim,.cpsheet').forEach(e=>e.remove());return}
     if(a==='cup-menu'){const v=$('#view');if(!v||v.querySelector('.cpsheet'))return;const o=other(me);
       v.insertAdjacentHTML('beforeend',`<div class="cpdim" data-act="cup-menux"></div><div class="gp-sheet cpsheet"><h3>Cup Pong</h3>
-        <p class="sub">Two balls a turn. Sink both and you get them back. Cups re-rack into a triangle at 6 and at 3. Clear the rack and the other player gets a redemption turn.</p>
-        <div class="cpcols"><span class="cpcl">Your cups</span>${Object.keys(CPCOLS).map(k=>`<button class="cpcol${cpCol(me,g)===k?' on':''}" data-act="cup-col" data-col="${k}" style="background:${CPCOLS[k][1]}" aria-label="${CPCOLS[k][0]}"></button>`).join('')}</div>
-        <button class="btn ghost" data-act="rules">How to play</button><button class="btn" data-act="home">Back to games</button>${practice?`<button class="btn ghost" data-act="switch">Play as ${esc(nameOf(o))}</button>`:''}<button class="btn ghost" data-act="cup-menux">Close</button></div>`);return}
+        
+        <div class="cpcols"><span class="cpcl">Your cups<small>what ${esc(nameOf(o))} aims at</small></span>${Object.keys(CPCOLS).map(k=>`<button class="cpcol${cpCol(me,g)===k?' on':''}" data-act="cup-col" data-col="${k}" style="background:${CPCOLS[k][1]}" aria-label="${CPCOLS[k][0]}"></button>`).join('')}</div>
+        <button class="btn ghost" data-act="rules" onclick="setTimeout(()=>document.querySelectorAll('.cpdim,.cpsheet').forEach(e=>e.remove()),0)">How to play</button><button class="btn ghost" data-act="home">Back to games</button>${practice?`<button class="btn ghost" data-act="switch">Play as ${esc(nameOf(o))}</button>`:''}<button class="btn" data-act="cup-menux">Close</button></div>`);return}
     if(a==='cup-col'){const k=t&&t.dataset&&t.dataset.col;if(!CPCOLS[k]||!g)return;await upd(g,{col:{[me]:k}});const cv=CV.cur;if(cv&&cv.st)cv.st.rk=null;/* the view re-renders on the update, so put the sheet back */setTimeout(()=>{if(!document.querySelector('.cpsheet')){const g2=cur();if(g2&&g2.type==='cup')this.act('cup-menu',t,g2)}},0);return}}
 };
 
+
+/* cup10: save a throw without waiting for the server round trip: go on as soon as this phone's copy has it (Firestore shows its own write at once) */
+function cpSave(g,patch){const pr=store.update(g.id,patch);if(practice||!store.db)return pr;const ts=patch.updatedAt||0;
+  return Promise.race([pr,new Promise(r=>{const t0=performance.now();const f=()=>{const x=games.find(y=>y.id===g.id);if((x&&(x.updatedAt||0)>=ts)||performance.now()-t0>4000)r();else setTimeout(f,16)};f()})])}
+/* cup10: characters react like Miis (shared GNR helper). A make: the thrower cheers, the other is shocked. Game over: winner cheers, loser pouts. */
+function cpFaces(c,st,g,me,opp,over,noOpp,ppu){const done=over&&g.winner&&g.winner!=='tie',R=st.react;if(!done&&!R)return;
+  for(const [p,x] of [[me,7.92],[opp,92.6]]){if(p===opp&&noOpp)continue;let cc={};try{cc=CH.get(p)||{}}catch(_){}const mood=done?(g.winner===p?(cc.win||'cheer'):(cc.lose||'cry')):R.miss?(R.p===p?'pout':null):(R.p===p?'cheer':'shocked');if(!mood)continue;
+    GNR.face(c,p,mood,x,10.2,6.2,done?st.over-.35:R.t,ppu)}}
+/* cup10: hold the character card until the last ball, the cup pickup and the result box have played (the card takes ~0.5s to build, so it lands ~1.5s after the box) (the other phone watches the replay first) */
+GNR.hold('cup',g=>{const cv=CV.cur,st=cv&&cv.st;if(!st||st.gid!==g.id||route.screen!=='game'||route.id!==g.id)return false;
+  return !!(st.sim||st.busy||st.play||st.pendingSim||st.sink||(st.queue&&st.queue.length))||(st.over||0)<1.25});
 /* ============ ARCHERY ============ */
 /* v14 (iPhone): time-based motion only, game-owned pointer capture, pre-rendered background / target / bow / HUD layers.
    Data shape unchanged: g.sets[{n,first,w:[{v,a}x3],p1:[{x,y,s}],p2:[...]}], g.pts{p1,p2}, g.turn, g.lastShot{id,by,k,i,x,y,s,w}, g.msg. */
@@ -19659,7 +19682,7 @@ function lpBreak(g){const row=(lab,f,cls='')=>`<tr class="${cls}"><th>${lab}</th
     ${row('Cash',v=>lpK(v.cash))}${row('House sold',v=>v.house?'+'+lpK(v.house.sale):'—')}${row('Life tiles',v=>`<span class="lptl">${(v.tiles||[]).map(t=>`<i>${lpMoney(t)}</i>`).join('')||'—'}</span>`)}${row('',v=>(v.tiles||[]).length?'+'+lpK((v.tiles||[]).reduce((a,b)=>a+b,0)):'')}${row('Retired to',v=>v.home2==='estates'?'Estates':v.home2==='acres'?'Acres':'—')}${row('Loans ×1.25',v=>v.loans?'−'+lpK(Math.round(v.loans*1.25)):'—')}${row('Total',v=>`<b>${lpK(lpNet(v))}</b>`,'tot')}</tbody></table>`}
 
 /* ---------- full-screen game layout: board fits, extras in a drawer ---------- */
-const LAYOUT={archery:{"fit": "#cv-host"},cup:{"fit": "#cv-host"},ws:{fit:'#ws-board'},clue:{fit:'.clueb',drawer:'.cardsp,.pad,.logp',label:'Cards & notes',sheet:'.actp'},race:{sheet:'.actp'},life:{fit:'.lifeb',sheet:'.actp'},
+const LAYOUT={archery:{"fit": "#cv-host"},cup:{},ws:{fit:'#ws-board'},clue:{fit:'.clueb',drawer:'.cardsp,.pad,.logp',label:'Cards & notes',sheet:'.actp'},race:{sheet:'.actp'},life:{fit:'.lifeb',sheet:'.actp'},
   trail:{fit:'.trail'},slides:{fit:'.slides'},battle:{fit:'#sea-main'},who:{fit:'.who-grid',drawer:'.mycard',label:'My person',sheet:'.actp'},tower:{fit:'.tower',scale:1},ice:{fit:'.icebox'},
   surgeon:{fit:'#cv-host',drawer:'.logp',label:'Log'},fish:{drawer:'.booksp',label:'Books'},pool:{fit:'#cv-host'},golf:{fit:'#cv-host',drawer:'.scard',label:'Scorecard'},bowl:{fit:'#cv-host',drawer:'.scard',label:'Scorecard'},
   hoops:{fit:'#cv-host'},wordle:{fit:'.wboard',scale:1},ttt:{fit:'.ttt'},dots:{fit:'.dots'},c4:{fit:'.c4'},hang:{fit:'.hangp',scale:1}};
@@ -20011,7 +20034,7 @@ function boardZoom(g){const sel=BZ_SEL[g.type];if(!sel)return;const el=document.
   box.addEventListener('dblclick',e=>{if(e.target.closest('.bzbtns'))return;if(e.target.closest('[data-act$="-tap"]'))return;if(performance.now()-(window.__bzAct||0)<700)return;const r=box.getBoundingClientRect();if(z.s>1.05){z.s=1;z.x=0;z.y=0}else{z.s=2;z.x=-(e.clientX-r.left-r.width/2);z.y=-(e.clientY-r.top-r.height/2)}bzClamp(z,r.width,r.height);bzSave(g.id);ease()});
   apply()}
 /* ---------- real-app shell (Nov 1): settings, splash, slide transitions, swipe back, connection banner, profile cards, achievements, holiday looks ---------- */
-const GN_VER='114';
+const GN_VER='115';
 /* --- achievements, worked out from finished games (nothing extra stored) --- */
 const ACH=[
  ['first','🏆','First win','Win any game',(w,all,p)=>w.length>=1],
