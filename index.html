@@ -6763,7 +6763,7 @@ function c4FrameSVG(){
   ${rims}</svg>`}
 function c4Hud(g,can){const st=g.status,used=p=>[...g.board].filter(ch=>ch===(p==='p1'?'1':'2')).length;
   const side=p=>`<div class="c4-side ${p}${st==='active'&&g.turn===p?' on':''}"><span class="c4-av">${ava(p)}</span><small>${p===me?'You':nm(p)}</small><b><i class="c4mini ${p}"></i>${21-used(p)}</b></div>`;
-  let cap;if(st==='done'){cap=g.winner==='tie'?'<span class="c4-cap">IT’S A DRAW</span>':g.winner===me?'<span class="c4-cap win">YOU WON!</span>':'<span class="c4-cap lose">YOU LOST</span>'}
+  let cap;if(st==='done'){cap=g.winner==='tie'?'<span class="c4-cap">IT’S A TIE!</span>':g.winner===me?'<span class="c4-cap win">YOU WON!</span>':'<span class="c4-cap lose">YOU LOST</span>'}
   else if(can)cap=`<span class="c4-cap go">${(()=>{try{return localStorage.getItem('gn-c4-hint')}catch(_){return 1}})()?'YOUR TURN':'YOUR TURN: TAP A COLUMN'}</span>`;
   else{const sent=ui.g.c4sent&&Date.now()-ui.g.c4sent<900;cap=`<span class="c4-cap${sent?' sent':''}">${sent?'SENT':`${esc(nameOf(g.turn).toUpperCase())}’S TURN`}</span>`}
   return `<div class="c4-hud">${side(me)}${cap}${side(other(me))}</div>`}
@@ -6787,20 +6787,21 @@ G.c4={title:'Connect 4',busy:()=>!!ui.g.c4anim,blurb:'Drop discs. First to line 
   after(g){
     const v=document.getElementById('view'),sc=document.querySelector('#view .c4scene'),st=sc&&sc.querySelector('.c4stage'),rig=st&&st.querySelector('.c4rig');if(!rig)return;
     /* like the real toy: a while after the win, the lever opens and the discs drop out the bottom */
-    if(g.status==='done'&&c4Win(g.board)&&ui.g.c4drain!==g.id&&!ui.g.c4dt){ui.g.c4dt=setTimeout(()=>{ui.g.c4dt=0;const gg=cur();if(!gg||gg.id!==g.id)return;ui.g.c4drain=g.id;const r=document.querySelector('#view .c4rig');if(r){r.classList.add('drain');try{gnFx('whoosh');gnFx('clack',{pitch:.7})}catch(_){}}},3200)}
+    if(false&&g.status==='done'&&c4Win(g.board)&&ui.g.c4drain!==g.id&&!ui.g.c4dt){ui.g.c4dt=setTimeout(()=>{ui.g.c4dt=0;const gg=cur();if(!gg||gg.id!==g.id)return;ui.g.c4drain=g.id;const r=document.querySelector('#view .c4rig');if(r){r.classList.add('drain');try{gnFx('whoosh');gnFx('clack',{pitch:.7})}catch(_){}}},3200)}
     /* fit by measurement (never 100vh): the view takes the real viewport, the rig is as big as the stage allows */
     const vh=Math.min(innerHeight,window.visualViewport?visualViewport.height:innerHeight),top=v.getBoundingClientRect().top+(window.scrollY||0);
     v.style.height=Math.max(300,Math.floor(vh-top-10))+'px';
     const r=st.getBoundingClientRect();rig.style.width=Math.max(160,Math.min(r.width,r.height*C4W/C4H))+'px';
     /* time-based drop with gravity: ~0.5s to the bottom row, one small bounce (elapsed ms, dt clamped to 50) */
     const d=rig.querySelector('.c4d.drop');
-    if(d&&!ui.g.c4anim){const row=+d.dataset.r,sc2=rig.getBoundingClientRect().width/C4W,yEnd=C4Y(row)-44,y0=-70,G=5600,e=.2;
-      const tFall=Math.sqrt(2*(yEnd-y0)/G),vL=G*tFall,vB=vL*e,tB=2*vB/G,tot=tFall+tB;let t=0,last=performance.now();ui.g.c4anim=1;
+    if(d&&!ui.g.c4anim&&window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches){d.classList.remove('drop');try{d.animate([{opacity:0},{opacity:1}],{duration:120})}catch(_){}try{window.__c4hit&&window.__c4hit()}catch(_){}try{navigator.vibrate&&navigator.vibrate(12);gnFx('clack',{pitch:1.15,vol:.55})}catch(_){}}
+    else if(d&&!ui.g.c4anim){const row=+d.dataset.r,sc2=rig.getBoundingClientRect().width/C4W,yEnd=C4Y(row)-44,y0=-70,G=5600,e=.2;
+      const V0=900,tFall=(-V0+Math.sqrt(V0*V0+2*G*(yEnd-y0)))/G,vL=V0+G*tFall,vB=vL*e,tB=2*vB/G,tot=tFall+tB;let t=0,last=performance.now();ui.g.c4anim=1;
       d.style.transform=`translateY(${((y0-yEnd)*sc2).toFixed(1)}px)`;d.style.willChange='transform';
-      const fin=()=>{d.style.transform='';d.style.willChange='';ui.g.c4anim=0;if(drag&&drag.c4){drag=null;ui.needRender=false;setTimeout(()=>{if(!drag)render()},0)}try{navigator.vibrate&&navigator.vibrate(12)}catch(_){}};
+      const fin=()=>{d.style.transform='';d.style.willChange='';ui.g.c4anim=0;if(drag&&drag.c4){drag=null;ui.needRender=false;setTimeout(()=>{if(!drag)render()},0)}if(!d.__hit){try{navigator.vibrate&&navigator.vibrate(12)}catch(_){}try{gnFx('clack',{pitch:1.15,vol:.55})}catch(_){}}};
       const tick=now=>{const gg=cur();if(!gg||gg.id!==g.id||route.screen!=='game'||!d.isConnected){fin();return}
         const p0=window.__prof?performance.now():0;t+=Math.min(50,Math.max(0,now-last))/1000;last=now;let y;
-        if(t<tFall)y=y0+.5*G*t*t;else if(t<tot){const u=t-tFall;y=yEnd-(vB*u-.5*G*u*u)}else{fin();return}
+        if(t<tFall)y=y0+V0*t+.5*G*t*t;else if(t<tot){if(!d.__hit){d.__hit=1;try{window.__c4hit&&window.__c4hit()}catch(_){}try{navigator.vibrate&&navigator.vibrate(12)}catch(_){}try{gnFx('clack',{pitch:1.15,vol:.55})}catch(_){}}const u=t-tFall;y=yEnd-(vB*u-.5*G*u*u)}else{fin();return}
         d.style.transform=`translateY(${((y-yEnd)*sc2).toFixed(2)}px)`;if(window.__prof)__prof.push(performance.now()-p0);requestAnimationFrame(tick)};
       /* the flag that defers renders is set after the current event finishes (the shell's pointerup handler would clear it) */
       setTimeout(()=>{if(!d.isConnected){ui.g.c4anim=0;return}if(!drag)drag={c4:1};last=performance.now();requestAnimationFrame(tick)},0)}
@@ -6821,12 +6822,12 @@ G.c4={title:'Connect 4',busy:()=>!!ui.g.c4anim,blurb:'Drop discs. First to line 
     if(a==='c4-start')return this.start();
     if(!g)return;if(a==='c4-again')return this.start();
     if(a==='c4-drop'&&g.status==='active'&&g.turn===me&&!ui.g.c4busy){const col=+t.dataset.c;let idx=-1;for(let r=5;r>=0;r--){if(g.board[r*7+col]==='.'){idx=r*7+col;break}}
-      if(idx<0){const b=document.querySelector(`#view .c4col[data-c="${col}"]`);if(b){b.classList.remove('nope');void b.offsetWidth;b.classList.add('nope')}return}
+      if(idx<0){const b=document.querySelector(`#view .c4col[data-c="${col}"]`);if(b){b.classList.remove('nope');void b.offsetWidth;b.classList.add('nope')}try{gnFx('tick',{pitch:.6,vol:.6});navigator.vibrate&&navigator.vibrate(20)}catch(_){}return}
       ui.g.c4busy=1;try{localStorage.setItem('gn-c4-hint','1')}catch(_){}
       const b=g.board.slice(0,idx)+(me==='p1'?'1':'2')+g.board.slice(idx+1);const patch={board:b,last:idx};
       if(c4Win(b)){patch.status='done';patch.winner=me}else if(!b.includes('.')){patch.status='done';patch.winner='tie'}else patch.turn=other(me);
       ui.g.c4sent=Date.now();const sent=ui.g.c4sent;try{await upd(g,patch)}finally{ui.g.c4busy=0}
-      if(!patch.status)setTimeout(()=>{const gg=cur();if(gg&&gg.id===g.id&&!drag&&ui.g.c4sent===sent)render()},1000)}
+      if(!patch.status)setTimeout(()=>{const gg=cur();if(gg&&gg.id===g.id&&!drag&&ui.g.c4sent===sent){const c=document.querySelector('#view .c4-cap.sent');if(c&&gg.turn!==me&&gg.status==='active'){c.classList.remove('sent');c.textContent=nameOf(gg.turn).toUpperCase()+'’S TURN'}else render()}},1000)}
   }
 };
 
@@ -20010,7 +20011,7 @@ function boardZoom(g){const sel=BZ_SEL[g.type];if(!sel)return;const el=document.
   box.addEventListener('dblclick',e=>{if(e.target.closest('.bzbtns'))return;if(e.target.closest('[data-act$="-tap"]'))return;if(performance.now()-(window.__bzAct||0)<700)return;const r=box.getBoundingClientRect();if(z.s>1.05){z.s=1;z.x=0;z.y=0}else{z.s=2;z.x=-(e.clientX-r.left-r.width/2);z.y=-(e.clientY-r.top-r.height/2)}bzClamp(z,r.width,r.height);bzSave(g.id);ease()});
   apply()}
 /* ---------- real-app shell (Nov 1): settings, splash, slide transitions, swipe back, connection banner, profile cards, achievements, holiday looks ---------- */
-const GN_VER='113';
+const GN_VER='114';
 /* --- achievements, worked out from finished games (nothing extra stored) --- */
 const ACH=[
  ['first','🏆','First win','Win any game',(w,all,p)=>w.length>=1],
@@ -22968,6 +22969,49 @@ try{const a0=G.ws.after;G.ws.after=function(g){const r=a0.apply(this,arguments);
 (()=>{let done=0;const go=()=>{if(done)return;done=1;try{window.__wsCloud()}catch(e){console.error('wsCloud',e)}};if(document.readyState==='complete')setTimeout(go,60);else addEventListener('load',()=>setTimeout(go,60))})();
 
 /* ---- WS cloud passes end ---- */
+/* c4dom cloud js */
+/* Connect 4 + Dominos cloud pass (Nov 27). Runs inside the app's main closure, installs after load (later patches re-wrap G.*). */
+window.__c4domCloud=function(){
+/* shared: shrink a game-bar title until it fits (min 14 px) instead of cutting it to "Connec..." */
+const fitTitle=()=>{const h=document.querySelector('#view .bar.gbar h1, #view .bar h1');if(!h)return;h.style.fontSize='';let fs=parseFloat(getComputedStyle(h).fontSize)||18;
+  for(let i=0;i<8&&h.scrollWidth>h.clientWidth+1&&fs>14;i++){fs=Math.max(14,fs-1.5);h.style.fontSize=fs+'px'}};
+const hueOf=c=>{const m=String(c).trim().match(/^#?([0-9a-f]{6})$/i);if(!m)return null;const n=parseInt(m[1],16),r=(n>>16&255)/255,g=(n>>8&255)/255,b=(n&255)/255,mx=Math.max(r,g,b),mn=Math.min(r,g,b),d=mx-mn;if(d<.15)return null;
+  let h=mx===r?((g-b)/d)%6:mx===g?(b-r)/d+2:(r-g)/d+4;h*=60;if(h<0)h+=360;return h};
+/* one buzz per moment: a second vibrate call within 40 ms cancels the first on Android, so drop it */
+try{if(navigator.vibrate&&!navigator.vibrate.__gn1){const v0=navigator.vibrate.bind(navigator);let last=-1e9;const v=function(p){const n=performance.now(),on=Array.isArray(p)?p.some(x=>x>0):p>0;if(on&&n-last<40)return true;if(on)last=n;return v0(p)};v.__gn1=1;navigator.vibrate=v}}catch(_){}
+const T4=G.c4;
+if(T4){
+  T4.ownSent=true;T4.tieCard=true; /* a draw gets the character card too */ /* its own SENT pill in the HUD; no second white "Sent" pill on top */
+  try{LAYOUT.c4={}}catch(_){} /* the game fits itself; the shared fitter only forced an extra layout */
+  const win0={};
+  const a0=T4.after;T4.after=function(g){const r=a0.apply(this,arguments);requestAnimationFrame(fitTitle);try{const rg=document.querySelector('#view .c4rig');if(rg)document.documentElement.style.setProperty('--c4Top',Math.round(rg.getBoundingClientRect().top+6)+'px')}catch(_){}
+    try{const rig=document.querySelector('#view .c4rig');if(rig){const cs=getComputedStyle(document.documentElement),blue=['--p1c','--p2c'].some(v=>{const h=hueOf(cs.getPropertyValue(v)||getComputedStyle(rig).getPropertyValue(v));return h!=null&&h>=195&&h<=255});rig.classList.toggle('c4alt',blue);const sc=rig.closest('.c4scene');if(sc)sc.classList.toggle('c4altbg',blue)}}catch(_){}
+    if(g&&g.status==='done'&&!win0[g.id])win0[g.id]=performance.now();return r};
+  /* (r3 #1, #4) the result pill waits for the winning disc to land; the landing frame gets its own "connect" sting and buzz */
+  const a2=T4.after;T4.after=function(g){const r=a2.apply(this,arguments);try{if(g&&g.status==='done'&&ui.g.c4anim){const c=document.querySelector('#view .c4-cap');if(c)c.classList.add('c4wait')}}catch(_){}return r};
+  window.__c4hit=()=>{const c=document.querySelector('#view .c4-cap.c4wait');if(c){c.classList.remove('c4wait');c.classList.add('c4show')}
+    const g=cur();if(!g||g.type!=='c4'||g.status!=='done')return;const won=g.winner===me,tie=g.winner==='tie';
+    try{if(tie){gnFx('tok',{vol:.5})}else{[0,90,180].forEach((d,i)=>setTimeout(()=>{try{gnFx('plip',{vol:.55,pitch:won?[1.2,1.5,1.8][i]:[1.1,.95,.8][i]})}catch(_){}},d))}}catch(_){}
+    try{navigator.vibrate&&navigator.vibrate(tie?[15]:won?[30,40,30]:[40])}catch(_){}};
+  /* the character card waits until the last disc has landed and the winning four has been on screen ~1.4 s */
+  try{GNR.hold('c4',g=>{if(!g||g.status!=='done'||route.screen!=='game'||route.id!==g.id)return false;if(ui.g.c4anim)return true;const t=win0[g.id];return !t||performance.now()-t<1400});
+    const tick=()=>{try{const g=cur();if(g&&g.type==='c4'&&g.status==='done'&&win0[g.id]&&performance.now()-win0[g.id]<2600)setTimeout(()=>{try{window.__chresSync&&window.__chresSync()}catch(_){}},1450)}catch(_){}};
+    const a1=T4.after;T4.after=function(g){const r=a1.apply(this,arguments);if(g&&g.status==='done'&&!T4['_t'+g.id]){T4['_t'+g.id]=1;tick()}return r}}catch(_){}
+}
+};
+setTimeout(()=>{try{window.__c4domCloud()}catch(e){console.error('c4dom',e)}},0);
+
+/* scene classes for the CSS (instead of :has(), which re-checks on every DOM change) */
+window.__c4domCls=function(){const v=document.getElementById('view');if(!v||v.__c4cls)return;v.__c4cls=1;const B=document.body;
+  const sync=()=>{const c4=v.querySelector('.c4scene');B.classList.toggle('gn-c4',!!c4);
+    if(c4){c4.classList.toggle('norow',!c4.querySelector(':scope>.row'));c4.classList.toggle('c4altbg',!!c4.querySelector('.c4rig.c4alt'))}};
+  new MutationObserver(sync).observe(v,{childList:true});sync();
+  let cOn=false;const cs=()=>{const on=!!B.querySelector(':scope>.chres');B.classList.toggle('gn-chres',on);cOn=on};new MutationObserver(cs).observe(B,{childList:true});cs();
+  /* older shells (live v108): no card re-check hook; give the card a way to show once a hold ends */
+  if(!window.__chresSync)window.__chresSync=()=>{try{const g=cur();if(g&&route.screen==='game'&&route.id===g.id)CH.resultMoment(g)}catch(_){}};
+};
+setTimeout(()=>{try{window.__c4domCls()}catch(e){console.error('c4cls',e)}},0);
+
 render();
 if(!me){if(practice){me='p1'}else if(!window.GN_FB)openModal('who')}
 store.start();
@@ -24128,4 +24172,55 @@ body.ingame #gntab.fwd .tabbar{display:flex;z-index:5}
 .chres.wsres.wsrhold .chrescard{visibility:hidden}
 
 
+</style><style>/* c4dom cloud */
+/* both: messages sit in the header strip, never on the status pill / result banner below it */
+body.ingame.gn-c4 #toast{top:8px!important;bottom:auto!important;max-width:min(300px,calc(100% - 120px));font-size:.8rem;padding:8px 14px;line-height:1.25}
+/* both: one way to play again. While the character card is up, the Play again row waits; no "Clear from list" */
+body.gn-chres #view .c4scene .row{visibility:hidden}
+#view .c4scene .row [data-act=archive]{display:none}
+
+/* Connect 4: the status pill was painted dark by a shared text rule (YOU WON/YOU LOST read as black on black) */
+.c4scene .c4-hud .c4-cap{color:#fff!important}
+.c4scene .c4-hud .c4-cap.go{color:#111!important}
+.c4scene .c4-hud .c4-cap.sent{color:#0E3A7A!important}
+.c4scene .c4-hud .c4-cap.win{color:#FFD60A!important}
+.c4scene .c4-hud .c4-cap.lose{color:#FF5A4F!important}
+/* Connect 4: names never under 11 px */
+.c4-side small{font-size:max(11px,.72rem)!important}
+@media (max-height:600px){.c4-side small{font-size:11px!important}}
+/* Connect 4: when a player's colour is blue (Jen's default), the board turns navy so blue discs stand out */
+.c4rig.c4alt .c4frame #c4body stop:first-child{stop-color:#34405E}
+.c4rig.c4alt .c4frame #c4body stop:last-child{stop-color:#1E2740}
+.c4rig.c4alt .c4frame path[fill="#1849A8"]{fill:#182036}
+.c4rig.c4alt .c4frame #c4rim stop:first-child{stop-color:#05070E}
+.c4rig.c4alt .c4frame #c4rim stop:last-child{stop-color:#8E9BBB}
+.c4rig.c4alt .c4back{background:#0D1322!important}
+.c4scene.c4altbg{background:radial-gradient(120% 70% at 50% 20%,#FFFFFF,#E6E9F2)!important}
+
+/* ---- grader round 1 (Connect 4) ---- */
+/* aim answers in the same frame: ghost, glow and landing marker appear at once (they still slide between columns) */
+.c4ghost.on{transition:left .06s linear!important;opacity:1}
+.c4land.on{transition:none!important}
+.c4glow.on{transition:left .06s linear!important}
+/* landing marker in the aiming player's own colour */
+.c4land.p1{background:radial-gradient(circle,color-mix(in srgb,var(--p1c,#FF2D87) 38%,transparent) 0 52%,transparent 54%)!important;box-shadow:0 0 0 3px color-mix(in srgb,var(--p1c,#FF2D87) 60%,transparent) inset!important}
+.c4land.p2{background:radial-gradient(circle,color-mix(in srgb,var(--p2c,#1F6BFF) 38%,transparent) 0 52%,transparent 54%)!important;box-shadow:0 0 0 3px color-mix(in srgb,var(--p2c,#1F6BFF) 60%,transparent) inset!important}
+.c4rig.c4alt .c4land.p1,.c4rig.c4alt .c4land.p2{box-shadow:0 0 0 3px rgba(255,255,255,.75) inset,0 0 0 6px color-mix(in srgb,var(--p1c,#FF2D87) 0%,transparent) inset!important}
+/* disc counts readable on the light scene */
+.c4scene .c4-side b{color:#2A3147!important;text-shadow:none!important}
+/* the board doesn't jump when the game ends: the Play again row's space is kept during play */
+/* (r2 #1) the Play again row floats in space kept from the start, so the board never resizes when the game ends */
+.c4scene{position:relative;padding-bottom:66px!important}
+.c4scene>.row{position:absolute!important;left:16px;right:16px;bottom:8px;margin:0!important}
+/* loser's discs: lighter dim so pink stays pink on navy */
+.c4d.dim{opacity:.78!important;filter:saturate(.7) brightness(.92)}
+/* tall phones: spend spare height on bigger faces and status instead of blank space */
+@media (min-height:700px) and (min-width:390px){.c4-hud{height:104px!important;padding-top:12px!important}.c4-side{width:66px!important}.c4-side small{font-size:.8rem!important;max-width:66px!important}.c4-side b{font-size:.82rem!important}.c4-cap{margin-top:14px!important}}
+@media (max-width:389px){.c4scene .c4-cap{letter-spacing:.02em!important;padding:8px 10px!important;font-size:max(11px,.72rem)!important}}
+/* ---- grader round 2 (Connect 4) ---- */
+@media (prefers-reduced-motion: reduce){.gnconf{display:none!important}}
+body.ingame.gn-c4 #toast{top:var(--c4Top,64px)!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:calc(100% - 24px)}
+.c4scene .c4-cap.c4wait{visibility:hidden}
+.c4scene .c4-cap.c4show{animation:c4capin .32s cubic-bezier(.3,1.4,.5,1) both}
+@keyframes c4capin{from{transform:scale(.6);opacity:0}}
 </style></body></html>
