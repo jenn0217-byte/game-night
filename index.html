@@ -4315,7 +4315,9 @@ const CAP=`M38 104 Q36 40 100 38 Q164 40 162 104Z`;
 
 /* ---- Mii-style pass (Nov 27): soft vinyl shading. Gradient ids are unique per picture, so many avatars on one screen never mix colours ---- */
 let GDL=[],GPF='',GCNT=0;
-function GBEGIN(){GDL=[];GPF='gm'+(++GCNT).toString(36)+'_'}
+function GBEGIN(){GDL=[];GPF='GQZ_';GCNT++}
+/* ids come from a hash of the picture itself (svgWrap swaps GQZ_ for it): the same picture gives the same markup on every render, so view diffing / fast paths still match */
+function GHASH(t){let h=2166136261;for(let i=0;i<t.length;i++){h^=t.charCodeAt(i);h=Math.imul(h,16777619)}return h>>>0}
 function GDEFS(){return GDL.length?'<defs>'+GDL.map(x=>x.s).join('')+'</defs>':''}
 function G(kind,c){if(!GPF||!c||c[0]!=='#')return c;const id=GPF+kind+c.slice(1);if(!GDL.some(x=>x.id===id)){let s;
  if(kind==='skin')s=`<radialGradient id="${id}" cx=".42" cy=".36" r=".72"><stop offset="0" stop-color="${shade(c,.13)}"/><stop offset=".55" stop-color="${c}"/><stop offset="1" stop-color="${shade(c,-.15)}"/></radialGradient>`;
@@ -4495,7 +4497,7 @@ const TOP_N=['Tee','Hoodie','Striped','Holiday','Overalls','Jersey','Dress','Jac
 const BOT_N=['Pants','Shorts','Skirt'];
 const BT1=182;
 function torsoPath(sx,wx,T1,T2){return `M${100-sx} ${T1+20} Q${100-sx} ${T1} ${100-sx+20} ${T1-2} L${100+sx-20} ${T1-2} Q${100+sx} ${T1} ${100+sx} ${T1+20} L${100+wx} ${T2-9} Q${100+wx} ${T2+1} ${100+wx-10} ${T2+1} L${100-wx+10} ${T2+1} Q${100-wx} ${T2+1} ${100-wx} ${T2-9}Z`}
-function body(p,mood){const skin=SKIN[p.skin],c=CLOTH[p.tc],c2=CLOTH[p.tc2],d=shade(c,-.18),pc=PANTS[p.pc],b=p.b,h=p.h,shoe=CLOTH[p.shoe];
+function body(p,mood){const skin=SKIN[p.skin],c=p.tcx||CLOTH[p.tc],c2=CLOTH[p.tc2],d=shade(c,-.18),pc=PANTS[p.pc],b=p.b,h=p.h,shoe=CLOTH[p.shoe];
  const T1=BT1,T2=T1+84*h,L2=T2+64*h,sx=40*b,wx=44*b,dress=p.top===6,sk=G('skin',skin),aw=17*b;
  const top=p.top===4?c2:c,tg=G('cloth',top);
  const arm=s=>{const x0=100+s*(sx-9),y0=T1+12;let x1,y1;
@@ -4533,18 +4535,19 @@ function body(p,mood){const skin=SKIN[p.skin],c=CLOTH[p.tc],c2=CLOTH[p.tc2],d=sh
  return {svg:`<ellipse cx="100" cy="${L2+8}" rx="${46*b}" ry="7" fill="#000" opacity=".12"/>${legs}${shoes}${neck}${over?torso+deco+arms:arms+torso+deco}`,H:L2+18}}
 
 /* head and shoulders for round avatars: the whole head, hat and chin always inside the circle (fixes faces cut off in games) */
-function bust(p,mood){const c=CLOTH[p.tc],top=p.top===4?CLOTH[p.tc2]:c,skin=SKIN[p.skin],sx=40;
+function bust(p,mood){const c=p.tcx||CLOTH[p.tc],top=p.top===4?CLOTH[p.tc2]:c,skin=SKIN[p.skin],sx=40;
  const sh=`<path d="M${100-sx-22} 232 Q${100-sx-22} 190 ${100-sx+6} 186 L${100+sx-6} 186 Q${100+sx+22} 190 ${100+sx+22} 232Z" fill="${G('cloth',top)}"/>`;
  const coll=p.top===1?`<path d="M72 188 Q100 206 128 188" stroke="${shade(c,-.18)}" stroke-width="9" fill="none" stroke-linecap="round"/>`:p.top===7?`<path d="M86 186 L100 206 L114 186Z" fill="${CLOTH[p.tc2]}"/>`:p.top===4?`<path d="M74 196 L80 186 M126 196 L120 186" stroke="${c}" stroke-width="6" stroke-linecap="round"/>`:`<path d="M87 186 Q100 197 113 186" stroke="${shade(top,-.18)}" stroke-width="4" fill="none" stroke-linecap="round"/>`;
  return head(p,mood,'back')+`<rect x="89" y="168" width="22" height="22" rx="8" fill="${shade(skin,-.1)}"/>`+sh+coll+head(p,mood,'front')}
 const BUSTVB='18 26 164 164';
 
-function svgWrap(vb,inner,attrs){return `<svg viewBox="${vb}" xmlns="http://www.w3.org/2000/svg" ${attrs}>${GDEFS()}${inner}</svg>`}
+function svgWrap(vb,inner,attrs){let body=GDEFS()+inner;const h=GHASH(vb+body);body=body.split('GQZ_').join('g'+h.toString(36)+'_');
+ attrs=attrs.replace('--chd:@',`--chd:-${(h%9*.61).toFixed(2)}s`);return `<svg viewBox="${vb}" xmlns="http://www.w3.org/2000/svg" ${attrs}>${body}</svg>`}
 function svgFull(p,mood,pose){GBEGIN();const bd=body(p,pose||mood);const pm=pose||mood,top=pm==='cheer'||pm==='shocked'||pm==='cry'?-6:0;
  const inner=`<g class="chall"><g class="chhd">${head(p,mood,'back')}</g>${bd.svg}<g class="chhd">${head(p,mood,'front')}</g></g>`;
- return svgWrap(`0 ${top} 200 ${bd.H-top}`,inner,`role="img" aria-label="Character, ${mood}" data-ch="live" data-chm="${pm||'happy'}" style="--chd:-${(GCNT%9*.71).toFixed(2)}s"`)}
+ return svgWrap(`0 ${top} 200 ${bd.H-top}`,inner,`role="img" aria-label="Character, ${mood}" data-ch="live" data-chm="${pm||'happy'}" style="--chd:@"`)}
 function svgHead(p,mood,vb='14 2 172 194'){GBEGIN();const inner=head(p,mood||'');return svgWrap(vb,inner,'aria-hidden="true"')}
-function svgBust(p,mood){GBEGIN();const inner=bust(p,mood||'');return svgWrap(BUSTVB,inner,`aria-hidden="true" data-ch="bust" style="--chd:-${(GCNT%9*.53).toFixed(2)}s"`)}
+function svgBust(p,mood){GBEGIN();const inner=bust(p,mood||'');return svgWrap(BUSTVB,inner,`aria-hidden="true" data-ch="bust" style="--chd:@"`)}
 
 /* ---- Mii-style editing (Nov 27): +/- buttons instead of fiddly sliders, face close-up while editing face parts ---- */
 const ADJ={es:['Size','Smaller','Bigger'],ey:['Up / down','Up','Down'],eg:['Spacing','Closer','Farther'],et:['Tilt','Tilt in','Tilt out'],fw:['Width','Narrower','Wider'],
@@ -14059,7 +14062,7 @@ function boardZoom(g){const sel=BZ_SEL[g.type];if(!sel)return;const el=document.
   box.addEventListener('dblclick',e=>{if(e.target.closest('.bzbtns'))return;const r=box.getBoundingClientRect();if(z.s>1.05){z.s=1;z.x=0;z.y=0}else{z.s=2;z.x=-(e.clientX-r.left-r.width/2);z.y=-(e.clientY-r.top-r.height/2)}bzClamp(z,r.width,r.height);bzSave(g.id);apply()});
   apply()}
 /* ---------- real-app shell (Nov 1): settings, splash, slide transitions, swipe back, connection banner, profile cards, achievements, holiday looks ---------- */
-const GN_VER='108';
+const GN_VER='109';
 /* --- achievements, worked out from finished games (nothing extra stored) --- */
 const ACH=[
  ['first','🏆','First win','Win any game',(w,all,p)=>w.length>=1],
