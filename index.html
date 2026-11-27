@@ -20411,7 +20411,7 @@ function boardZoom(g){const sel=BZ_SEL[g.type];if(!sel)return;const el=document.
   box.addEventListener('dblclick',e=>{if(e.target.closest('.bzbtns'))return;if(e.target.closest('[data-act$="-tap"]'))return;if(performance.now()-(window.__bzAct||0)<700)return;const r=box.getBoundingClientRect();if(z.s>1.05){z.s=1;z.x=0;z.y=0}else{z.s=2;z.x=-(e.clientX-r.left-r.width/2);z.y=-(e.clientY-r.top-r.height/2)}bzClamp(z,r.width,r.height);bzSave(g.id);ease()});
   apply()}
 /* ---------- real-app shell (Nov 1): settings, splash, slide transitions, swipe back, connection banner, profile cards, achievements, holiday looks ---------- */
-const GN_VER='119';
+const GN_VER='120';
 /* --- achievements, worked out from finished games (nothing extra stored) --- */
 const ACH=[
  ['first','🏆','First win','Win any game',(w,all,p)=>w.length>=1],
@@ -23580,6 +23580,165 @@ G.hang.act=async function(a,t,g){if(a==='hang-key'&&g&&g.status==='active'&&g.se
 /* the word field's red error border clears as soon as they type again */
 document.addEventListener('input',e=>{if(e.target&&e.target.id==='hang-word')e.target.classList.remove('shake')});
 
+/* ===== MANCALA 10 (Nov 27, mancala-nov27/mx.js): own board, hand sowing, capture / go-again / sweep beats, tie card, reactions ===== */
+window.__mx10=function(){
+const T=G.mancala;if(!T||T.__mx10)return;T.__mx10=1;
+T.ownSent=true;T.tieCard=true;T.fastRes=true;
+try{LAYOUT.mancala={}}catch(_){}
+const ST=i=>i===6||i===13,OWN=i=>i<=6?'p1':'p2',STO=p=>p==='p1'?6:13,P=()=>performance.now();
+const RM=()=>{try{return matchMedia('(prefers-reduced-motion: reduce)').matches}catch(_){return false}};
+T.resLine=g=>{const m=(me==='p1'||me==='p2')?me:'p1',o=other(m);return g.winner==='tie'?`${g.b[6]} to ${g.b[13]}: a perfect split`:`You ${g.b[STO(m)]} · ${nameOf(o)} ${g.b[STO(o)]}`};
+
+/* ---------- sound: small own synth (glass stones, wood store, capture, go again, endings) ---------- */
+const AC=()=>{try{if(GN_SND.muted)return null}catch(_){}try{const A=window.__gnAC||(window.__gnAC=new (window.AudioContext||window.webkitAudioContext)());if(A.state==='suspended')A.resume();return A}catch(_){return null}};
+const tone=(A,f,t,d,v,type,f2)=>{const o=A.createOscillator(),g=A.createGain();o.type=type||'sine';o.frequency.setValueAtTime(f,t);if(f2)o.frequency.exponentialRampToValueAtTime(f2,t+d);g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(v,t+.004);g.gain.exponentialRampToValueAtTime(.0008,t+d);o.connect(g);g.connect(A.destination);o.start(t);o.stop(t+d+.02)};
+let NZ=null;const noise=(A,t,d,v,lo,hi)=>{if(!NZ||NZ.sampleRate!==A.sampleRate){const n=A.sampleRate*.4|0;NZ=A.createBuffer(1,n,A.sampleRate);const c=NZ.getChannelData(0);for(let i=0;i<n;i++)c[i]=Math.random()*2-1}const s=A.createBufferSource(),f=A.createBiquadFilter(),g=A.createGain();s.buffer=NZ;f.type='bandpass';f.frequency.setValueAtTime(lo,t);if(hi)f.frequency.exponentialRampToValueAtTime(hi,t+d);f.Q.value=1.2;g.gain.setValueAtTime(v,t);g.gain.exponentialRampToValueAtTime(.0008,t+d);s.connect(f);f.connect(g);g.connect(A.destination);s.start(t);s.stop(t+d+.02)};
+const SND={
+  tap(){const A=AC();if(!A)return;const t=A.currentTime;tone(A,520,t,.06,.12,'triangle',380)},
+  drop(k){const A=AC();if(!A)return;const t=A.currentTime,p=1+Math.min(k,14)*.035;tone(A,2350*p,t,.07,.09);tone(A,3700*p,t,.045,.05);tone(A,900*p,t,.05,.06,'triangle')},
+  store(){const A=AC();if(!A)return;const t=A.currentTime;tone(A,330,t,.16,.2,'triangle',250);tone(A,1650,t,.06,.06);noise(A,t,.05,.08,1800)},
+  lift(){const A=AC();if(!A)return;const t=A.currentTime;for(let i=0;i<3;i++){tone(A,2000+i*420,t+i*.025,.04,.05)}},
+  cap(){const A=AC();if(!A)return;const t=A.currentTime;noise(A,t,.28,.16,600,3200);[0,.07,.14,.21].forEach((d,i)=>tone(A,2200+i*300,t+.12+d,.06,.07));tone(A,660,t+.42,.14,.14,'square');tone(A,990,t+.52,.22,.13,'square')},
+  again(){const A=AC();if(!A)return;const t=A.currentTime;[523,659,784,1047].forEach((f,i)=>tone(A,f,t+i*.075,.16,.12,'triangle'))},
+  sweep(n){const A=AC();if(!A)return;const t=A.currentTime;for(let i=0;i<Math.min(10,n);i++)tone(A,2100+Math.random()*1400,t+i*.03,.04,.05);tone(A,300,t+.3,.18,.18,'triangle',240)},
+  win(){const A=AC();if(!A)return;const t=A.currentTime;[523,659,784,1047,1319].forEach((f,i)=>tone(A,f,t+i*.09,i===4?.5:.18,.13,'triangle'))},
+  lose(){const A=AC();if(!A)return;const t=A.currentTime;[392,330,262].forEach((f,i)=>tone(A,f,t+i*.16,.28,.12,'triangle'))},
+  tie(){const A=AC();if(!A)return;const t=A.currentTime;[523,523,659,659].forEach((f,i)=>tone(A,f,t+i*.12,.2,.11,'triangle'));tone(A,784,t+.5,.45,.12,'triangle')}
+};
+const buzz=p=>{try{navigator.vibrate&&navigator.vibrate(p)}catch(_){}};
+
+/* ---------- stones ---------- */
+const COLS=['#F4EFE6','#36C5B0','#FFB43A','#A98BFF','#FF7E5F'];
+const hsh=(a,b)=>{const v=Math.sin(a*91.3+b*17.17+3.1)*43758.5453;return v-Math.floor(v)};
+function stones(n,i,st,neu){const cap=st?34:14,sh=Math.min(n,cap),o=[];for(let k=0;k<sh;k++){const f=Math.sqrt((k+.6)/(cap+.6)),a=k*2.39996+hsh(i,k)*.5,rx=st?40:34,ry=st?36:30;
+    const x=50+Math.cos(a)*f*rx,y=50+Math.sin(a)*f*ry;o.push(`<i class="${neu!=null&&k>=neu?'nw':''}" style="left:${x.toFixed(1)}%;top:${y.toFixed(1)}%;--c:${COLS[Math.floor(hsh(k*3+1,i+7)*COLS.length)]}"></i>`)}return o.join('')}
+
+/* ---------- move script: every step's board, so any re-render mid-move draws the right picture ---------- */
+function script(prev,pit,who){const b=prev.slice(),n=b[pit],steps=[];const mySt=STO(who),skip=STO(other(who));b[pit]=0;steps.push({t:'lift',pit,n,b:b.slice()});
+  let i=pit,left=n;while(left>0){i=(i+1)%14;if(i===skip)continue;b[i]++;left--;steps.push({t:'drop',i,left,b:b.slice()})}
+  const extra=i===mySt,mine=who==='p1'?[0,5]:[7,12];
+  if(!extra&&i>=mine[0]&&i<=mine[1]&&b[i]===1&&b[12-i]>0){const c=b[12-i]+1,o=b[12-i];b[mySt]+=c;b[i]=0;b[12-i]=0;steps.push({t:'cap',i,o:12-i,on:o,n:c,to:mySt,b:b.slice()})}
+  const s1=b.slice(0,6).reduce((a,c)=>a+c,0),s2=b.slice(7,13).reduce((a,c)=>a+c,0);let done=false;
+  if(!s1||!s2){const fr=[];for(let k=0;k<14;k++){if(ST(k)||!b[k])continue;fr.push({i:k,n:b[k],to:STO(OWN(k))})}for(let k=0;k<6;k++){b[6]+=b[k];b[k]=0;b[13]+=b[7+k];b[7+k]=0}done=true;if(fr.length)steps.push({t:'sweep',fr,b:b.slice()})}
+  if(extra&&!done)steps.push({t:'again',to:mySt,b:b.slice()});
+  return {steps,b,extra,done,last:i,cap:steps.find(s=>s.t==='cap')}}
+
+/* ---------- state kept outside ui.g (practice hand-offs wipe ui.g) ---------- */
+let MX=null;const ENDT={},SEEN={};
+const seenK=id=>{if(SEEN[id]!=null)return SEEN[id];try{return SEEN[id]=+(sessionStorage.getItem('gn-mx-'+id)||0)}catch(_){return 0}};
+const setSeen=(id,k)=>{SEEN[id]=k;try{sessionStorage.setItem('gn-mx-'+id,String(k))}catch(_){}};
+const running=id=>MX&&MX.id===id&&!MX.fin;
+T.busy=g=>!!(g&&running(g.id));
+
+/* ---------- view ---------- */
+const FITD={};const FHK=()=>{try{return 'gn-mx-fh-'+innerWidth+'x'+innerHeight}catch(_){return 'gn-mx-fh'}};
+let LCAP='';const capOf=(g,disp,anim)=>{const h=capOf0(g,disp,anim),t=h.replace(/<[^>]+>/g,'');const nw=t!==LCAP;LCAP=t;return nw?h.replace('mxcap','mxcap mxnew'):h};
+const capOf0=(g,disp,anim)=>{const opp=other(me);
+  if(anim){const by=MX.by;return by===me?'<span class="tcap go mxcap">YOUR MOVE</span>':`<span class="tcap mxcap">${esc(nameOf(by).toUpperCase())}’S MOVE</span>`}
+  if(g.status==='done')return g.winner==='tie'?'<span class="tcap mxcap tie">TIE GAME!</span>':practice?`<span class="tcap win mxcap">${esc(nameOf(g.winner).toUpperCase())} WON!</span>`:g.winner===me?'<span class="tcap win mxcap">YOU WON!</span>':`<span class="tcap lose mxcap">${esc(nameOf(g.winner).toUpperCase())} WON</span>`;
+  return g.turn===me?'<span class="tcap go mxcap">YOUR TURN</span>':`<span class="tcap mxcap">${esc(nameOf(opp).toUpperCase())}’S TURN</span>`};
+const noteOf=(g,anim)=>{if(anim)return MX.note||'';const m=g.mv,myS=STO(me),opS=STO(other(me));
+  if(g.status==='done')return g.winner==='tie'?`${g.b[myS]} to ${g.b[opS]}. Nobody loses tonight!`:`Final score ${g.b[myS]} to ${g.b[opS]}`;
+  if(!m)return g.turn===me?'Tap a glowing pit. Stones travel toward your store.':`${nm(other(me))} goes first.`;
+  if(practice&&g.turn!==me&&!m.extra)return `Pass the phone to ${nm(g.turn)}…`;
+  if(m.by===me)return m.extra?'Last stone in your store. Go again!':m.cap?`You captured ${m.cap}!`:`Waiting for ${nm(other(me))}`;
+  return m.extra?`${nm(m.by)} landed in their store and goes again`:m.cap?`${nm(m.by)} captured ${m.cap} of your stones`:'Your turn. Tap a glowing pit.'};
+T.view=function(g){const opp=other(me),bs=me==='p1'?0:7,os=me==='p1'?7:0,myS=bs+6,opS=os+6;
+  /* a new move from the other phone (or one opened later) gets replayed */
+  const k=g.mv?g.mv.k:0;
+  if(g.mv&&!running(g.id)&&k>seenK(g.id)&&!(MX&&MX.id===g.id&&MX.k===k)){if(g.mv.by!==me||practice)queue(g);else setSeen(g.id,k)}
+  const anim=running(g.id),disp=anim?MX.disp:g.b,can=!anim&&g.status==='active'&&g.turn===me,ending=!anim&&g.status==='done'&&ENDT[g.id]&&P()-ENDT[g.id]<1500;
+  const pit=(i)=>{const n=disp[i],mine=i>=bs&&i<bs+6,ok=can&&mine&&g.b[i]>0,lst=!anim&&g.mv&&g.mv.last===i&&g.status!=='done';
+    return `<button class="mxp ${OWN(i)}${mine?' mine':' opp'}${ok?' ok':''}${lst?' last':''}" data-i="${i}" ${ok?`data-act="mancala-go"`:'disabled'} aria-label="${n} stones"><span class="mxo"><span class="mxs">${stones(n,i)}</span></span><b class="mxn">${n}</b></button>`};
+  const store=(i,lab)=>{const w=g.status==='done'&&!anim&&(g.winner===OWN(i)||g.winner==='tie');return `<div class="mxst ${OWN(i)}${i===myS?' mine':' opp'}${w?' won':''}" data-i="${i}"><span class="mxo"><span class="mxs">${stones(disp[i],i,1)}</span></span><b class="mxn">${disp[i]}</b><small>${lab}</small></div>`};
+  let rows='';for(let r=0;r<6;r++)rows+=pit(os+5-r)+pit(bs+r);
+  let fh='';try{const v=localStorage.getItem(FHK());if(v)fh=` style="height:${v}px"`}catch(_){}
+  const foot=g.status==='done'?`<div class="tfoot mxfoot${anim||ending?'':' on'}">${wgAgain(g,'<button class="btn" data-act="mancala-again">Rematch</button>')}<button class="btn ghost" data-act="archive" data-id="${g.id}">Clear</button></div>`:'<div class="tfoot mxfoot"></div>';
+  return `${head('Mancala')}<div class="tsc mxsc"${fh}><div class="thud">${tttAv(me,'You','',anim?MX.by===me:can,`<span class="mcsc1 mxsc1" data-s="${myS}">${disp[myS]}</span>`)}<div class="tmid">${capOf(g,disp,anim)}<small class="tnote">${noteOf(g,anim)}</small></div>${tttAv(opp,nm(opp),'',anim?MX.by===opp:g.status==='active'&&g.turn===opp,`<span class="mcsc1 mxsc1" data-s="${opS}">${disp[opS]}</span>`)}</div>
+    <div class="mxbw"><div class="mxbd${can?' myturn':''}${anim?' anim':''}">${store(opS,esc(nameOf(opp))+'’s store')}${rows}${store(myS,'Your store')}</div></div>${foot}</div>`};
+T.after=function(g){try{wgRmToast(g)}catch(_){}const sc=document.querySelector('#view .mxsc');if(!sc)return;
+  const fit=()=>{try{const sc=document.querySelector('#view .mxsc');if(!sc)return;const vv=window.visualViewport,vh=vv?vv.height:innerHeight,top=sc.getBoundingClientRect().top,pb=parseFloat(getComputedStyle(document.documentElement).paddingBottom)||0,h=Math.max(380,Math.floor(vh-top-pb));
+    if(sc.style.height!==h+'px'){sc.style.height=h+'px'}FITD[FHK()]=1;try{localStorage.setItem(FHK(),String(h))}catch(_){}}catch(_){}};
+  if(!sc.style.height)fit();else if(!FITD[FHK()]){FITD[FHK()]=1;setTimeout(fit,400)}
+  if(g.status==='done'&&!running(g.id)&&!ENDT[g.id])ENDT[g.id]=1;/* opened finished: no beat */
+  if(MX&&MX.id===g.id&&MX.wait&&!MX.go)start()};
+
+/* ---------- taps: the move plays at once on this phone; the save runs alongside ---------- */
+const a0=T.act;T.act=async function(a,t,g){
+  if(a==='mancala-go'){if(!g||g.status!=='active'||g.turn!==me||running(g.id))return;const i=+t.dataset.i,bs=me==='p1'?0:7;if(i<bs||i>bs+5||!g.b[i])return;
+    SND.tap();buzz(10);const r=script(g.b,i,me),k=Date.now();
+    const patch={b:r.b,mv:{k,by:me,pit:i,prev:g.b,path:r.steps.filter(s=>s.t==='drop').map(s=>s.i),last:r.last,extra:r.extra,cap:r.cap?r.cap.n:0,done:r.done}};
+    if(r.done){patch.status='done';patch.winner=r.b[6]>r.b[13]?'p1':r.b[6]<r.b[13]?'p2':'tie'}else if(!r.extra)patch.turn=other(me);
+    setSeen(g.id,k);MX={id:g.id,k,by:me,steps:r.steps,disp:g.b.slice(),si:-1,end:patch.status==='done'?patch.winner:null,note:'',wait:1};
+    t.classList.add('mxpress');start();
+    try{if(practice||!store.db)await upd(g,patch);else await store.update(g.id,patch)}catch(e){console.error('mx save',e)}return}
+  if(a==='mancala-again'&&g){const f=other(g.first||g.by);await wgRematch(g,()=>create(base('mancala',{b:[4,4,4,4,4,4,0,4,4,4,4,4,4,0],turn:f,first:f,mv:null})));return}
+  return a0.apply(this,arguments)};
+T.start=async function(){await create(base('mancala',{b:[4,4,4,4,4,4,0,4,4,4,4,4,4,0],turn:me,first:me,mv:null}))};
+
+function queue(g){const m=g.mv;if(!m||!Array.isArray(m.prev))return setSeen(g.id,m?m.k:0);const r=script(m.prev,m.pit,m.by);
+  if(MX&&MX.id===g.id&&!MX.fin){MX.next=g;return}
+  setSeen(g.id,m.k);MX={id:g.id,k:m.k,by:m.by,steps:r.steps,disp:m.prev.slice(),si:-1,end:g.status==='done'?g.winner:null,note:'',wait:1,delay:280}}
+
+/* ---------- the animation ---------- */
+let HAND=null;
+const layer=()=>{let l=document.getElementById('mxfly');if(!l){l=document.createElement('div');l.id='mxfly';document.body.appendChild(l)}return l};
+const el=i=>document.querySelector(`#view .mxbd [data-i="${i}"]`);
+function rects(){const R={};for(let i=0;i<14;i++){const e=el(i);if(!e)return null;const o=e.querySelector('.mxo')||e,r=o.getBoundingClientRect();R[i]={x:r.left+r.width/2,y:r.top+r.height/2,w:r.width,h:r.height}}return R}
+function paint(i,n,fresh){const e=el(i);if(!e)return;const s=e.querySelector('.mxs'),b=e.querySelector('.mxn');const st=ST(i);if(s)s.innerHTML=stones(n,i,st,fresh?n-1:null);if(b){b.textContent=n;b.classList.remove('bump');void b.offsetWidth;b.classList.add('bump')}
+  if(st){e.classList.remove('glow');void e.offsetWidth;e.classList.add('glow');const h=document.querySelector(`#view .mxsc1[data-s="${i}"]`);if(h){h.textContent=n;h.classList.remove('bump');void h.offsetWidth;h.classList.add('bump')}}else if(fresh){e.classList.remove('hit');void e.offsetWidth;e.classList.add('hit')}}
+function setDisp(b){const old=MX.disp;MX.disp=b.slice();return old}
+function pop(x,y,txt,cls){const l=layer(),d=document.createElement('div');d.className='mxpop '+(cls||'');d.textContent=txt;d.style.left=x+'px';d.style.top=y+'px';l.appendChild(d);setTimeout(()=>d.remove(),1300)}
+function cluster(n,x,y){const d=document.createElement('div');d.className='mxhand';let h='';const sh=Math.min(n,5);for(let k=0;k<sh;k++){const a=k*2.4,f=k?0.55+.45*(k/sh):0;h+=`<i style="left:${50+Math.cos(a)*f*34}%;top:${50+Math.sin(a)*f*30}%;--c:${COLS[(k*2+n)%COLS.length]}"></i>`}
+  d.innerHTML=h+(n>1?`<b>${n}</b>`:'');d.style.transform=`translate(${x}px,${y}px)`;layer().appendChild(d);return d}
+const fly=(d,a,b,ms,lift)=>{const T0=`translate(${a.x}px,${a.y}px)`,T1=`translate(${(a.x+b.x)/2}px,${(a.y+b.y)/2-(lift||16)}px) scale(1.1)`,T2=`translate(${b.x}px,${b.y}px)`;d.style.transform=T2;try{return d.animate([{transform:T0},{transform:T1},{transform:T2}],{duration:ms,easing:'cubic-bezier(.4,.1,.3,1)'})}catch(_){return null}};
+function react(p,mood,ms){try{const a=document.querySelector(`#view .mxsc .tav.${p} .chava`);if(!a)return;a.innerHTML=CH.mini(p,mood);const r=a.closest('.tring')||a;r.classList.remove('mxhop');void r.offsetWidth;r.classList.add('mxhop');
+  if(ms)setTimeout(()=>{try{const g=cur();if(!g||g.status==='done')return;const b=document.querySelector(`#view .mxsc .tav.${p} .chava`);if(b)b.innerHTML=CH.mini(p,'')}catch(_){}},ms)}catch(_){}}
+const setNote=t=>{MX.note=t;const n=document.querySelector('#view .mxsc .tnote');if(n)n.textContent=t};
+function start(){if(!MX||MX.go)return;const sc=document.querySelector('#view .mxsc');const g=cur();if(!sc||!g||g.id!==MX.id){return}
+  MX.go=1;MX.wait=0;const bd=sc.querySelector('.mxbd');if(bd){bd.classList.add('anim');bd.classList.remove('myturn');sc.querySelectorAll('.mxp.ok').forEach(e=>{e.classList.remove('ok');e.removeAttribute('data-act');e.disabled=true})}
+  const cp=sc.querySelector('.mxcap');if(cp){const mineM=MX.by===me;const tx=mineM?'YOUR MOVE':nameOf(MX.by).toUpperCase()+'’S MOVE';if(cp.textContent!==tx){cp.className='tcap mxcap mxnew'+(mineM?' go':'');cp.textContent=tx;LCAP=tx}}
+  setNote(MX.by===me?'Sowing…':`${nameOf(MX.by)} is moving…`);
+  MX.R=rects();if(!MX.R){MX.fin=1;return}
+  setTimeout(step,MX.delay||0)}
+const alive=()=>{const g=cur();return MX&&!MX.fin&&route.screen==='game'&&g&&g.id===MX.id&&document.querySelector('#view .mxsc')};
+function finish(){if(!MX)return;const id=MX.id,end=MX.end,nx=MX.next;MX.fin=1;try{if(HAND){HAND.remove();HAND=null}}catch(_){}
+  if(end){ENDT[id]=P();endBeat(end);setTimeout(()=>{try{const f=document.querySelector('#view .mxsc .mxfoot');if(f&&cur()&&cur().id===id)f.classList.add('on')}catch(_){}},practice?1520:2700)}
+  MX=null;try{render()}catch(_){}if(nx&&nx.mv&&nx.mv.k>seenK(id)){queue(nx);try{render()}catch(_){}}}
+function step(){if(!alive()){if(MX){MX.fin=1;try{if(HAND){HAND.remove();HAND=null}}catch(_){}MX=null}return}
+  MX.si++;const s=MX.steps[MX.si];if(!s){return finish()}
+  const R=MX.R,fast=(MX.next?.55:1)*(RM()?.5:1),tot=MX.steps.filter(x=>x.t==='drop').length,hop=Math.round(Math.max(95,Math.min(165,175-tot*6))*fast);
+  if(s.t==='lift'){const e=el(s.pit);if(e){e.classList.add('lift')}setDisp(s.b);paint(s.pit,0);HAND=cluster(s.n,R[s.pit].x,R[s.pit].y);HAND.classList.add('up');SND.lift();setTimeout(step,Math.round(150*fast));return}
+  if(s.t==='drop'){const from=MX.si===1?R[MX.steps[0].pit]:R[MX.steps[MX.si-1].i],to=R[s.i];if(HAND)fly(HAND,from,to,hop,ST(s.i)?22:14);
+    setTimeout(()=>{if(!alive())return step();setDisp(s.b);paint(s.i,s.b[s.i],1);if(ST(s.i)){SND.store();}else SND.drop(MX.si);
+      if(HAND){if(s.left<=0){HAND.remove();HAND=null}else{const b=HAND.querySelector('b');if(b){if(s.left>1)b.textContent=s.left;else b.remove()}const is=HAND.querySelectorAll('i');if(is.length>s.left&&is.length>1)is[is.length-1].remove()}}
+      setTimeout(step,ST(s.i)?60:12)},hop);return}
+  if(s.t==='cap'){const a=el(s.i),o=el(s.o);[a,o].forEach(e=>e&&e.classList.add('capt'));setNote(MX.by===me?`Capture! ${s.n} stones`:`${nameOf(MX.by)} captures ${s.n}!`);
+    react(MX.by,'cheer',1100);react(other(MX.by),'shocked',1100);buzz([20,30,20]);
+    setTimeout(()=>{if(!alive())return step();const b=MX.disp.slice();b[s.i]=0;b[s.o]=0;MX.disp=b;paint(s.i,0);paint(s.o,0);SND.cap();
+      const c1=cluster(s.on,R[s.o].x,R[s.o].y),c2=cluster(1,R[s.i].x,R[s.i].y);const ms=Math.round(380*fast);fly(c1,R[s.o],R[s.to],ms,40);fly(c2,R[s.i],R[s.to],ms-40,30);
+      try{const bd=document.querySelector('#view .mxbd');bd&&bd.animate([{transform:'translateX(0)'},{transform:'translateX(-4px)'},{transform:'translateX(4px)'},{transform:'translateX(0)'}],{duration:220})}catch(_){}
+      setTimeout(()=>{c1.remove();c2.remove();if(!alive())return step();setDisp(s.b);paint(s.to,s.b[s.to]);SND.store();pop(R[s.to].x,R[s.to].y-R[s.to].h*.55,'+'+s.n,'cap');setTimeout(step,Math.round(380*fast))},ms)},Math.round(300*fast));return}
+  if(s.t==='again'){const e=el(s.to);e&&e.classList.add('again');SND.again();pop(R[s.to].x,R[s.to].y-R[s.to].h*.6,'GO AGAIN!','again');react(MX.by,'cheer',1000);
+    setNote(MX.by===me?'Last stone in your store. Go again!':`${nameOf(MX.by)} goes again`);setTimeout(step,Math.round(520*fast));return}
+  if(s.t==='sweep'){setNote('Out of stones! The rest go home…');let n=0,ms=Math.round(420*fast);s.fr.forEach((f,j)=>{n+=f.n;setTimeout(()=>{if(!alive())return;const b=MX.disp.slice();b[f.i]=0;MX.disp=b;paint(f.i,0);const c=cluster(f.n,R[f.i].x,R[f.i].y);fly(c,R[f.i],R[f.to],ms,26);setTimeout(()=>{c.remove();if(!alive())return;const b2=MX.disp.slice();b2[f.to]+=f.n;MX.disp=b2;paint(f.to,b2[f.to])},ms)},j*70)});
+    SND.sweep(n);setTimeout(()=>{if(!alive())return step();setDisp(s.b);setTimeout(step,120)},s.fr.length*70+ms+40);return}
+  step()}
+
+/* the ending on the board: winner's store glows, faces react, then the app card (two phones) or our own fanfare (practice) */
+function endBeat(w){const tie=w==='tie';setTimeout(()=>{try{react('p1',tie?'happy':w==='p1'?(CH.get('p1').win||'cheer'):(CH.get('p1').lose||'pout'));react('p2',tie?'happy':w==='p2'?(CH.get('p2').win||'cheer'):(CH.get('p2').lose||'pout'));
+    const R=rects();if(R){const show=(i,t)=>pop(R[i].x,R[i].y-R[i].h*.62,t,tie?'tie':'win');if(tie){show(6,'TIE!');show(13,'TIE!')}else show(STO(w),'WINNER!')}
+    if(practice){tie?SND.tie():SND.win();try{if(!tie&&typeof gnConfetti==='function')gnConfetti()}catch(_){}buzz(tie?[15]:[20,40,20,40,60])}else{tie?SND.tie():SND.store()}}catch(_){}},60)}
+
+/* the character card waits for the sowing, the sweep and ~1 s of the final board */
+const hold=g=>{if(!g||g.type!=='mancala'||g.status!=='done')return false;if(running(g.id)||(MX&&MX.id===g.id))return true;if(route.screen==='game'&&route.id===g.id&&g.mv&&g.mv.k>seenK(g.id))return true;const t=ENDT[g.id];return !!(t&&t>1&&P()-t<1050)};
+const inst=()=>{const prev=window.__resHold;if(prev&&prev.__mx)return;const f=g=>g&&g.type==='mancala'?hold(g):(prev?prev(g):false);f.__mx=1;window.__resHold=f};inst();setInterval(inst,2000);
+/* one Play again: the board's own row waits while the card is up */
+try{const V=document.getElementById('view');const f=()=>{const on=!!(V&&V.querySelector('.mxsc'));document.body.classList.toggle('mxon',on);document.body.classList.toggle('mxprac',on&&!!practice)};if(V){new MutationObserver(f).observe(V,{childList:true});f()}}catch(_){}
+try{new MutationObserver(()=>{document.body.classList.toggle('mxcard',!!document.querySelector('body>.chres:not(.chgone)'))}).observe(document.body,{childList:true})}catch(_){}
+};
+setTimeout(()=>{try{window.__mx10()}catch(e){console.error('mx10',e)}},0);
+
 render();
 if(!me){if(practice){me='p1'}else if(!window.GN_FB)openModal('who')}
 store.start();
@@ -24860,4 +25019,84 @@ body.hgon .chres.out .chrescard{animation:hgcardout .3s ease-in both}
 /* loss reveal: the blank tile stays (count and shape of the word never drop out); only the letter and the tint come in */
 .wgw .hgslots .slot.rv{animation:hgrvin .4s cubic-bezier(.3,1.5,.5,1) both;animation-delay:calc(.25s + var(--i) * var(--rvs,.14s))}
 @keyframes hgrvin{0%{-webkit-text-fill-color:transparent;background:rgba(255,255,255,.13);box-shadow:inset 0 -3px 0 rgba(246,239,224,.85);transform:none}50%{transform:scale(1.14)}100%{-webkit-text-fill-color:#D7263D;transform:none}}
+
+/* ===== MANCALA 10 (Nov 27, mancala-nov27/mx.css) ===== */
+:is(#view,.navclone) .tsc.mxsc{display:flex;flex-direction:column;background:linear-gradient(180deg,#FFF7EA 0,#F6E7CF 100%)!important;box-shadow:none!important;overflow:hidden}
+.mxsc .thud{flex:0 0 auto}
+.mxsc .tnote{min-height:1.25em;color:#5B4630!important;font-weight:800}
+.mxsc .mxcap.tie{background:#7B5CFF!important;color:#fff!important}
+.mxsc .tring.mxhop{animation:mxhop .7s cubic-bezier(.3,1.6,.5,1)}
+@keyframes mxhop{0%{transform:none}30%{transform:translateY(-9px) scale(1.12)}60%{transform:translateY(0) scale(.96)}100%{transform:none}}
+.mxsc1.bump{animation:mxbump .32s ease-out}
+.mxbw{flex:1 1 auto;min-height:0;display:flex;justify-content:center;align-items:stretch;padding:4px 10px 6px;container-type:size}
+.mxbd{--g:6px;position:relative;width:min(100cqw,68cqh,460px);height:100%;box-sizing:border-box;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:minmax(0,1.25fr) repeat(6,minmax(0,1fr)) minmax(0,1.25fr);column-gap:10px;row-gap:0;padding:10px 16px;border-radius:30px;
+  background:linear-gradient(180deg,#E9C690,#DDB277);border:4px solid #A8713C;box-shadow:0 6px 0 #8A5A2E,0 12px 18px rgba(90,55,20,.25),inset 0 2px 0 rgba(255,255,255,.45)}
+.mxbd::before{content:"";position:absolute;left:50%;top:13%;bottom:13%;width:2px;margin-left:-1px;background:rgba(138,90,46,.25);border-radius:2px}
+.mxp,.mxst{position:relative;border:0;background:none;padding:calc(var(--g)/2) 0;margin:0;min-width:0;min-height:0;font:inherit;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+.mxst{grid-column:1/3;padding:4px 18px}
+.mxo{position:absolute;inset:calc(var(--g)/2) 4px;border-radius:50%;background:radial-gradient(120% 90% at 50% 70%,#D9A86C 0,#C48F55 60%,#B27D45 100%);box-shadow:inset 0 5px 0 rgba(90,50,15,.35),0 1px 0 rgba(255,255,255,.5);transition:transform .12s}
+.mxst .mxo{inset:4px 6px;border-radius:44%/50%}
+.mxp.p1 .mxo,.mxst.p1 .mxo{--oc:var(--p1c,#FF2D87)}.mxp.p2 .mxo,.mxst.p2 .mxo{--oc:var(--p2c,#1F6BFF)}
+.mxp .mxo{box-shadow:inset 0 5px 0 rgba(90,50,15,.35),0 0 0 2.5px color-mix(in srgb,var(--oc) 45%,transparent)}
+.mxst .mxo{box-shadow:inset 0 6px 0 rgba(90,50,15,.35),0 0 0 3px color-mix(in srgb,var(--oc) 60%,transparent)}
+.mxs{position:absolute;inset:0}
+.mxs i{position:absolute;width:min(3.2cqh,7.2cqw,22px);height:min(2.9cqh,6.5cqw,20px);min-width:10px;min-height:9px;transform:translate(-50%,-50%);border-radius:50%;background:var(--c);
+  box-shadow:inset -2px -3px 0 rgba(0,0,0,.18),0 1.5px 0 rgba(70,40,10,.35)}
+.mxs i::after{content:"";position:absolute;left:22%;top:18%;width:30%;height:26%;border-radius:50%;background:rgba(255,255,255,.75)}
+.mxst .mxs i{width:min(2.7cqh,6cqw,19px);height:min(2.45cqh,5.4cqw,17px)}
+.mxs i.nw{animation:mxnew .26s cubic-bezier(.3,1.7,.5,1)}
+@keyframes mxnew{0%{transform:translate(-50%,-120%) scale(.4)}100%{transform:translate(-50%,-50%) scale(1)}}
+.mxn{position:absolute;top:50%;min-width:24px;height:22px;line-height:22px;padding:0 5px;box-sizing:border-box;border-radius:11px;text-align:center;font:900 14px/22px var(--body,system-ui);color:#fff;background:var(--oc,#8A5A2E);transform:translateY(-50%);box-shadow:0 2px 0 rgba(0,0,0,.2);z-index:2;pointer-events:none}
+.mxp.p1 .mxn,.mxst.p1 .mxn{--oc:var(--p1c,#FF2D87)}.mxp.p2 .mxn,.mxst.p2 .mxn{--oc:var(--p2c,#1F6BFF)}
+.mxp:nth-child(even) .mxn{left:-12px}.mxp:nth-child(odd) .mxn{right:-12px}
+.mxst .mxn{left:-8px;min-width:32px;height:28px;line-height:28px;border-radius:14px;font-size:18px}
+.mxst small{position:absolute;right:26px;bottom:7px;font:800 11px/1 var(--body,system-ui);color:#fff;background:color-mix(in srgb,var(--oc,#8A5A2E) 85%,#000);padding:3px 7px;border-radius:8px;z-index:2;pointer-events:none;max-width:72%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mxst.p1 small{--oc:var(--p1c,#FF2D87)}.mxst.p2 small{--oc:var(--p2c,#1F6BFF)}
+.mxst.opp small{bottom:auto;top:7px}
+.mxn.bump{animation:mxbump .3s ease-out}
+@keyframes mxbump{0%{scale:1}40%{scale:1.3}100%{scale:1}}
+.mxp.ok{cursor:pointer}
+.mxp.ok .mxo{box-shadow:inset 0 5px 0 rgba(90,50,15,.35),0 0 0 3.5px var(--oc),0 0 12px 2px color-mix(in srgb,var(--oc) 55%,transparent)}
+.mxp.ok .mxo::after{content:"";position:absolute;inset:-6px;border-radius:50%;border:2.5px solid var(--oc);opacity:0;animation:mxring 1.8s ease-out infinite;pointer-events:none}
+.mxbd.anim .mxo::after{animation:none!important;display:none}
+@keyframes mxring{0%{opacity:.7;transform:scale(.96)}70%,100%{opacity:0;transform:scale(1.12)}}
+.mxp.ok:active .mxo,.mxp.mxpress .mxo{transform:scale(.9)}
+.mxp.last .mxo{box-shadow:inset 0 5px 0 rgba(90,50,15,.35),0 0 0 2.5px #fff}
+.mxp.lift .mxo{animation:mxsq .22s ease-out}
+.mxp.hit .mxo{animation:mxsq .2s ease-out}
+@keyframes mxsq{0%{transform:scale(1)}40%{transform:scale(.92,.86)}100%{transform:scale(1)}}
+.mxst.glow .mxo{animation:mxglow .45s ease-out}
+@keyframes mxglow{0%{filter:brightness(1.25)}100%{filter:none}}
+.mxp.capt .mxo{box-shadow:inset 0 5px 0 rgba(90,50,15,.35),0 0 0 4px #FFD23F,0 0 16px 4px rgba(255,210,63,.8)!important;animation:mxsq .25s ease-out}
+.mxst.again .mxo,.mxst.won .mxo{box-shadow:inset 0 6px 0 rgba(90,50,15,.35),0 0 0 4px #FFD23F,0 0 18px 5px rgba(255,210,63,.75)!important}
+#mxfly{position:fixed;inset:0;pointer-events:none;z-index:40}
+.mxhand{position:absolute;left:0;top:0;width:44px;height:40px;margin:-20px 0 0 -22px;will-change:transform}
+.mxhand i{position:absolute;width:17px;height:15px;transform:translate(-50%,-50%);border-radius:50%;background:var(--c);box-shadow:inset -2px -3px 0 rgba(0,0,0,.18),0 3px 3px rgba(70,40,10,.35)}
+.mxhand i::after{content:"";position:absolute;left:22%;top:18%;width:30%;height:26%;border-radius:50%;background:rgba(255,255,255,.75)}
+.mxhand.up{filter:drop-shadow(0 6px 4px rgba(70,40,10,.3))}
+.mxhand b{position:absolute;right:-12px;top:-12px;min-width:20px;height:20px;padding:0 4px;box-sizing:border-box;border-radius:10px;background:#2A2035;color:#fff;font:900 12px/20px var(--body,system-ui);text-align:center}
+.mxpop{position:absolute;transform:translate(-50%,-50%);font:900 20px/1 var(--display,var(--body,system-ui));color:#fff;background:#2A2035;padding:6px 12px;border-radius:14px;white-space:nowrap;animation:mxpop 1.25s cubic-bezier(.3,1.5,.5,1) forwards;box-shadow:0 3px 0 rgba(0,0,0,.25)}
+.mxpop.cap{background:#FFB43A;color:#2A2035}.mxpop.again{background:#36C5B0}.mxpop.win{background:#FFD23F;color:#2A2035}.mxpop.tie{background:#7B5CFF}
+@keyframes mxpop{0%{opacity:0;transform:translate(-50%,-30%) scale(.5)}18%{opacity:1;transform:translate(-50%,-60%) scale(1.12)}30%{transform:translate(-50%,-60%) scale(1)}80%{opacity:1;transform:translate(-50%,-75%)}100%{opacity:0;transform:translate(-50%,-90%)}}
+.mxfoot{flex:0 0 auto;min-height:56px;display:flex;gap:10px;align-items:center;justify-content:center;padding:0 12px 6px;visibility:hidden}
+.mxfoot.on{visibility:visible;animation:mxin .3s ease-out}
+body.mxcard .mxfoot{visibility:hidden!important}
+@keyframes mxin{0%{opacity:0;transform:scale(.94)}100%{opacity:1;transform:none}}
+@media (max-height:600px){.mxbd{padding:6px 14px;border-width:3px}.mxfoot{min-height:0;padding:0}.mxfoot.on{min-height:48px;padding:0 12px 6px}.mxbw{padding:2px 8px 4px}.mxbd{grid-template-rows:minmax(0,1.05fr) repeat(6,minmax(0,1fr)) minmax(0,1.05fr)}.mxsc .tnote{font-size:12px}}
+@media (prefers-reduced-motion:reduce){.mxp.ok .mxo::after{animation:none}}
+body.ingame.mxon #toast{top:calc(8px + env(safe-area-inset-top,0px))!important;bottom:auto!important;max-width:calc(100% - 120px)!important}
+/* result card: springs in solid, only the dim fades (no see-through card over the board) */
+body.mxon>.chres:not(.chgone){animation:mxdim .28s ease-out both!important}
+body.mxon>.chres:not(.chgone) .chrescard{animation:mxcardin .44s cubic-bezier(.22,1.3,.42,1) both!important}
+@keyframes mxdim{from{background-color:rgba(20,22,35,0)}}
+@keyframes mxcardin{0%{transform:translateY(40px) scale(.82)}100%{transform:none}}
+/* round 2: readable labels on cream, quiet capsule */
+.mxsc .tnm{color:#5B4630!important;text-shadow:none!important;font-weight:800}
+.mxsc .tav.p1 .mxsc1{background:var(--p1c,#FF2D87)!important;color:#fff!important}.mxsc .tav.p2 .mxsc1{background:var(--p2c,#1F6BFF)!important;color:#fff!important}
+.mxfoot .btn.ghost{color:#5B4630!important;background:#fff!important;border:0!important;box-shadow:0 2px 0 rgba(138,90,46,.35)!important}
+.mxsc .mxcap{animation:none!important}
+.mxsc .mxcap.mxnew{animation:mxcapin .34s cubic-bezier(.3,1.5,.5,1) both!important}
+@keyframes mxcapin{0%{transform:scale(.8)}100%{transform:none}}
+body.mxprac #toast{display:none!important}
+body.ingame.mxon #toast{max-width:calc(100% - 200px)!important}
 </style></body></html>
