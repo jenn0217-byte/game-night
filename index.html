@@ -4741,6 +4741,7 @@ const SHADOW=[null,'#C3A6FF','#FF8FB8','#7FB8E6','#E8B26A','#6E5A4E','#2DBE8C'];
 const BASE={skin:4,face:0,fw:1,blush:1,blc:0,freck:0,mole:0,dimp:0,paint:0,hb:2,hf:4,hc:3,flip:0,streak:0,hacc:0,haccc:0,
  eye:2,ec:1,es:1,ey:0,eg:24,et:4,shadow:0,brow:2,bw:1,by:0,bc:-1,nose:0,ns:1,ny:0,mouth:0,lc:2,ms:1,my:0,fh:0,
  gl:0,gc:0,ear:1,nring:0,top:1,tc:0,tc2:14,bot:0,pc:0,shoe:16,h:1,b:1,hat:0,hatc:0,win:'cheer',lose:'pout'};
+Object.assign(BASE,{ew:1,bs:1,bg:0,bt:0,mw:1,gs:1,gy:0});/*GN_MAKER2*/
 const JEN={...BASE};
 const KRY={...BASE,skin:2,face:2,freck:1,hb:9,hf:1,hc:6,flip:1,streak:1,eye:6,ec:3,es:1.05,ey:-2,eg:25,et:2,shadow:1,brow:0,by:-2,nose:2,mouth:4,lc:3,gl:1,gc:4,ear:2,top:3,tc:2,bot:2,pc:3,h:.95,b:.95,hat:0,win:'smug',lose:'angry'};
 
@@ -4843,11 +4844,11 @@ function eye(p,s,mood,skin){const c=EYEC[p.ec],dk='#22182A';let st=p.eye;
  case -4:g=big+`<path d="M-13 -14 L13 -14 L13 -1 L-13 -1Z" fill="${shade(skin,.05)}"/><path d="M-12 -1 L12 -1" stroke="${dk}" stroke-width="2.6" stroke-linecap="round"/>`;break;}
  if(mood==='angry')g+=`<path d="M-15 -18 L15 -18 L15 -11 L-15 -1Z" fill="${shade(skin,.05)}"/><path d="M-13 -2 L13 -11" stroke="${dk}" stroke-width="2.6" stroke-linecap="round"/>`;
  const sh=SHADOW[p.shadow]&&st>=0&&st!==4?`<ellipse cy="-8" rx="13" ry="7" fill="${SHADOW[p.shadow]}" opacity=".6"/>`:'';
- const x=100+s*p.eg,y=124+p.ey,k=p.es*.86;return `<g class="cheye"><g transform="translate(${x} ${y}) rotate(${s*p.et}) scale(${s*k} ${k})">${sh}${g}</g></g>`}
+ const x=100+s*p.eg,y=124+p.ey,k=p.es*.86;return `<g class="cheye"><g transform="translate(${x} ${y}) rotate(${s*p.et}) scale(${s*k*(p.ew||1)} ${k})">${sh}${g}</g></g>`}
 const BROW_N=['Thin','Thick','Arched','Straight','Bushy','Soft dots'];
 function brow(p,s,mood,c){const D=['M-10 2 Q0 -3 10 1','M-11 2 Q0 -4 11 1','M-11 4 Q-2 -7 11 0','M-10 0 L10 0','M-12 2 Q0 -6 12 0','M-6 0 L6 0'][p.brow],W=[3,6,3.5,5,8,5][p.brow]*p.bw;
  const rot={angry:-24,pout:14,cry:18,shocked:0,cheer:0,smug:-8,sleepy:6}[mood]||0,dy=mood==='cheer'||mood==='shocked'?-6:mood==='angry'?4:0;
- return `<g transform="translate(${100+s*p.eg} ${102+p.ey+p.by+dy}) scale(${s} 1) rotate(${rot})"><path d="${D}" stroke="${c}" stroke-width="${mood==='angry'?W+1.5:W}" fill="none" stroke-linecap="round"/></g>`}
+ return `<g transform="translate(${100+s*(p.eg+(p.bg||0))} ${102+p.ey+p.by+dy}) scale(${s*(p.bs||1)} ${p.bs||1}) rotate(${rot+(p.bt||0)})"><path d="${D}" stroke="${c}" stroke-width="${mood==='angry'?W+1.5:W}" fill="none" stroke-linecap="round"/></g>`}
 const NOSE_N=['Button','Line','Dots','None','Round','Pointy'];
 function nose(p,skin){const k=p.ns,d=shade(skin,-.22),t=`translate(100 ${143+p.ny}) scale(${k})`;switch(p.nose){
  case 0:return `<ellipse transform="${t}" rx="5" ry="3.6" fill="${d}"/>`;
@@ -4857,7 +4858,7 @@ function nose(p,skin){const k=p.ns,d=shade(skin,-.22),t=`translate(100 ${143+p.n
  case 4:return `<g transform="${t}"><circle r="7.5" fill="${shade(skin,-.08)}"/><circle cx="2.5" cy="-2.5" r="2" fill="#fff" opacity=".5"/></g>`;
  case 5:return `<path transform="${t}" d="M0 -10 L6 4 L-3 4" stroke="${d}" stroke-width="2.4" fill="none" stroke-linejoin="round" stroke-linecap="round"/>`;}}
 const MOUTH_N=['Smile','Grin','Open','Smirk','Small','Full lips','Tongue','Cat'];
-function mouth(p,mood){const c=LIPC[p.lc],t=`translate(100 ${163+p.my}) scale(${p.ms})`;
+function mouth(p,mood){const c=LIPC[p.lc],t=`translate(100 ${163+p.my}) scale(${p.ms*(p.mw||1)} ${p.ms})`;
  let m={cheer:2,pout:8,angry:9,cry:10,shocked:11,smug:3,sleepy:4}[mood];if(m===undefined)m=p.mouth;
  const S=d=>`<path d="${d}" stroke="${c}" stroke-width="3.2" fill="none" stroke-linecap="round"/>`;
  const g=[S('M-12 -2 Q0 10 12 -2'),
@@ -4924,7 +4925,7 @@ function head(p,mood,part){const skin=SKIN[p.skin],hc=HAIRC[p.hc],ex=earX(p),fl=
  if(mood==='sleepy')fx=`<text x="150" y="62" font-family="Fredoka,sans-serif" font-weight="700" font-size="18" fill="#7064E0">z</text><text x="162" y="44" font-family="Fredoka,sans-serif" font-weight="700" font-size="24" fill="#7064E0">Z</text>`;
  if(mood==='smug')fx=`<path d="M154 70 l4 -10 l4 10 l10 4 l-10 4 l-4 10 l-4 -10 l-10 -4Z" fill="#FFC93C"/>`;
  const fhc=shade(hc,-.1);
- return `${part==='front'?'':back}${ears}${earrings(p,ex)}${face(p,skin)}${flush}${blush}${fr}${mole}${dimp}${paint(p)}${facialHair(p,fhc)}${eye(p,-1,mood,skin)}${eye(p,1,mood,skin)}${brow(p,-1,mood,p.bc<0?shade(hc,-.15):HAIRC[p.bc])}${brow(p,1,mood,p.bc<0?shade(hc,-.15):HAIRC[p.bc])}${nose(p,skin)}${nring}${mouth(p,mood)}${glasses(p)}<g ${fl}>${hairFront(p,hc)}</g>${hairAcc(p)}${hat(p)}${fx}`}
+ return `${part==='front'?'':back}${ears}${earrings(p,ex)}${face(p,skin)}${flush}${blush}${fr}${mole}${dimp}${paint(p)}${facialHair(p,fhc)}${eye(p,-1,mood,skin)}${eye(p,1,mood,skin)}${brow(p,-1,mood,p.bc<0?shade(hc,-.15):HAIRC[p.bc])}${brow(p,1,mood,p.bc<0?shade(hc,-.15):HAIRC[p.bc])}${nose(p,skin)}${nring}${mouth(p,mood)}${p.gl?`<g transform="translate(0 ${p.gy||0}) translate(100 ${124+p.ey}) scale(${p.gs||1}) translate(-100 ${-124-p.ey})">${glasses(p)}</g>`:''}<g ${fl}>${hairFront(p,hc)}</g>${hairAcc(p)}${hat(p)}${fx}`}
 
 /* ---- body (Mii-style pass, Nov 27): a rounded little person. Soft vinyl shading, round mitten hands, short pill legs, rounded shoes ---- */
 const TOP_N=['Tee','Hoodie','Striped','Holiday','Overalls','Jersey','Dress','Jacket'];
@@ -4989,7 +4990,7 @@ function svgBust(p,mood){GBEGIN();const inner=bust(p,mood||'');return svgWrap(BU
 
 /* ---- Mii-style editing (Nov 27): +/- buttons instead of fiddly sliders, face close-up while editing face parts ---- */
 const ADJ={es:['Size','Smaller','Bigger'],ey:['Up / down','Up','Down'],eg:['Spacing','Closer','Farther'],et:['Tilt','Tilt in','Tilt out'],fw:['Width','Narrower','Wider'],
- bw:['Thickness','Thinner','Thicker'],by:['Up / down','Up','Down'],ns:['Size','Smaller','Bigger'],ny:['Up / down','Up','Down'],ms:['Size','Smaller','Bigger'],my:['Up / down','Up','Down'],h:['Height','Shorter','Taller'],b:['Build','Slimmer','Wider']};
+ bw:['Thickness','Thinner','Thicker'],by:['Up / down','Up','Down'],ns:['Size','Smaller','Bigger'],ny:['Up / down','Up','Down'],ms:['Size','Smaller','Bigger'],my:['Up / down','Up','Down'],h:['Height','Shorter','Taller'],b:['Build','Slimmer','Wider'],ew:['Width','Thinner','Wider'],bs:['Size','Smaller','Bigger'],bg:['Spacing','Closer','Farther'],bt:['Tilt','Tilt in','Tilt out'],mw:['Width','Thinner','Wider'],gs:['Size','Smaller','Bigger'],gy:['Up / down','Up','Down']};
 function adjRows(p,sl){return '<div class="chadj">'+sl.map(([k,n,a,b])=>{const v=+p[k],L=ADJ[k]||[n,'Less','More'],f=Math.max(0,Math.min(1,(v-a)/(b-a)));
   return `<div class="chadjr"><span class="chadjn">${L[0]}</span><i class="chmeter" aria-hidden="true"><b style="left:${(f*100).toFixed(1)}%"></b></i><button type="button" class="chstep" data-chstep="${k}" data-d="-1"${v<=a?' disabled':''}>${L[1]}</button><button type="button" class="chstep" data-chstep="${k}" data-d="1"${v>=b?' disabled':''}>${L[2]}</button></div>`}).join('')+'</div>'}
 function stepDef(k){for(const t of Object.values(TABS))for(const pt of t.parts)if(pt.sl)for(const q of pt.sl)if(q[0]===k)return q;return null}
@@ -5029,12 +5030,12 @@ const TABS={
  color:{n:'Color',parts:[{gcolpick:1}]},
  hair:{n:'Hair',parts:[T('hb','Length and shape',HB_N,{hairOnly:1}),T('hf','Bangs',HF_N,{hairOnly:1}),{sw:'hc',n:'Color',cols:HAIRC},{sw:'streak',n:'Streak',cols:STREAK},{tog:[['flip','Flip part']]},T('hacc','Hair accessory',HACC_N,{none:0}),{sw:'haccc',n:'Accessory color',cols:ACC}]},
  face:{n:'Face',parts:[T('face','Shape',FACE_N,{bald:1}),{sw:'skin',n:'Skin',cols:SKIN},{sl:[['fw','Width',.88,1.12,.01]]},{tog:[['blush','Blush'],['freck','Freckles'],['mole','Beauty mark'],['dimp','Dimples']]},{sw:'blc',n:'Blush color',cols:BLUSHC},T('paint','Face paint',PAINT_N,{none:0,zoomCheek:1})]},
- eyes:{n:'Eyes',parts:[T('eye','Style',EYE_N,{zoom:1}),{sw:'ec',n:'Color',cols:EYEC},{sw:'shadow',n:'Eyeshadow',cols:SHADOW},{sl:[['es','Size',.75,1.3,.01],['ey','Height',-12,12,1],['eg','Spacing',16,32,1],['et','Tilt',-14,14,1]]}]},
- brows:{n:'Brows',parts:[T('brow','Style',BROW_N,{zoom:1}),{sw:'bc',n:'Color',cols:[null,...HAIRC],off:1},{sl:[['bw','Thickness',.6,1.6,.01],['by','Height',-8,8,1]]}]},
+ eyes:{n:'Eyes',parts:[T('eye','Style',EYE_N,{zoom:1}),{sw:'ec',n:'Color',cols:EYEC},{sw:'shadow',n:'Eyeshadow',cols:SHADOW},{sl:[['es','Size',.75,1.3,.01],['ey','Height',-12,12,1],['eg','Spacing',16,32,1],['et','Tilt',-14,14,1],['ew','Width',.75,1.3,.01]]}]},
+ brows:{n:'Brows',parts:[T('brow','Style',BROW_N,{zoom:1}),{sw:'bc',n:'Color',cols:[null,...HAIRC],off:1},{sl:[['bs','Size',.7,1.4,.01],['bw','Thickness',.6,1.6,.01],['by','Height',-8,8,1],['bg','Spacing',-6,10,1],['bt','Tilt',-16,16,1]]}]},
  nose:{n:'Nose',parts:[T('nose','Style',NOSE_N,{zoom:1,none:3}),{sl:[['ns','Size',.7,1.5,.01],['ny','Height',-6,6,1]]},{tog:[['nring','Nose ring']]}]},
- mouth:{n:'Mouth',parts:[T('mouth','Style',MOUTH_N,{zoom:1}),{sw:'lc',n:'Lip color',cols:LIPC},{sl:[['ms','Size',.7,1.4,.01],['my','Height',-10,10,1]]},T('fh','Facial hair',FH_N,{none:0})]},
- extras:{n:'Glasses',parts:[T('gl','Glasses',GL_N,{zoom:1,none:0}),{sw:'gc',n:'Frame color',cols:GLC},T('ear','Earrings',EAR_N,{none:0})]},
- outfit:{n:'Outfit',parts:[{sw:'gcol',n:'Game color (your pieces in every game)',cols:GCOLS},{chips:'top',n:'Top',opts:TOP_N},{sw:'tc',n:'Main color',cols:CLOTH},{sw:'tc2',n:'Second color',cols:CLOTH},{chips:'bot',n:'Bottoms',opts:BOT_N},{sw:'pc',n:'Bottoms color',cols:PANTS},{sw:'shoe',n:'Shoes',cols:CLOTH},{sl:[['h','Height',.85,1.15,.01],['b','Build',.8,1.25,.01]]}]},
+ mouth:{n:'Mouth',parts:[T('mouth','Style',MOUTH_N,{zoom:1}),{sw:'lc',n:'Lip color',cols:LIPC},{sl:[['ms','Size',.7,1.4,.01],['my','Height',-10,10,1],['mw','Width',.7,1.4,.01]]},T('fh','Facial hair',FH_N,{none:0})]},
+ extras:{n:'Glasses',parts:[T('gl','Glasses',GL_N,{zoom:1,none:0}),{sw:'gc',n:'Frame color',cols:GLC},{sl:[['gs','Size',.8,1.25,.01],['gy','Up / down',-6,6,1]]},T('ear','Earrings',EAR_N,{none:0})]},
+ outfit:{n:'Outfit',parts:[{chips:'top',n:'Top',opts:TOP_N},{sw:'tc',n:'Main color',cols:CLOTH},{sw:'tc2',n:'Second color',cols:CLOTH},{chips:'bot',n:'Bottoms',opts:BOT_N},{sw:'pc',n:'Bottoms color',cols:PANTS},{sw:'shoe',n:'Shoes',cols:CLOTH},{sl:[['h','Height',.85,1.15,.01],['b','Build',.8,1.25,.01]]}]},
  hat:{n:'Hat',parts:[T('hat','Hat',HAT_N,{none:0}),{sw:'hatc',n:'Color',cols:CLOTH}]},
  moods:{n:'Moods',parts:[{moodpick:'win',n:'Your face when you win',opts:['cheer','smug','happy','shocked']},{moodpick:'lose',n:'Your face when you lose',opts:['angry','pout','cry','shocked','smug']},{note:'Games show these on the win screen, and your losing face pops up when the other player takes the lead.'}]}
 };
@@ -5050,13 +5051,13 @@ const full=(p,mood)=>svgFull(seas(get(p)),mood||'happy');
 const E={who:'p1',d:null,tab:'hair',mood:'happy',hist:[],dirty:false,drag:false,snap:''};
 function open(p){E.who=p;E.d=get(p);E.tab=(window.chars&&window.chars[p])?'hair':'color';E.mood='happy';E.hist=[];E.dirty=!(window.chars&&window.chars[p])}
 function setv(k,v){E.hist.push(JSON.stringify(E.d));if(E.hist.length>80)E.hist.shift();E.d[k]=v;E.dirty=true;repaint()}
-function panel(){const p=E.d,t=TABS[E.tab];let h='';
+function panel(){const p=mkView(E.d),t=TABS[E.tab];let h='';
  for(const pt of t.parts){
   if(pt.k){h+=`<div><p class="chlbl">${pt.n}</p><div class="chtiles">`;pt.names.forEach((nm2,i)=>{const q={...p,[pt.k]:i};if(pt.k!=='hat')q.hat=0;if(pt.hairOnly)q.hacc=0;if(pt.bald){q.hb=0;q.hf=8;q.hacc=0;q.ear=0}
      const inner=pt.none===i?`<span class="chnone">None</span>`:svgHead(q,'',tileVB(pt,p));
      h+=`<button type="button" class="chtile ${p[pt.k]===i?'on':''}" data-chk="${pt.k}" data-chv="${i}" aria-label="${pt.n}: ${nm2}">${inner}</button>`});h+='</div></div>'}
   if(pt.sw){h+=`<div><p class="chlbl">${pt.n}</p><div class="chsws">`+pt.cols.map((c,i)=>{const v=pt.off?i-1:i;return c?`<button type="button" class="chsw ${p[pt.sw]===v?'on':''}" style="background:${c}" data-chk="${pt.sw}" data-chv="${v}" aria-label="${pt.n} ${i+1}"></button>`:`<button type="button" class="chsw ${p[pt.sw]===v?'on':''}" style="background:linear-gradient(135deg,#fff 45%,#E0303A 45% 55%,#fff 55%)" data-chk="${pt.sw}" data-chv="${v}" aria-label="${pt.off?'Match hair':'None'}"></button>`}).join('')+'</div></div>'}
-  if(pt.sl)h+=adjRows(p,pt.sl);
+  if(pt.sl)h+=moveCard(p,pt.sl);
   if(0&&pt.sl){h+='<div class="chsls">'+pt.sl.map(([k,n,a,b,s])=>`<label class="chsl" for="chsl-${k}">${n}<input id="chsl-${k}" type="range" min="${a}" max="${b}" step="${s}" value="${p[k]}" data-chsl="${k}"></label>`).join('')+'</div>'}
   if(pt.tog){h+='<div class="chtogs">'+pt.tog.map(([k,n])=>`<button type="button" class="chchip ${p[k]?'on':''}" data-chtog="${k}">${n}</button>`).join('')+'</div>'}
   if(pt.chips){h+=`<div><p class="chlbl">${pt.n}</p><div class="chtogs">`+pt.opts.map((n,i)=>`<button type="button" class="chchip ${p[pt.chips]===i?'on':''}" data-chk="${pt.chips}" data-chv="${i}">${n}</button>`).join('')+'</div></div>'}
@@ -5064,23 +5065,184 @@ function panel(){const p=E.d,t=TABS[E.tab];let h='';
   if(pt.gcolpick)h+=gcEd(E);
   if(pt.note)h+=`<p class="chnote">${pt.note}</p>`;
  }return h}
-function stage(){const fz=/^(face|eyes|brows|nose|mouth|extras)$/.test(E.tab);return (fz?svgHead(E.d,E.mood==='happy'?'':E.mood,'16 6 168 190'):svgFull(E.d,E.mood)).replace('<svg ',`<svg class="chbig chm-${E.mood}${fz?' chzoom':''}" `)}
+function stage0(){const fz=/^(face|eyes|brows|nose|mouth|extras)$/.test(E.tab);return (fz?svgHead(mkView(E.d),E.mood==='happy'?'':E.mood,'16 6 168 190'):svgFull(E.d,E.mood)).replace('<svg ',`<svg class="chbig chm-${E.mood}${fz?' chzoom':''}" `)}
 function repaint(){const v=document.getElementById('chx');if(!v)return;E.snap=JSON.stringify(E.d);
  v.querySelector('.chstage .chfig').innerHTML=stage();
  v.querySelector('.chmoods').innerHTML=MOODS.map(([k,n])=>`<button type="button" class="chchip ${E.mood===k?'on':''}" data-chmood="${k}">${n}</button>`).join('');
- v.querySelector('.chtabs').innerHTML=Object.entries(TABS).map(([k,t])=>`<button type="button" class="chtab ${E.tab===k?'on':''}" data-chtab="${k}">${t.n}</button>`).join('');
- v.querySelector('.chpanel').innerHTML=panel();
+ v.querySelector('.chtabs').innerHTML=tabsHtml();
+ v.querySelector('.chpanel').innerHTML=panel();railPaint(v);
  const sv=document.querySelector('[data-act=ch-save]');if(sv){sv.disabled=!E.dirty;if(E.dirty)sv.textContent='Save'}}
+/* ---- Mii Maker controls (Nov 27): buttons beside the face, drag / pinch / twist on the face, tab icons, pick-a-look ideas ---- */
+const MK={tab:null,hold:null,ptr:new Map(),g:null,raf:0,ideas:null};
+/* which saved field each control moves, per tab. L = left of the face (position), R = right (shape) */
+const MKP={extras:{L:['gy'],R:['gs']},eyes:{L:['ey','eg'],R:['es','ew','et']},brows:{L:['by','bg'],R:['bs','bw','bt']},nose:{L:['ny'],R:['ns']},mouth:{L:['my'],R:['ms','mw']},face:{L:[],R:['fw']},outfit:{L:[],R:['h','b']}};
+const MKD={face:{s:'fw'},outfit:{y:'h',yf:-.0016,s:'b'},extras:{y:'gy',s:'gs'},eyes:{y:'ey',x:'eg',s:'es',r:'et'},brows:{y:'by',x:'bg',s:'bs',r:'bt'},nose:{y:'ny',s:'ns'},mouth:{y:'my',s:'ms'}};
+const MKN={extras:'glasses',eyes:'eyes',brows:'eyebrows',nose:'nose',mouth:'mouth',face:'face',outfit:'body'};
+const IC=(d,w)=>`<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="${w||2.4}" stroke-linecap="round" stroke-linejoin="round">${d}</svg>`;
+const ARW={
+ up:IC('<path d="M12 19V5M6 11l6-6 6 6"/>'),down:IC('<path d="M12 5v14M6 13l6 6 6-6"/>'),
+ in:IC('<path d="M2 12h7M6 8.5 9.5 12 6 15.5M22 12h-7M18 8.5 14.5 12 18 15.5"/>'),out:IC('<path d="M9.5 12H2M5.5 8.5 2 12l3.5 3.5M14.5 12H22M18.5 8.5 22 12l-3.5 3.5"/>'),
+ sm:IC('<circle cx="12" cy="12" r="9.5"/><path d="M7.5 12h9"/>'),bg:IC('<circle cx="12" cy="12" r="9.5"/><path d="M7.5 12h9M12 7.5v9"/>'),
+ thin:IC('<ellipse cx="12" cy="12" rx="3.2" ry="7"/><path d="M2 12h4M4.5 10l1.8 2-1.8 2M22 12h-4M19.5 10l-1.8 2 1.8 2"/>',2),wide:IC('<ellipse cx="12" cy="12" rx="6" ry="5"/><path d="M5 12H1.5M3.2 10 1.4 12l1.8 2M19 12h3.5M20.8 10l1.8 2-1.8 2"/>',2),
+ tl:IC('<path d="M5 13a7 7 0 1 0 2.2-6.2"/><path d="M6.6 2.8v4.4H11"/>'),tr:IC('<path d="M19 13a7 7 0 1 1-2.2-6.2"/><path d="M17.4 2.8v4.4H13"/>'),
+ lthin:IC('<path d="M4 12h16"/>',1.6),lthick:IC('<path d="M5 12h14"/>',6),
+ short:IC('<rect x="7.5" y="10" width="9" height="9" rx="3"/><path d="M4 21h16"/>'),reset:IC('<path d="M4 12a8 8 0 1 0 2.4-5.7"/><path d="M4 3v4.5h4.5"/>'),tall:IC('<rect x="8.5" y="3" width="7" height="16" rx="3"/><path d="M4 21h16"/>')};
+const MKI={ey:['up','down'],by:['up','down'],ny:['up','down'],my:['up','down'],eg:['in','out'],bg:['in','out'],es:['sm','bg'],bs:['sm','bg'],ns:['sm','bg'],ms:['sm','bg'],
+ ew:['thin','wide'],gy:['up','down'],gs:['sm','bg'],mw:['thin','wide'],fw:['thin','wide'],b:['thin','wide'],bw:['lthin','lthick'],et:['tl','tr'],bt:['tl','tr'],h:['short','tall']};
+function mkP(){return E.tab==='extras'&&!(E.d&&E.d.gl)?null:MKP[E.tab]}
+function mkD(){return E.tab==='extras'&&!(E.d&&E.d.gl)?null:MKD[E.tab]}
+function mkStep(k,dir){const q=stepDef(k);if(!q||!E.d)return false;const [,,a,mx,s]=q,st=Math.max(s,(mx-a)/14);let v=+E.d[k]+dir*st;v=Math.round(v/s)*s;v=+Math.min(mx,Math.max(a,v)).toFixed(3);if(v===+E.d[k])return false;E.d[k]=v;E.dirty=true;return true}
+function mkFast(){const v=document.getElementById('chx');if(!v)return;const f=v.querySelector('.chfig');if(f)f.innerHTML=stage();mkState(v);const sv=document.querySelector('[data-act=ch-save]');if(sv&&E.dirty){sv.disabled=false;sv.textContent='Save'}}
+function mkState(v){v.querySelectorAll('[data-chrs]').forEach(b=>{const q=stepDef(b.dataset.chrs);if(!q)return;const x=+E.d[q[0]],d=+b.dataset.d;b.disabled=d<0?x<=q[2]+1e-9:x>=q[3]-1e-9});
+ const ub=v.querySelector('[data-chundo]');if(ub)ub.disabled=!E.hist.length;
+ v.querySelectorAll('[data-chmt]').forEach(m=>{const q=stepDef(m.dataset.chmt);if(!q)return;m.style.width=(100*Math.max(0,Math.min(1,(+E.d[q[0]]-q[2])/(q[3]-q[2])))).toFixed(1)+'%'});
+ const rb=v.querySelector('[data-chreset]');if(rb){const ks=rb.dataset.chreset.split(','),O=MK.orig||BASE,at=ks.every(k=>+E.d[k]===+O[k]);rb.disabled=at;rb.setAttribute('aria-label','Reset '+(MKN[E.tab]||'part')+' to how it was')}}
+function mkRow(k){const L=ADJ[k]||[k,'Less','More'],ic=MKI[k]||['sm','bg'];
+ return `<div class="chrow"><span>${L[0]}</span><i class="chmt" aria-hidden="true"><b data-chmt="${k}"></b></i><div><button type="button" class="chrb" data-chrs="${k}" data-d="-1" aria-label="${L[1]} (${MKN[E.tab]||'part'})">${ARW[ic[0]]}</button><button type="button" class="chrb" data-chrs="${k}" data-d="1" aria-label="${L[2]} (${MKN[E.tab]||'part'})">${ARW[ic[1]]}</button></div></div>`}
+function railPaint(v){if(!E.hist.length&&MK.origD!==E.d){MK.orig={...E.d};MK.origWho=E.who;MK.origD=E.d}const P=mkP(),st=v.querySelector('.chstage');if(!st)return;st.classList.toggle('chrails',!!P);
+ const tk=E.tab+(P?'+':'-');if(MK.tab!==tk){MK.tab=tk;const l=v.querySelector('.chrl'),r=v.querySelector('.chrr');if(l)l.innerHTML=P?P.L.map(mkRow).join('')+`<div class="chrow"><div><button type="button" class="chrb chrst" data-chreset="${(P.L.concat(P.R)).join(',')}">Reset</button></div></div>`:'';if(r)r.innerHTML=P?P.R.map(mkRow).join(''):''}
+ const D=mkD(),t=E.tab;st.classList.toggle('chtouch',!!D);st.classList.toggle('chmoodtab',t==='moods');const hn=v.querySelector('.chhint');if(hn){const tx=t==='face'?'<b>Pinch</b> to change width':t==='outfit'?'<b>Drag</b> or <b>pinch</b> me':D?(D.r?'<b>Drag</b>, <b>pinch</b> or <b>twist</b>':'<b>Drag</b> or <b>pinch</b> it'):t==='color'?'Your game color':t==='moods'?'Win and lose faces':t==='extras'?'Pick glasses first':'Tap a style below';hn.innerHTML=tx?`<span>${tx}</span>`:'';hn.hidden=!tx}const hb=v.querySelector('.chhid');if(hb){const h=mkHid(t);hb.textContent=h?(h==='Glasses and hat'?'Glasses + hat hidden':h+' hidden'):'';hb.hidden=!h}mkState(v)}
+/* the panel: one short card instead of the old rows of buttons */
+function moveCard(p,sl){return ''}
+/* a dashed box around the part you are editing, like the Mii Maker's highlight */
+function selRect(svg){const p=E.d,t=E.tab;if(!/^(eyes|brows|nose|mouth|extras)$/.test(t)||!/chzoom/.test(svg))return svg;let x,y,w,h;
+ if(t==='eyes'){const k=p.es*.86;w=2*p.eg+30*k*(p.ew||1);h=26*k;x=100-w/2;y=124+p.ey-h/2}
+ else if(t==='brows'){const k=p.bs||1;w=2*(p.eg+(p.bg||0))+28*k;h=18*k;x=100-w/2;y=103+p.ey+p.by-h/2}
+ else if(t==='extras'){if(!p.gl)return svg;const k=p.gs||1;w=(2*p.eg+44)*k;h=34*k;x=100-w/2;y=124+p.ey+(p.gy||0)-h/2}
+ else if(t==='nose'){w=26*p.ns;h=24*p.ns;x=100-w/2;y=143+p.ny-h/2}
+ else{w=36*p.ms*(p.mw||1);h=24*p.ms;x=100-w/2;y=163+p.my-h/2}
+ const r=`<rect class="chsel${MK.g?' on':''}${MK.lim?' lim':''}" x="${(x-5).toFixed(1)}" y="${(y-5).toFixed(1)}" width="${(w+10).toFixed(1)}" height="${(h+10).toFixed(1)}" rx="9"/>`;
+ const i=svg.lastIndexOf('</svg>');return svg.slice(0,i)+r+svg.slice(i)}
+function stage(){return selRect(stage0())}
+function mkHid(t){const p=E.d||{};const g=(t==='eyes'||t==='brows')&&p.gl,h=/^(face|eyes|brows|nose|mouth|extras)$/.test(t)&&p.hat;return g&&h?'Glasses and hat':g?'Glasses':h?'Hat':''}
+function mkView(p){const t=E.tab;if(!p)return p;const q={...p};if(t==='eyes'||t==='brows')q.gl=0;if(/^(face|eyes|brows|nose|mouth|extras)$/.test(t))q.hat=0;return q}
+/* tab icons (all tabs on screen at once, two rows) */
+const TABIC={color:'<circle cx="12" cy="12" r="8.5"/><circle cx="9" cy="9.5" r="1.4" fill="currentColor"/><circle cx="14.5" cy="8.5" r="1.4" fill="currentColor"/><circle cx="16" cy="13.5" r="1.4" fill="currentColor"/><path d="M11 20c-1.5-2 0-4 2-3.5"/>',
+ hair:'<path d="M4.5 15c-1-7 3-11 7.5-11s8.5 4 7.5 11"/><path d="M7 11c3 0 6-1.5 7.5-4 1 2 2.5 3.5 2.5 4"/><path d="M4.5 15c0 3 1 5 2 6M19.5 15c0 3-1 5-2 6"/>',
+ face:'<ellipse cx="12" cy="12.5" rx="7.5" ry="8.5"/><path d="M9 11h.01M15 11h.01M9.5 15.5q2.5 2 5 0"/>',
+ eyes:'<path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6z"/><circle cx="12" cy="12" r="2.8"/>',
+ brows:'<path d="M3 13q4-5 8-2M13 11q4-3 8 2"/>',nose:'<path d="M13 4c-1 5-4 8-4 11 0 2 2 3 4 2.5 1.5.5 3 0 3-1.5"/>',
+ mouth:'<path d="M4 11q8 9 16 0"/><path d="M4 11h16"/>',extras:'<circle cx="7" cy="13" r="4"/><circle cx="17" cy="13" r="4"/><path d="M11 13h2M3 12 2 9M21 12l1-3"/>',
+ outfit:'<path d="M8 3 3.5 6.5 6 10l2-1v12h8V9l2 1 2.5-3.5L16 3q-1 3-4 3T8 3z"/>',hat:'<path d="M3 17h18"/><path d="M6 17c0-6 2.5-10 6-10s6 4 6 10"/>',
+ moods:'<circle cx="12" cy="12" r="9"/><path d="M8.5 10h.01M15.5 10h.01M8 14.5q4 4 8 0"/>'};
+function tabsHtml(){return Object.entries(TABS).map(([k,t])=>`<button type="button" role="tab" aria-selected="${E.tab===k}" class="chtab ${E.tab===k?'on':''}" data-chtab="${k}">${IC(TABIC[k]||TABIC.face,2).replace('width="22" height="22"','width="20" height="20"')}<span>${t.n}</span></button>`).join('')}
+/* pick a look: nine random faces to choose from, like the Mii Maker's look-alikes */
+function ideasPaint(){let o=document.querySelector('.chideas');if(!o){o=document.createElement('div');o.className='chideas';o.setAttribute('role','dialog');o.setAttribute('aria-label','Pick a look');document.body.appendChild(o)}
+ MK.ideas=Array.from({length:9},()=>rlook(E.d));
+ o.innerHTML=`<div class="chidc"><div class="chidh"><b>Pick a look</b><span>Then change anything you like.</span></div><div class="chidg">${MK.ideas.map((d,i)=>`<button type="button" class="chtile" data-chidea="${i}" aria-label="Look ${i+1}">${svgHead(d,'','6 -10 188 206')}</button>`).join('')}</div><div class="chidb"><button type="button" class="btn" data-chidmore="1">${DIE}More looks</button><button type="button" class="btn ghost" data-chidx="1">Close</button></div></div>`;
+ requestAnimationFrame(()=>{o.classList.add('on');const f=o.querySelector('.chidc');try{f.setAttribute('tabindex','-1');f.focus({preventScroll:true})}catch(_){}})}
+function ideasClose(){const o=document.querySelector('.chideas');if(o){o.classList.remove('on');setTimeout(()=>o.remove(),220)}MK.ideas=null}
+const DIE=`<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" style="vertical-align:-4px;margin-right:4px"><rect x="3" y="3" width="18" height="18" rx="5" fill="none" stroke="currentColor" stroke-width="2.2"/><circle cx="8.5" cy="8.5" r="1.7" fill="currentColor"/><circle cx="15.5" cy="15.5" r="1.7" fill="currentColor"/><circle cx="12" cy="12" r="1.7" fill="currentColor"/><circle cx="15.5" cy="8.5" r="1.7" fill="currentColor"/><circle cx="8.5" cy="15.5" r="1.7" fill="currentColor"/></svg>`;
+const UNDO=`<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" style="vertical-align:-4px;margin-right:4px" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14 4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-3"/></svg>`;
+function mkBuzz(){try{navigator.vibrate&&navigator.vibrate(6)}catch(_){}}
+if(typeof document!=='undefined'){
+ /* press and hold a side button: one step at once, then repeats while held */
+ const stop=()=>{const h=MK.hold;if(!h)return;clearTimeout(h.t);clearInterval(h.i);MK.hold=null;if(h.moved)repaint()};
+ document.addEventListener('pointerdown',e=>{const b=e.target.closest&&e.target.closest('#chx [data-chrs]');if(!b||b.disabled)return;e.preventDefault();stop();
+  const k=b.dataset.chrs,d=+b.dataset.d,snap=JSON.stringify(E.d),h=MK.hold={b,moved:false,t:0,i:0};
+  const go=()=>{if(mkStep(k,d)){if(!h.moved){E.hist.push(snap);if(E.hist.length>80)E.hist.shift()}h.n=(h.n||0)+1;h.moved=true;mkFast();mkBuzz();if(h.n%3===1)try{gnSfx('tap')}catch(_){}}else if(h.i){clearInterval(h.i);h.i=0}};
+  go();h.t=setTimeout(()=>{h.i=setInterval(go,85)},380);try{b.setPointerCapture(e.pointerId)}catch(_){}});
+ ['pointerup','pointercancel','lostpointercapture'].forEach(n=>document.addEventListener(n,stop));
+ document.addEventListener('pointermove',e=>{const h=MK.hold;if(!h)return;const r=h.b.getBoundingClientRect();if(e.clientX<r.left-12||e.clientX>r.right+12||e.clientY<r.top-12||e.clientY>r.bottom+12)stop()});
+ /* back to a calm face when leaving the Moods tab; Undo jumps to the tab it changes */
+ const keyTab=k=>{for(const [tk,t] of Object.entries(TABS))for(const pt of t.parts){if(pt.k===k||pt.sw===k||pt.chips===k||pt.moodpick===k||(pt.gcolpick&&k==='gcol')||(pt.sl&&pt.sl.some(q=>q[0]===k))||(pt.tog&&pt.tog.some(q=>q[0]===k)))return tk}return null};
+ document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('#chx button');if(!b)return;
+  if(b.dataset.chtab&&b.dataset.chtab!=='moods')E.mood='happy';
+  if(b.dataset.chundo&&E.hist.length){const before=E.d;setTimeout(()=>{if(E.d===before)return;const ch=Object.keys({...before,...E.d}).filter(k=>JSON.stringify(before[k])!==JSON.stringify(E.d[k]));const tabs=[...new Set(ch.map(keyTab).filter(Boolean))];if(tabs.length===1&&tabs[0]!==E.tab){E.tab=tabs[0];repaint()}},0)}},true);
+ /* keyboard / TV remote: Enter or Space still works on a side button */
+ document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('#chx [data-chrs]');if(!b||b.disabled||e.detail)return;const s=JSON.stringify(E.d);if(mkStep(b.dataset.chrs,+b.dataset.d)){E.hist.push(s);repaint()}});
+ /* drag, pinch and twist the part on the face */
+ const pts=()=>[...MK.ptr.values()];
+ const begin=()=>{const f=document.querySelector('#chx .chfig svg'),D=mkD();if(!f||!D)return null;const r=f.getBoundingClientRect(),vb=(f.getAttribute('viewBox')||'0 0 168 190').split(/[ ,]+/).map(Number);
+  const P=pts(),g={D,u:vb[2]/r.width,cx:r.left+r.width/2,d0:{...E.d},snap:JSON.stringify(E.d),p0:P.map(q=>({...q})),moved:false};
+  if(P.length>1){g.dist=Math.hypot(P[1].x-P[0].x,P[1].y-P[0].y)||1;g.ang=Math.atan2(P[1].y-P[0].y,P[1].x-P[0].x)}else g.side=P[0].x<g.cx?-1:1;return g};
+ const setK=(k,v)=>{const q=stepDef(k);if(!q)return;v=Math.round(v/q[4])*q[4];if(v<q[2]-q[4]*.5||v>q[3]+q[4]*.5)MK.hit=1;E.d[k]=+Math.min(q[3],Math.max(q[2],v)).toFixed(3)};
+ const move=()=>{MK.raf=0;const g=MK.g;if(!g)return;const P=pts(),D=g.D;MK.hit=0;
+  if(P.length>1&&g.dist){const dist=Math.hypot(P[1].x-P[0].x,P[1].y-P[0].y),ang=Math.atan2(P[1].y-P[0].y,P[1].x-P[0].x);
+   let ra=dist/g.dist;ra=Math.abs(ra-1)<.03?1:ra>1?ra-.03:ra+.03;if(D.s)setK(D.s,g.d0[D.s]*ra);if(D.r){let da=(ang-g.ang)*180/Math.PI;if(da>180)da-=360;if(da<-180)da+=360;da=Math.abs(da)<6?0:da-Math.sign(da)*6;setK(D.r,g.d0[D.r]+da*.6)}}
+  else if(P.length===1&&g.p0.length===1){const rx=P[0].x-g.p0[0].x,ry=P[0].y-g.p0[0].y;if(!g.ax&&Math.hypot(rx,ry)>8)g.ax=D.x&&Math.abs(rx)>Math.abs(ry)*1.2?'x':'y';const dx=rx*g.u,dy=ry*g.u;if(g.ax==='y'&&D.y)setK(D.y,g.d0[D.y]+dy*(D.yf||1));if(g.ax==='x'&&D.x)setK(D.x,g.d0[D.x]+dx*g.side)}
+  if(MK.hit&&!g.hit){g.hit=1;try{navigator.vibrate&&navigator.vibrate([10,40,10])}catch(_){}}MK.lim=!!MK.hit;
+  const ch=JSON.stringify(E.d)!==g.snap;if(ch&&!g.moved){g.moved=true;E.hist.push(g.snap);if(E.hist.length>80)E.hist.shift()}if(ch)E.dirty=true;mkFast()};
+ document.addEventListener('pointerdown',e=>{const f=e.target.closest&&e.target.closest('#chx .chstage.chtouch .chfig');if(!f)return;e.preventDefault();MK.ptr.set(e.pointerId,{x:e.clientX,y:e.clientY});try{f.setPointerCapture(e.pointerId)}catch(_){}
+  if(MK.g&&MK.g.moved&&pts().length>1){/* a second finger joins: restart from here as a pinch */}MK.g=begin();mkFast()});
+ document.addEventListener('pointermove',e=>{if(!MK.ptr.has(e.pointerId))return;MK.ptr.set(e.pointerId,{x:e.clientX,y:e.clientY});if(!MK.raf)MK.raf=requestAnimationFrame(move)});
+ const up=e=>{if(!MK.ptr.has(e.pointerId))return;MK.ptr.delete(e.pointerId);const moved=MK.g&&MK.g.moved;if(MK.ptr.size){MK.g=begin();if(MK.g&&moved)MK.g.moved=true}else{MK.g=null;MK.lim=false;if(moved){try{gnSfx('tap')}catch(_){}}repaint()}};
+ document.addEventListener('pointerup',up);document.addEventListener('pointercancel',up);
+ document.addEventListener('click',e=>{const t=e.target.closest&&e.target.closest('button');if(!t)return;const ds=t.dataset;
+  if(ds.chreset&&t.closest('#chx')){const s=JSON.stringify(E.d),O=MK.orig||BASE,ks=ds.chreset.split(',');ks.forEach(k=>{E.d[k]=O[k]});try{gnSfx('tap')}catch(_){}if(JSON.stringify(E.d)!==s){E.hist.push(s);E.dirty=true}repaint();return}
+  if(ds.chideas&&t.closest('#chx')){ideasPaint();try{gnSfx('tap')}catch(_){}return}
+  if(ds.chidmore){ideasPaint();try{gnSfx('tap')}catch(_){}return}
+  if(ds.chidx){ideasClose();return}
+  if(ds.chidea&&MK.ideas){const d=MK.ideas[+ds.chidea];if(d){E.hist.push(JSON.stringify(E.d));E.d={...d};MK.orig={...d};MK.origD=E.d;E.dirty=true;ideasClose();repaint();try{gnSfx('pop')}catch(_){try{gnSfx('tap')}catch(_){}}}return}});
+ document.addEventListener('click',e=>{const o=document.querySelector('.chideas');if(o&&e.target===o)ideasClose()});
+ document.addEventListener('keydown',e=>{if(e.key==='Escape'&&document.querySelector('.chideas'))ideasClose()});
+ const st2=document.createElement('style');st2.id='gn-mii-ed2';st2.textContent=`
+.chstage{position:sticky}
+.chfig{height:clamp(200px,31vh,280px)!important}
+.chstage{padding-top:10px!important}
+.chbar{margin-top:6px}
+.chhid{position:absolute;top:6px;left:50%;transform:translateX(-50%);z-index:3;font:800 11px/20px var(--body,system-ui);padding:0 9px;border-radius:10px;background:rgba(255,255,255,.92);color:#44506A;white-space:nowrap;box-shadow:0 1px 3px rgba(30,60,110,.15);pointer-events:none}.chhid[hidden]{display:none}
+.chrail{position:absolute;top:10px;height:clamp(200px,31vh,280px);display:flex;flex-direction:column;justify-content:center;gap:5px;z-index:2}
+.chrl{left:6px}.chrr{right:6px}
+.chstage:not(.chrails) .chrail{display:none}
+.chrow{display:flex;flex-direction:column;align-items:center;gap:2px}
+.chrow>span{font:800 11px/13px var(--body,system-ui);color:#44506A;letter-spacing:.02em;white-space:nowrap}
+.chrow>div{display:flex;gap:4px}
+.chmt{position:relative;display:block;width:60px;height:4px;border-radius:2px;background:#D5DDEC;margin:1px 0 3px;overflow:hidden}.chmt b{position:absolute;left:0;top:0;bottom:0;border-radius:2px;background:#FF4F8B;transition:width .08s}
+.chsel.lim{stroke:#E5322B;stroke-dasharray:none;stroke-width:2.4}
+.chhint{display:flex;align-items:center;justify-content:center;gap:6px;height:22px;margin:0;font-size:12.5px;line-height:22px;color:#44506A;text-align:center;white-space:nowrap;overflow:hidden;max-width:100%}.chhint span{overflow:hidden;text-overflow:ellipsis}.chhint[hidden]{display:flex;visibility:hidden}
+.chmoods{display:none!important}
+.chbtns:empty{display:none}
+.chbar{display:flex;align-items:center;gap:6px;width:100%;padding:0 4px;box-sizing:border-box}
+.chbar .chhint{flex:1;min-width:0}
+.chpill{flex:none;display:inline-flex;align-items:center;min-height:40px;padding:0 11px;border-radius:20px;border:0;background:#fff;color:#1E2233;font:800 14px var(--display,system-ui);box-shadow:0 2px 0 #C9D3E6;cursor:pointer;white-space:nowrap;-webkit-tap-highlight-color:transparent}
+.chpill.dk{background:#1E2233;color:#fff;box-shadow:0 2px 0 #000}
+.chpill:active{transform:translateY(2px);box-shadow:none}.chpill:disabled{opacity:.4;box-shadow:none}
+.chpill svg{width:18px;height:18px}
+html.dark .chpill:not(.dk){background:#fff;color:#1E2233}.chhint svg{flex:none;color:#FF4F8B}.chhint b{color:#1E2233}
+.chmoods .chchip{min-height:40px}.chpanel .chchip{min-height:40px}
+.chrb.chrst{width:auto;border-radius:21px;padding:0 14px;font:800 13px var(--display,system-ui)}
+.chbtns .btn:disabled{opacity:.45}
+html.dark .chmoods .chchip.on{background:#1E2233;color:#fff;border-color:#1E2233}
+.chrb.chrst:disabled{opacity:.4}.chsw{width:40px!important;height:40px!important}
+.chrb{width:42px;height:42px;border-radius:50%;border:0;background:#fff;color:#1E2233;display:grid;place-items:center;padding:0;box-shadow:0 2px 0 #C9D3E6,0 3px 8px rgba(30,60,110,.14);cursor:pointer;touch-action:none;-webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none;transition:transform .08s,background .08s}
+.chrb:active{transform:translateY(2px) scale(.94);box-shadow:0 0 0 #C9D3E6,0 1px 4px rgba(30,60,110,.14);background:#EEF3FF}
+.chrb:disabled{opacity:.35;box-shadow:none;cursor:default}
+.chrb svg{pointer-events:none}
+.chstage.chtouch .chfig{touch-action:none;cursor:grab}
+.chsel{fill:none;stroke:#FF4F8B;stroke-width:1.6;stroke-dasharray:4 3;opacity:.85;pointer-events:none}
+.chsel.on{stroke-dasharray:none;stroke-width:2;opacity:1}
+@media (prefers-reduced-motion:no-preference){.chsel:not(.on){animation:chselp 1.4s ease-in-out infinite}@keyframes chselp{50%{opacity:.35}}}
+.chtabs{display:grid!important;grid-template-columns:repeat(6,minmax(0,1fr));gap:4px;overflow:visible!important;padding:0 0 4px}
+.chtab{display:flex!important;flex-direction:column;align-items:center;gap:1px;padding:5px 2px 4px!important;min-height:44px;border-radius:14px!important;font:800 11.5px var(--display,system-ui)!important;min-width:0}
+.chtab span{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.chmove{display:flex;flex-direction:column;gap:10px;align-items:flex-start;background:#F4F7FD;border-radius:14px;padding:12px 14px}
+.chmove p{margin:0;font-size:14px;line-height:1.4;color:#44506A}.chmove b{color:#1E2233}
+.chmove .chchip{min-height:40px}
+.chideas{position:fixed;inset:0;z-index:60;background:rgba(20,22,32,0);display:flex;align-items:flex-end;justify-content:center;transition:background .2s}
+.chideas.on{background:rgba(20,22,32,.45)}
+.chidc{width:100%;max-width:520px;background:#fff;border-radius:24px 24px 0 0;padding:16px 16px calc(16px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:12px;transform:translateY(100%);transition:transform .26s cubic-bezier(.22,1,.36,1);max-height:calc(100dvh - 40px);overflow:auto}
+.chideas.on .chidc{transform:none}.chidc:focus{outline:none}
+.chidh{display:flex;flex-direction:column;gap:2px}.chidh b{font:800 20px var(--display,system-ui);color:#1E2233}.chidh span{font-size:14px;color:#6B7189}
+.chidg{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.chidg .chtile{background:#EEF4FF}
+.chidb{display:flex;gap:8px}.chidb .btn{flex:1;white-space:nowrap}
+.chbtns .btn{white-space:nowrap}
+html.dark .chmove{background:#24252C}html.dark .chmove p{color:#B9BED0}html.dark .chmove b{color:#fff}
+html.dark .chidc{background:#1B1C22}html.dark .chidh b{color:#fff}`;
+ (document.head||document.documentElement).appendChild(st2)}
+
 function view(){if(!E.d)open(me||'p1');
- return `<div class="bar"><button class="back" data-act="ch-back">←</button><h1>Your character</h1><button class="btn chsave" data-act="ch-save" ${E.dirty?'':'disabled'}>Save</button></div>
- <div id="chx"><div class="chstage"><div class="chfig"></div><div class="chmoods"></div></div>
- <div class="chbtns"><button type="button" class="btn" data-chrand="1">🎲 Random</button><button type="button" class="btn ghost" data-chundo="1">↶ Undo</button></div>
+ return `<div class="bar"><button class="back" data-act="ch-back" aria-label="Back (your changes are saved)">←</button><h1>Your character</h1><button class="btn chsave" data-act="ch-save" ${E.dirty?'':'disabled'}>Save</button></div>
+ <div id="chx"><div class="chstage"><span class="chhid" hidden></span><div class="chrail chrl"></div><div class="chfig"></div><div class="chrail chrr"></div><div class="chmoods"></div><div class="chbar"><button type="button" class="chpill" data-chundo="1">${UNDO}Undo</button><p class="chhint" hidden></p><button type="button" class="chpill dk" data-chideas="1">${DIE}Pick a look</button></div></div>
+ <div class="chbtns"></div>
  <div class="chtabs" role="tablist"></div><div class="chpanel"></div></div>`}
-function rand(){const r=n=>Math.floor(Math.random()*n),f=(a,c)=>+(a+Math.random()*(c-a)).toFixed(2),old=E.d;E.hist.push(JSON.stringify(old));
- E.d={...old,skin:r(SKIN.length),face:r(6),fw:f(.92,1.08),blush:r(2),blc:r(4),freck:r(3)===0?1:0,mole:r(6)===0?1:0,dimp:r(4)===0?1:0,paint:r(5)===0?1+r(5):0,
+function rand(){E.hist.push(JSON.stringify(E.d));E.d=rlook(E.d);E.dirty=true;repaint()}
+function rlook(old){const r=n=>Math.floor(Math.random()*n),f=(a,c)=>+(a+Math.random()*(c-a)).toFixed(2);
+ return {...old,ew:f(.9,1.12),bs:f(.9,1.12),bg:0,bt:r(7)-3,mw:f(.9,1.12),skin:r(SKIN.length),face:r(6),fw:f(.92,1.08),blush:r(2),blc:r(4),freck:r(3)===0?1:0,mole:r(6)===0?1:0,dimp:r(4)===0?1:0,paint:r(5)===0?1+r(5):0,
  hb:r(16),hf:r(12),hc:r(HAIRC.length),flip:r(2),streak:r(4)===0?1+r(7):0,hacc:r(3)===0?1+r(5):0,haccc:r(8),eye:r(8),ec:r(EYEC.length),es:f(.85,1.2),ey:r(11)-5,eg:20+r(10),et:r(13)-6,shadow:r(3)===0?1+r(6):0,
  brow:r(6),bw:f(.8,1.3),by:r(7)-3,nose:r(6),ns:f(.8,1.3),ny:r(5)-2,mouth:r(8),lc:r(LIPC.length),ms:f(.85,1.2),my:r(9)-4,fh:r(6)===0?1+r(4):0,gl:r(3)===0?1+r(6):0,gc:r(GLC.length),ear:r(4),nring:r(8)===0?1:0,
- top:r(8),tc:r(CLOTH.length),tc2:r(CLOTH.length),bot:r(3),pc:r(PANTS.length),shoe:r(CLOTH.length),h:f(.88,1.12),b:f(.85,1.2),hat:r(3)===0?1+r(9):0,hatc:r(CLOTH.length)};E.dirty=true;repaint()}
+ top:r(8),tc:r(CLOTH.length),tc2:r(CLOTH.length),bot:r(3),pc:r(PANTS.length),shoe:r(CLOTH.length),h:f(.88,1.12),b:f(.85,1.2),hat:r(3)===0?1+r(9):0,hatc:r(CLOTH.length)}}
 document.addEventListener('click',e=>{const b=e.target.closest('#chx button');if(!b)return;const ds=b.dataset;
  if(ds.chmood){E.mood=ds.chmood;repaint();return}
  if(ds.chtab){E.tab=ds.chtab;repaint();return}
@@ -22757,7 +22919,7 @@ function boardZoom(g){const sel=BZ_SEL[g.type];if(!sel)return;const el=document.
   box.addEventListener('dblclick',e=>{if(e.target.closest('.bzbtns'))return;if(e.target.closest('[data-act$="-tap"]'))return;if(performance.now()-(window.__bzAct||0)<700)return;const r=box.getBoundingClientRect();if(z.s>1.05){z.s=1;z.x=0;z.y=0}else{z.s=2;z.x=-(e.clientX-r.left-r.width/2);z.y=-(e.clientY-r.top-r.height/2)}bzClamp(z,r.width,r.height);bzSave(g.id);ease()});
   apply()}
 /* ---------- real-app shell (Nov 1): settings, splash, slide transitions, swipe back, connection banner, profile cards, achievements, holiday looks ---------- */
-const GN_VER='122';
+const GN_VER='123';
 /* --- achievements, worked out from finished games (nothing extra stored) --- */
 const ACH=[
  ['first','🏆','First win','Win any game',(w,all,p)=>w.length>=1],
